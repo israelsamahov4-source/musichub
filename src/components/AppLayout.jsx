@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Bell, GraduationCap, Handshake, Home, LogOut, MessageCircle, Search, Settings, Sparkles, User } from "lucide-react";
+import { Bell, GraduationCap, Handshake, Home, LogOut, MessageCircle, Search, Settings, Shield, Sparkles, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger,
@@ -120,6 +120,7 @@ export default function AppLayout() {
                     <DropdownMenuSeparator />
                     <DropdownMenuItem asChild><Link to={`/u/${profile?.username}`}><User className="h-4 w-4" />הפרופיל שלי</Link></DropdownMenuItem>
                     <DropdownMenuItem asChild><Link to="/settings"><Settings className="h-4 w-4" />הגדרות</Link></DropdownMenuItem>
+                    {profile?.is_admin && <DropdownMenuItem asChild><Link to="/admin"><Shield className="h-4 w-4" />ניהול</Link></DropdownMenuItem>}
                     {profile?.plan_tier === "free" && (
                       <DropdownMenuItem asChild><Link to="/pricing" className="text-primary"><Sparkles className="h-4 w-4" />שדרוג</Link></DropdownMenuItem>
                     )}
@@ -138,6 +139,11 @@ export default function AppLayout() {
         </div>
       </header>
 
+      {profile?.is_suspended && (
+        <div className="bg-destructive px-4 py-2 text-center text-sm text-destructive-foreground" role="alert">
+          החשבון הושעה בעקבות דיווח. אפשר לצפות בתוכן אבל לא לפרסם. לבירור: פנו לצוות האתר.
+        </div>
+      )}
       <main id="main" className={cn("flex-1", user && "pb-20 md:pb-0")}>
         <Outlet />
       </main>

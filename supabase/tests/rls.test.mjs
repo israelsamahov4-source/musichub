@@ -10,7 +10,7 @@ await db.connect();
 let passed = 0, failed = 0;
 const users = {};
 
-async function as(user, sql, params = []) {
+async function as(user, sql, params = [], aal = 'aal1') {
   await db.query('begin');
   try {
     if (user === 'server') {
@@ -18,6 +18,7 @@ async function as(user, sql, params = []) {
     } else if (user) {
       await db.query(`set local role authenticated; set local request.jwt.claim.role = 'authenticated'`);
       await db.query(`select set_config('request.jwt.claim.sub', $1, true)`, [users[user]]);
+      await db.query(`select set_config('request.jwt.claims', $1, true)`, [JSON.stringify({ sub: users[user], role: 'authenticated', aal })]);
     } else {
       await db.query(`set local role anon; set local request.jwt.claim.role = 'anon'`);
     }
@@ -64,7 +65,7 @@ await ok('profile + free subscription are created on sign-up', async () => {
 });
 
 console.log('\nProfiles');
-await ok('anyone can read public profiles', async () => { assert((await as(null, 'select * from profiles')).rowCount === 4); });
+await ok('anyone can read the public profile card', async () => { assert((await as(null, 'select id, username, full_name, instruments from profiles')).rowCount === 4); });
 await ok('user edits own profile', async () => { await as('alice', `update profiles set bio = 'guitarist' where id = $1`, [users.alice]); });
 await denied('user cannot edit another profile', () => as('bob', `update profiles set bio = 'hacked' where id = $1`, [users.alice]));
 await denied('user cannot upgrade own plan', () => as('alice', `update profiles set plan_tier = 'premium' where id = $1`, [users.alice]));
@@ -268,6 +269,68 @@ await ok('blocking hides my CV from the blocked user', async () => {
   await as('bob', 'insert into blocks (blocker_id, blocked_id) values ($1, $2)', [users.bob, users.carol]);
   assert((await as('carol', 'select 1 from profile_details where user_id = $1', [users.bob])).rowCount === 0);
   await as('bob', 'delete from blocks where blocker_id = $1', [users.bob]);
+});
+
+console.log('\nPrivacy');
+await denied('visitors cannot read bio / location / links', () => as(null, 'select bio, location, links from profiles'));
+await denied('visitors cannot read the follow graph', () => as(null, 'select * from follows'));
+await denied('nobody can see who is an admin', () => as('carol', 'select is_admin from profiles'));
+await denied('nobody can read the suspended flag of others', () => as('carol', 'select is_suspended from profiles'));
+await ok('members can read the full public profile', async () => {
+  assert((await as('carol', 'select bio, location, links from profiles where id = $1', [users.bob])).rowCount === 1);
+});
+await ok('a user can read their own account flags', async () => {
+  const r = await as('bob', 'select my_account() as a'); assert(r.rows[0].a.is_admin === false);
+});
+
+console.log('\nModeration');
+let reportedPost, reportId;
+await denied('non-admins cannot read others\' reports', async () => {
+  reportedPost = (await as('carol', `insert into posts (author_id, content) values ($1, 'spam spam') returning id`, [users.carol])).rows[0].id;
+  reportId = (await as('bob', `insert into reports (reporter_id, target_type, target_id, reason) values ($1, 'post', $2, 'spam') returning id`, [users.bob, reportedPost])).rows[0].id;
+  return as('carol', 'select * from reports');
+});
+await denied('non-admins cannot open the admin report queue', () => as('bob', `select * from admin_reports('open')`));
+await denied('non-admins cannot see admin stats', () => as('bob', 'select admin_stats()'));
+await denied('non-admins cannot suspend users', () => as('bob', 'select admin_set_flags($1, true, null)', [users.carol]));
+await denied('users cannot make themselves admin via profile update', () => as('bob', 'update profiles set is_admin = true where id = $1', [users.bob]));
+await ok('admin sees the report with the reported text, removes the post, report closes', async () => {
+  await as('server', 'update profiles set is_admin = true where id = $1', [users.dave]);
+  const q = await as('dave', `select * from admin_reports('open')`);
+  assert(q.rows.some((r) => r.id === reportId && r.target_text === 'spam spam'), 'report visible with text');
+  await as('dave', 'select admin_remove_reported($1)', [reportId]);
+  assert((await db.query('select 1 from posts where id = $1', [reportedPost])).rowCount === 0, 'post removed');
+  assert((await db.query('select status from reports where id = $1', [reportId])).rows[0].status === 'reviewed');
+});
+await ok('suspended users can no longer post or message', async () => {
+  await as('dave', 'select admin_set_flags($1, true, null)', [users.carol]);
+  let blocked = false;
+  try { await as('carol', `insert into posts (author_id, content) values ($1, 'x')`, [users.carol]); } catch (e) { blocked = /suspended/.test(e.message); }
+  assert(blocked, 'suspended user must not post');
+  await as('dave', 'select admin_set_flags($1, false, null)', [users.carol]);
+});
+await denied('an admin cannot suspend another admin', async () => {
+  await as('server', 'update profiles set is_admin = true where id = $1', [users.bob]);
+  await as('dave', 'select admin_set_flags($1, true, null)', [users.bob]);
+  const r = await db.query('select is_suspended from profiles where id = $1', [users.bob]);
+  await as('server', 'update profiles set is_admin = false where id = $1', [users.bob]);
+  if (!r.rows[0].is_suspended) throw new Error('not suspended (expected)');
+});
+
+console.log('\nTwo-step verification');
+await ok('after turning on 2FA, a password-only session sees nothing', async () => {
+  await db.query(`insert into auth.mfa_factors (user_id, status) values ($1, 'verified')`, [users.bob]);
+  assert((await as('bob', 'select * from subscriptions')).rowCount === 0, 'aal1 must see nothing');
+  let blocked = false;
+  try { await as('bob', `insert into posts (author_id, content) values ($1, 'x')`, [users.bob]); } catch { blocked = true; }
+  assert(blocked, 'aal1 must not write');
+});
+await ok('the same user with password + code (aal2) works normally', async () => {
+  assert((await as('bob', 'select * from subscriptions', [], 'aal2')).rowCount === 1);
+  await db.query('delete from auth.mfa_factors where user_id = $1', [users.bob]);
+});
+await ok('users without 2FA are not affected', async () => {
+  assert((await as('carol', 'select * from subscriptions')).rowCount === 1);
 });
 
 console.log('\nStorage');

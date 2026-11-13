@@ -4,7 +4,10 @@ export const APP_NAME = "MusicHub";
 export const APP_TAGLINE = "הרשת החברתית למוזיקאים";
 export const SUPPORT_EMAIL = "support@example.com"; // TODO: replace with a real address before launch
 
-export const PAYMENTS_ENABLED = import.meta.env.VITE_PAYMENTS_ENABLED === "true";
+// Payments switch on automatically once the Paddle client token is configured in Vercel.
+export const PADDLE_CLIENT_TOKEN = import.meta.env.VITE_PADDLE_CLIENT_TOKEN || "";
+export const PADDLE_ENV = import.meta.env.VITE_PADDLE_ENV === "production" ? "production" : "sandbox";
+export const PAYMENTS_ENABLED = Boolean(PADDLE_CLIENT_TOKEN);
 export const GOOGLE_AUTH_ENABLED = import.meta.env.VITE_GOOGLE_AUTH_ENABLED === "true";
 
 const toMap = (list) => Object.fromEntries(list.map((o) => [o.value, o.label]));

@@ -1,5 +1,14 @@
-# Supabase CLI settings used by `supabase link` / `supabase functions deploy`.
+# Supabase CLI settings (supabase link / supabase functions deploy).
 project_id = "musichub"
 
-[functions.stripe-webhook]
+# Paddle signs its webhooks; it doesn't send a Supabase JWT.
+[functions.paddle-webhook]
+verify_jwt = false
+
+# These functions verify the user's token themselves (works with the new JWT signing keys).
+[functions.paddle-checkout]
+verify_jwt = false
+[functions.billing-portal]
+verify_jwt = false
+[functions.delete-account]
 verify_jwt = false

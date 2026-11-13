@@ -10,6 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import UserAvatar from "@/components/UserAvatar";
 import EmptyState from "@/components/EmptyState";
+import PageHeader from "@/components/PageHeader";
 import { supabase, unwrap } from "@/lib/supabase";
 import { COURSE_CARD, canTeach } from "@/api/courses";
 import { useAuth } from "@/auth/AuthProvider";
@@ -75,16 +76,11 @@ export default function Courses() {
   });
 
   return (
+    <div>
+    <PageHeader tone="blue" title="קורסים" text="ללמוד ממוזיקאים אחרים, בקצב שלכם."
+      actions={teacher && <Button asChild size="lg" variant="secondary" className="shadow-[3px_3px_0_#FF4F81]"><Link to="/courses/new"><Plus />קורס חדש</Link></Button>} />
     <div className="page">
-      <div className="flex flex-wrap items-start gap-3">
-        <div className="flex-1">
-          <h1 className="page-title">קורסים</h1>
-          <p className="mt-1 text-muted-foreground">ללמוד ממוזיקאים אחרים, בקצב שלכם.</p>
-        </div>
-        {teacher && <Button asChild><Link to="/courses/new"><Plus />קורס חדש</Link></Button>}
-      </div>
-
-      <Tabs defaultValue="catalog" dir="rtl" className="mt-6">
+      <Tabs defaultValue="catalog" dir="rtl">
         <TabsList>
           <TabsTrigger value="catalog">כל הקורסים</TabsTrigger>
           {user && <TabsTrigger value="learning">הלמידה שלי</TabsTrigger>}
@@ -127,6 +123,7 @@ export default function Courses() {
           </TabsContent>
         )}
       </Tabs>
+    </div>
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -12,6 +12,9 @@ import {
 import Field from "@/components/Field";
 import UserAvatar from "@/components/UserAvatar";
 import PlanBadge from "@/components/PlanBadge";
+import PageHeader from "@/components/PageHeader";
+import TwoFactorCard from "@/components/TwoFactorCard";
+import { downloadMyData } from "@/lib/exportData";
 import { supabase, unwrap } from "@/lib/supabase";
 import { useAuth } from "@/auth/AuthProvider";
 import { PAYMENTS_ENABLED } from "@/lib/config";
@@ -45,9 +48,13 @@ export default function Settings() {
   const qc = useQueryClient();
   const [confirmName, setConfirmName] = useState("");
   const [deleting, setDeleting] = useState(false);
+  const [exporting, setExporting] = useState(false);
+  const checkoutDone = new URLSearchParams(window.location.search).get("checkout") === "success";
 
   const sub = useQuery({
     queryKey: ["subscription", user.id],
+    // Right after paying, the webhook may take a few seconds: poll until the plan shows up.
+    refetchInterval: (q) => (checkoutDone && q.state.data?.tier === "free" ? 3000 : false),
     queryFn: async () => unwrap(await supabase.from("subscriptions").select("tier, status, billing_cycle, current_period_end, cancel_at_period_end").eq("user_id", user.id).maybeSingle()),
   });
   const blocks = useQuery({
@@ -59,6 +66,13 @@ export default function Settings() {
     onSuccess: () => { toast.success("החסימה בוטלה"); qc.invalidateQueries({ queryKey: ["blocks"] }); },
     onError: (e) => toast.error(errorMessage(e)),
   });
+
+  useEffect(() => {
+    if (checkoutDone) toast.success("התשלום התקבל! המנוי יופעל תוך כמה שניות");
+  }, [checkoutDone]);
+  useEffect(() => {
+    if (checkoutDone && sub.data && sub.data.tier !== "free") qc.invalidateQueries({ queryKey: ["profile"] });
+  }, [checkoutDone, sub.data, qc]);
 
   const portal = async () => {
     const { data, error } = await supabase.functions.invoke("billing-portal");
@@ -76,8 +90,9 @@ export default function Settings() {
 
   const s = sub.data;
   return (
+    <div>
+    <PageHeader narrow title="הגדרות" />
     <div className="page-narrow space-y-5">
-      <h1 className="page-title">הגדרות</h1>
 
       <Card className="space-y-4 p-5">
         <h2 className="font-semibold">חשבון</h2>
@@ -127,6 +142,17 @@ export default function Settings() {
         )}
       </Card>
 
+      <TwoFactorCard />
+
+      <Card className="space-y-3 p-5">
+        <h2 className="font-semibold">המידע שלכם</h2>
+        <p className="text-sm text-muted-foreground">הורדת קובץ עם כל מה שנשמר עליכם באתר: פרופיל, קורות חיים, פוסטים, הודעות, פרויקטים, קורסים והתראות.</p>
+        <Button variant="outline" className="w-fit" disabled={exporting} onClick={async () => {
+          setExporting(true);
+          try { await downloadMyData(user.id, user.email); } catch (e) { toast.error(errorMessage(e)); } finally { setExporting(false); }
+        }}>{exporting ? "מכין קובץ…" : "הורדת המידע שלי"}</Button>
+      </Card>
+
       <Card className="space-y-3 border-destructive/40 p-5">
         <h2 className="font-semibold text-destructive">מחיקת חשבון</h2>
         <p className="text-sm text-muted-foreground">מוחק לצמיתות את הפרופיל, הפוסטים, ההודעות, הפרויקטים שבבעלותכם, הקורסים והקבצים שהעליתם. מנוי פעיל יבוטל.</p>
@@ -146,6 +172,7 @@ export default function Settings() {
           </AlertDialogContent>
         </AlertDialog>
       </Card>
+    </div>
     </div>
   );
 }

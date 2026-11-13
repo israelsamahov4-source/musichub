@@ -25,6 +25,15 @@ create function auth.role() returns text language sql stable as $$
   select nullif(current_setting('request.jwt.claim.role', true), '')
 $$;
 
+create function auth.jwt() returns jsonb language sql stable as $$
+  select coalesce(nullif(current_setting('request.jwt.claims', true), ''), '{}')::jsonb
+$$;
+create table auth.mfa_factors (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid references auth.users (id) on delete cascade,
+  status text not null default 'unverified'
+);
+
 grant usage on schema auth, storage, extensions to anon, authenticated, service_role;
 grant execute on all functions in schema auth to anon, authenticated, service_role;
 

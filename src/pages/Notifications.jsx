@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import UserAvatar from "@/components/UserAvatar";
 import EmptyState from "@/components/EmptyState";
+import PageHeader from "@/components/PageHeader";
 import PageLoader from "@/components/PageLoader";
 import { supabase, unwrap } from "@/lib/supabase";
 import { useAuth } from "@/auth/AuthProvider";
@@ -35,12 +36,12 @@ export default function Notifications() {
   if (isLoading) return <PageLoader />;
   const unread = data.filter((n) => !n.read_at).length;
   return (
-    <div className="page-narrow">
-      <div className="mb-4 flex flex-wrap items-center gap-2">
-        <h1 className="page-title flex-1">התראות</h1>
+    <div>
+    <PageHeader narrow title="התראות" actions={<>
         {unread > 0 && <Button variant="outline" size="sm" onClick={() => markAll.mutate()}><CheckCheck />סימון הכל כנקרא</Button>}
         {data.length > unread && <Button variant="ghost" size="sm" onClick={() => clear.mutate()}><Trash2 />ניקוי נקראות</Button>}
-      </div>
+      </>} />
+    <div className="page-narrow">
       {data.length === 0 ? <EmptyState icon={Bell} title="אין התראות" text="כשמישהו יעקוב אחריכם, יגיב או יבקש להצטרף לפרויקט, תראו את זה כאן." /> : (
         <Card className="divide-y">
           {data.map((n) => {
@@ -62,6 +63,7 @@ export default function Notifications() {
           })}
         </Card>
       )}
+    </div>
     </div>
   );
 }

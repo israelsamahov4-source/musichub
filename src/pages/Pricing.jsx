@@ -8,6 +8,7 @@ import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/auth/AuthProvider";
 import { PAYMENTS_ENABLED, PLANS } from "@/lib/config";
 import { cn, errorMessage } from "@/lib/utils";
+import { openCheckout } from "@/lib/paddle";
 
 export default function Pricing() {
   const { user, profile } = useAuth();
@@ -20,9 +21,15 @@ export default function Pricing() {
 
   const checkout = async (tier) => {
     setBusy(tier);
-    const { data, error } = await supabase.functions.invoke("create-checkout", { body: { tier, cycle } });
-    if (error || !data?.url) { setBusy(null); return toast.error(errorMessage(error)); }
-    window.location.assign(data.url);
+    try {
+      const { data, error } = await supabase.functions.invoke("paddle-checkout", { body: { tier, cycle } });
+      if (error || !data?.transactionId) throw error ?? new Error("checkout failed");
+      await openCheckout({ transactionId: data.transactionId, email: user.email });
+    } catch (e) {
+      toast.error(errorMessage(e));
+    } finally {
+      setBusy(null);
+    }
   };
 
   const action = (plan) => {
@@ -63,7 +70,10 @@ export default function Pricing() {
           </Card>
         ))}
       </div>
-      <p className="mt-6 text-center text-xs text-muted-foreground">המחירים כוללים מע"מ. אפשר לבטל בכל עת, והמנוי יישאר פעיל עד סוף תקופת החיוב.</p>
+      <p className="mt-6 text-center text-xs text-muted-foreground">
+        המחירים כוללים מע"מ. אפשר לבטל בכל עת, והמנוי יישאר פעיל עד סוף תקופת החיוב.
+        התשלום מאובטח ומתבצע אצל Paddle, ספק התשלומים שלנו. פרטי הכרטיס לא עוברים דרכנו ולא נשמרים אצלנו.
+      </p>
     </div>
   );
 }

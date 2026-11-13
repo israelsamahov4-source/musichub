@@ -15,6 +15,7 @@ import { Textarea } from "@/components/ui/textarea";
 import Field from "@/components/Field";
 import TagPicker from "@/components/TagPicker";
 import EmptyState from "@/components/EmptyState";
+import PageHeader from "@/components/PageHeader";
 import UserAvatar from "@/components/UserAvatar";
 import { supabase, unwrap } from "@/lib/supabase";
 import { useAuth } from "@/auth/AuthProvider";
@@ -124,16 +125,12 @@ export default function Collabs() {
   const statusBadge = (s) => s === "requested" ? <span className="chip">ממתין לאישור</span> : s === "invited" ? <span className="chip border-primary text-primary">הוזמנת</span> : null;
 
   return (
+    <div>
+    <PageHeader title="פרויקטים" text="מצאו שותפים לשיר, ללהקה או להפקה, או הצטרפו לפרויקט קיים."
+      actions={user ? <Button size="lg" className="shadow-[3px_3px_0_#FF4F81]" onClick={() => setOpen(true)}><Plus />פרויקט חדש</Button>
+        : <Button asChild size="lg"><Link to="/signup">הצטרפו כדי ליצור פרויקט</Link></Button>} />
     <div className="page">
-      <div className="flex flex-wrap items-start gap-3">
-        <div className="flex-1">
-          <h1 className="page-title">פרויקטים משותפים</h1>
-          <p className="mt-1 text-muted-foreground">מצאו שותפים לשיר, ללהקה או להפקה, או הצטרפו לפרויקט קיים.</p>
-        </div>
-        {user ? <Button onClick={() => setOpen(true)}><Plus />פרויקט חדש</Button> : <Button asChild><Link to="/signup">הצטרפו כדי ליצור פרויקט</Link></Button>}
-      </div>
-
-      <Tabs defaultValue="explore" dir="rtl" className="mt-6">
+      <Tabs defaultValue="explore" dir="rtl">
         <TabsList>
           <TabsTrigger value="explore">כל הפרויקטים</TabsTrigger>
           {user && <TabsTrigger value="mine">הפרויקטים שלי</TabsTrigger>}
@@ -169,6 +166,7 @@ export default function Collabs() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+    </div>
     </div>
   );
 }

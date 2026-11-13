@@ -18,6 +18,7 @@ import ConfirmDialog from "@/components/ConfirmDialog";
 import { LINK_FIELDS } from "@/components/ProfileForm";
 import CvView, { OpenToBadges } from "@/components/CvView";
 import { fetchDetails } from "@/api/details";
+import { MEMBER_PROFILE_COLS, PUBLIC_PROFILE_COLS } from "@/api/profiles";
 import { supabase, unwrap } from "@/lib/supabase";
 import { useAuth } from "@/auth/AuthProvider";
 import { label } from "@/lib/config";
@@ -45,13 +46,14 @@ export default function Profile() {
   const [reportOpen, setReportOpen] = useState(false);
 
   const { data: p, isLoading } = useQuery({
-    queryKey: ["profile", "by-username", username],
-    queryFn: async () => unwrap(await supabase.from("profiles").select("*").eq("username", username.toLowerCase()).maybeSingle()),
+    queryKey: ["profile", "by-username", username, Boolean(user)],
+    queryFn: async () => unwrap(await supabase.from("profiles").select(user ? MEMBER_PROFILE_COLS : PUBLIC_PROFILE_COLS)
+      .eq("username", username.toLowerCase()).maybeSingle()),
   });
 
   const { data: stats } = useQuery({
     queryKey: ["profile-stats", p?.id],
-    enabled: Boolean(p),
+    enabled: Boolean(p && user),
     queryFn: async () => {
       const count = async (q) => (await q).count ?? 0;
       const [followers, following, posts] = await Promise.all([
@@ -180,7 +182,8 @@ export default function Profile() {
                 ))}
               </div>
             )}
-            {!p.bio && !p.instruments.length && !links.length && <p className="text-sm text-muted-foreground">עוד אין פרטים בפרופיל.</p>}
+            {!user && <p className="text-sm text-muted-foreground"><Link to="/signup" className="text-primary underline">הצטרפו</Link> כדי לראות את הפרופיל המלא.</p>}
+            {user && !p.bio && !p.instruments.length && !links.length && <p className="text-sm text-muted-foreground">עוד אין פרטים בפרופיל.</p>}
           </Card>
           {courses.length > 0 && (
             <Card className="p-4">

@@ -12,6 +12,7 @@ import PlanBadge from "@/components/PlanBadge";
 import FollowButton from "@/components/FollowButton";
 import TagPicker from "@/components/TagPicker";
 import EmptyState from "@/components/EmptyState";
+import PageHeader from "@/components/PageHeader";
 import Field from "@/components/Field";
 import { supabase, unwrap } from "@/lib/supabase";
 import { GENRES, INSTRUMENTS, LOOKING_FOR, ROLES, label } from "@/lib/config";
@@ -85,11 +86,10 @@ export default function Discover() {
   const people = query.data?.pages.flat() ?? [];
 
   return (
+    <div>
+    <PageHeader title="מוזיקאים" text="מצאו נגנים, זמרים, מפיקים ומורים לפי כלי, תפקיד, ז'אנר ומיקום." />
     <div className="page">
-      <h1 className="page-title">גילוי מוזיקאים</h1>
-      <p className="mt-1 text-muted-foreground">מצאו נגנים, זמרים, מפיקים ומורים לפי כלי, ז'אנר ומיקום.</p>
-
-      <div className="mt-5 flex gap-2">
+      <div className="flex gap-2">
         <div className="relative flex-1">
           <Search className="pointer-events-none absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
           <Input value={f.q} onChange={(e) => set("q")(e.target.value)} placeholder="חיפוש לפי שם או תיאור…" className="ps-9" aria-label="חיפוש מוזיקאים" />
@@ -129,6 +129,7 @@ export default function Discover() {
           </>
         )}
       </div>
+    </div>
     </div>
   );
 }

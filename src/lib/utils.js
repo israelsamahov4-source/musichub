@@ -61,6 +61,7 @@ const ERROR_MESSAGES = [
   [/rate limit|too many/i, "יותר מדי ניסיונות. נסו שוב בעוד כמה דקות"],
   [/profiles_username_key|duplicate key.*username/i, "שם המשתמש כבר תפוס"],
   [/profiles_username_check/i, "שם משתמש: 3–30 תווים, אותיות באנגלית קטנות, ספרות וקו תחתון"],
+  [/account suspended/i, "החשבון מושעה ולא ניתן לפרסם"],
   [/blocked/i, "לא ניתן לבצע את הפעולה מול המשתמש הזה"],
   [/row-level security|permission denied/i, "אין הרשאה לבצע את הפעולה"],
   [/slow down/i, "רגע, אתם מהירים מדי. נסו שוב בעוד דקה"],

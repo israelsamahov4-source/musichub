@@ -41,6 +41,7 @@ const LessonView = lazy(() => import("@/pages/LessonView"));
 const Notifications = lazy(() => import("@/pages/Notifications"));
 const Pricing = lazy(() => import("@/pages/Pricing"));
 const Settings = lazy(() => import("@/pages/Settings"));
+const Admin = lazy(() => import("@/pages/Admin"));
 const Terms = lazy(() => import("@/pages/legal/Terms"));
 const Privacy = lazy(() => import("@/pages/legal/Privacy"));
 const Accessibility = lazy(() => import("@/pages/legal/Accessibility"));
@@ -83,6 +84,7 @@ export default function App() {
           <Route path="/notifications" element={auth(<Notifications />)} />
           <Route path="/pricing" element={<Pricing />} />
           <Route path="/settings" element={auth(<Settings />)} />
+          <Route path="/admin" element={auth(<Admin />)} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/accessibility" element={<Accessibility />} />
