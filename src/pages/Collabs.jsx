@@ -56,9 +56,9 @@ export function ProjectFields({ value, onChange }) {
 function ProjectCard({ p, badge }) {
   return (
     <Link to={`/collabs/${p.id}`} className="block">
-      <Card className="flex h-full flex-col p-4 transition-shadow hover:shadow-md">
+      <Card className="flex h-full flex-col p-4 transition-[transform,box-shadow] hover:-translate-y-0.5 hover:shadow-[4px_4px_0_0_#1E1B3A]">
         <div className="flex items-start gap-2">
-          <h3 className="flex-1 font-semibold">{p.title}</h3>
+          <h3 className="flex-1 font-display text-3xl font-bold leading-[0.95] text-ink">{p.title}</h3>
           {badge}
           {!p.is_public && <Lock className="h-4 w-4 text-muted-foreground" aria-label="פרויקט פרטי" />}
         </div>
@@ -67,7 +67,7 @@ function ProjectCard({ p, badge }) {
         {p.looking_for_roles?.length > 0 && (
           <div className="mt-3 flex flex-wrap gap-1.5">
             <span className="text-xs font-medium">מחפשים:</span>
-            {p.looking_for_roles.slice(0, 4).map((r) => <span key={r} className="chip border-primary/30 text-primary">{label("roles", r)}</span>)}
+            {p.looking_for_roles.slice(0, 4).map((r) => <span key={r} className="chip border-riso-pink bg-riso-pink/10 font-semibold text-ink">{label("roles", r)}</span>)}
           </div>
         )}
         <div className="mt-auto flex items-center gap-2 pt-4 text-xs text-muted-foreground">

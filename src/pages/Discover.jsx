@@ -31,7 +31,7 @@ function useDebounced(value, ms = 350) {
 function MusicianCard({ p }) {
   const roles = (p.musical_roles || []).map((r) => label("roles", r.role));
   return (
-    <Card className="flex flex-col p-4">
+    <Card className="flex flex-col p-4 transition-[transform,box-shadow] hover:-translate-y-0.5 hover:shadow-[4px_4px_0_0_#1E1B3A]">
       <div className="flex items-start gap-3">
         <Link to={`/u/${p.username}`}><UserAvatar profile={p} size="md" /></Link>
         <div className="min-w-0 flex-1">
@@ -47,8 +47,8 @@ function MusicianCard({ p }) {
         {p.genres.slice(0, 2).map((g) => <span key={g} className="chip">{label("genres", g)}</span>)}
       </div>
       <div className="mt-auto flex items-center justify-between pt-4">
-        {p.details?.open_to?.length ? <span className="truncate text-xs font-medium text-emerald-700">פתוח/ה ל{label("openTo", p.details.open_to[0])}{p.details.open_to.length > 1 && ` ועוד ${p.details.open_to.length - 1}`}</span>
-          : p.open_for_collaboration ? <span className="text-xs font-medium text-emerald-700">פתוח/ה לשיתופי פעולה</span> : <span />}
+        {p.details?.open_to?.length ? <span className="truncate text-xs font-semibold text-riso-blue">פתוח/ה ל{label("openTo", p.details.open_to[0])}{p.details.open_to.length > 1 && ` ועוד ${p.details.open_to.length - 1}`}</span>
+          : p.open_for_collaboration ? <span className="text-xs font-semibold text-riso-blue">פתוח/ה לשיתופי פעולה</span> : <span />}
         <FollowButton profileId={p.id} />
       </div>
     </Card>

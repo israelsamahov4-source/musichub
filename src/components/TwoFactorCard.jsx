@@ -54,7 +54,7 @@ export default function TwoFactorCard() {
       <div className="flex items-center gap-2">
         {active ? <ShieldCheck className="h-5 w-5 text-emerald-600" aria-hidden /> : <ShieldOff className="h-5 w-5 text-muted-foreground" aria-hidden />}
         <h2 className="font-semibold">אימות דו-שלבי</h2>
-        {active && <span className="rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-medium text-emerald-800">פעיל</span>}
+        {active && <span className="rounded-md border-2 border-ink bg-riso-yellow px-2 py-0.5 text-xs font-bold text-ink">פעיל</span>}
       </div>
       <p className="text-sm text-muted-foreground">
         בכל התחברות תתבקשו גם לקוד מאפליקציית אימות (Google Authenticator, Microsoft Authenticator, 1Password ועוד). כך גם מי שיודע את הסיסמה שלכם לא יוכל להיכנס.

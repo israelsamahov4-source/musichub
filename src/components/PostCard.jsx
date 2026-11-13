@@ -55,7 +55,7 @@ export default function PostCard({ post, defaultShowComments = false, onDeleted 
 
   const a = post.author || {};
   return (
-    <Card className="p-4">
+    <Card className={cn("p-4", post.collaboration_wanted && "border-2 border-ink shadow-[4px_4px_0_0_#FFD84D]")}>
       <div className="flex items-start gap-3">
         <Link to={`/u/${a.username}`}><UserAvatar profile={a} /></Link>
         <div className="min-w-0 flex-1">
@@ -79,7 +79,7 @@ export default function PostCard({ post, defaultShowComments = false, onDeleted 
       </div>
 
       {post.collaboration_wanted && (
-        <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-800">
+        <div className="mt-3 inline-flex rotate-[-1.5deg] items-center gap-1.5 rounded-md border-2 border-ink bg-riso-yellow px-2.5 py-0.5 text-xs font-bold text-ink">
           <Handshake className="h-3.5 w-3.5" aria-hidden />מחפש/ת שותפים
         </div>
       )}
@@ -91,7 +91,7 @@ export default function PostCard({ post, defaultShowComments = false, onDeleted 
 
       <div className="mt-3 flex items-center gap-1 border-t pt-2">
         <Button variant="ghost" size="sm" aria-pressed={liked} disabled={!user || like.isPending} onClick={() => like.mutate(!liked)}
-          className={cn(liked && "text-rose-600 hover:text-rose-700")}>
+          className={cn(liked && "text-riso-pink hover:text-riso-pink")}>
           <Heart className={cn(liked && "fill-current")} />{likeCount > 0 && likeCount}<span className="sr-only">לייקים</span>
         </Button>
         <Button variant="ghost" size="sm" onClick={() => setShowComments((s) => !s)} aria-expanded={showComments}>

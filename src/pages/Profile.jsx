@@ -25,7 +25,30 @@ import { label } from "@/lib/config";
 import { errorMessage, formatDate, safeUrl } from "@/lib/utils";
 
 function Stat({ value, text }) {
-  return <div><span className="font-bold">{value ?? "–"}</span> <span className="text-muted-foreground">{text}</span></div>;
+  return (
+    <div className="flex items-baseline gap-1.5">
+      <span className="font-display text-3xl font-bold leading-none text-ink">{value ?? "–"}</span>
+      <span className="text-sm text-muted-foreground">{text}</span>
+    </div>
+  );
+}
+
+/** Without a cover photo, the cover is a lineup poster set from the musician's own instruments and roles. */
+function PosterCover({ words, coverUrl }) {
+  if (safeUrl(coverUrl)) {
+    return <div className="h-32 sm:h-44"><img src={safeUrl(coverUrl)} alt="" className="h-full w-full object-cover" /></div>;
+  }
+  const lineup = words.length ? words : ["מוזיקה", "במה", "חזרות", "הקלטות"];
+  return (
+    <div className="grain relative h-32 overflow-hidden bg-riso-blue sm:h-44" aria-hidden>
+      <div className="absolute -inset-x-6 -top-3 flex rotate-[-3deg] flex-wrap gap-x-5 gap-y-0 font-display text-6xl font-bold leading-[0.95] text-white/[0.16] sm:text-7xl">
+        {[...lineup, ...lineup, ...lineup].slice(0, 14).map((w, i) => (
+          <span key={i} className={i % 4 === 1 ? "text-riso-pink/70" : ""}>{w}</span>
+        ))}
+      </div>
+      <span className="tape -bottom-1 start-10 rotate-[4deg]" />
+    </div>
+  );
 }
 
 function ChipGroup({ title, items, group }) {
@@ -110,11 +133,9 @@ export default function Profile() {
 
   return (
     <div className="page space-y-6">
-      <Card className="overflow-hidden">
-        <div className="grain relative h-28 overflow-hidden bg-riso-blue sm:h-36" aria-hidden>
-          <span className="absolute -end-10 -top-16 h-56 w-56 rounded-full bg-riso-pink" />
-          <span className="absolute end-36 top-6 h-16 w-16 rounded-full bg-riso-yellow" />
-        </div>
+      <Card className="overflow-hidden border-2 border-ink">
+        <PosterCover coverUrl={p.cover_url}
+          words={[...(p.instruments || []).map((i) => label("instruments", i)), ...roles.map((r) => label("roles", r))]} />
         <div className="px-5 pb-5">
           <div className="-mt-12 flex flex-wrap items-end gap-4">
             <UserAvatar profile={p} size="xl" className="ring-4 ring-card" />
@@ -145,7 +166,7 @@ export default function Profile() {
           </div>
           <div className="mt-3">
             <div className="flex flex-wrap items-center gap-2">
-              <h1 className="font-display text-6xl font-bold leading-[0.9]">{p.full_name || p.username}</h1>
+              <h1 className="riso riso-animate font-display text-6xl font-bold leading-[0.9] md:text-7xl">{p.full_name || p.username}</h1>
               <PlanBadge tier={p.plan_tier} />
             </div>
             {cv?.headline && <p className="mt-1 text-lg font-medium text-ink/85">{cv.headline}</p>}
@@ -156,7 +177,7 @@ export default function Profile() {
               {p.location && <span className="flex items-center gap-1"><MapPin className="h-3.5 w-3.5" aria-hidden />{p.location}</span>}
               <span>הצטרף/ה ב{formatDate(p.created_at, "MMMM yyyy")}</span>
             </div>
-            <div className="mt-3 flex gap-5 text-sm">
+            <div className="mt-4 flex flex-wrap gap-6 border-t-2 border-dashed border-ink/15 pt-4">
               <Stat value={stats?.followers} text="עוקבים" />
               <Stat value={stats?.following} text="נעקבים" />
               <Stat value={stats?.posts} text="פוסטים" />
@@ -168,7 +189,7 @@ export default function Profile() {
       <div className="grid gap-6 lg:grid-cols-[300px_1fr]">
         <aside className="space-y-4">
           <Card className="space-y-4 p-4">
-            {p.open_for_collaboration && <p className="rounded-md bg-emerald-50 px-3 py-2 text-sm font-medium text-emerald-800">פתוח/ה לשיתופי פעולה</p>}
+            {p.open_for_collaboration && <p className="w-fit rotate-[-2deg] rounded-lg border-2 border-ink bg-riso-yellow px-3 py-1.5 text-sm font-bold text-ink shadow-[3px_3px_0_0_#FF4F81]">פתוח/ה לשיתופי פעולה</p>}
             {p.bio && <p className="whitespace-pre-wrap break-words text-sm">{p.bio}</p>}
             <ChipGroup title="כלי נגינה" items={p.instruments} group="instruments" />
             <ChipGroup title="ז'אנרים" items={p.genres} group="genres" />

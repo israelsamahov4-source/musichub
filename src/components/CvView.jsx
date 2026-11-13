@@ -10,7 +10,7 @@ export function OpenToBadges({ openTo }) {
   return (
     <div className="flex flex-wrap gap-1.5">
       {openTo.map((o) => (
-        <span key={o} className="inline-flex items-center rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-medium text-emerald-800">{label("openTo", o)}</span>
+        <span key={o} className="inline-flex items-center rounded-md border-2 border-ink bg-riso-yellow px-2 py-0.5 text-xs font-bold text-ink">{label("openTo", o)}</span>
       ))}
     </div>
   );

@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { Camera, Loader2 } from "lucide-react";
+import { Camera, Image as ImageIcon, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,7 +11,7 @@ import TagPicker from "@/components/TagPicker";
 import UserAvatar from "@/components/UserAvatar";
 import { ACCEPT, uploadFile } from "@/lib/upload";
 import { GENRES, INSTRUMENTS, LEVELS, LOOKING_FOR, ROLES } from "@/lib/config";
-import { errorMessage } from "@/lib/utils";
+import { errorMessage, safeUrl } from "@/lib/utils";
 
 export const LINK_FIELDS = [
   { key: "website", label: "אתר אישי" },
@@ -27,6 +27,7 @@ export function profileToForm(p) {
     full_name: p.full_name || "",
     username: p.username || "",
     avatar_url: p.avatar_url || null,
+    cover_url: p.cover_url || null,
     bio: p.bio || "",
     location: p.location || "",
     user_type: p.user_type || "musician",
@@ -50,6 +51,7 @@ export function formToProfile(f) {
     full_name: f.full_name.trim(),
     username: f.username.trim().toLowerCase(),
     avatar_url: f.avatar_url,
+    cover_url: f.cover_url ?? null,
     bio: f.bio.trim(),
     location: f.location.trim(),
     user_type: f.user_type,
@@ -74,14 +76,15 @@ export default function ProfileForm({ form, setForm, userId, sections = ["basics
   const set = (k) => (v) => setForm((f) => ({ ...f, [k]: v?.target ? v.target.value : v }));
   const show = (s) => sections.includes(s);
 
-  const onAvatar = async (e) => {
+  const coverRef = useRef(null);
+  const onImage = (field) => async (e) => {
     const file = e.target.files?.[0];
     e.target.value = "";
     if (!file) return;
-    setUploading(true);
+    setUploading(field);
     try {
       const url = await uploadFile(file, { bucket: "avatars", kind: "image", userId });
-      setForm((f) => ({ ...f, avatar_url: url }));
+      setForm((f) => ({ ...f, [field]: url }));
     } catch (err) {
       toast.error(errorMessage(err));
     } finally {
@@ -93,12 +96,26 @@ export default function ProfileForm({ form, setForm, userId, sections = ["basics
     <div className="space-y-6">
       {show("basics") && (
         <section className="space-y-4">
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap items-center gap-4">
             <UserAvatar profile={{ ...form }} size="xl" />
-            <input ref={fileRef} type="file" accept={ACCEPT.image} hidden onChange={onAvatar} />
-            <Button type="button" variant="outline" onClick={() => fileRef.current?.click()} disabled={uploading}>
-              {uploading ? <Loader2 className="animate-spin" /> : <Camera />}תמונת פרופיל
+            <input ref={fileRef} type="file" accept={ACCEPT.image} hidden onChange={onImage("avatar_url")} />
+            <Button type="button" variant="outline" onClick={() => fileRef.current?.click()} disabled={!!uploading}>
+              {uploading === "avatar_url" ? <Loader2 className="animate-spin" /> : <Camera />}תמונת פרופיל
             </Button>
+          </div>
+          <div className="space-y-2">
+            <div className="relative h-24 overflow-hidden rounded-xl border-2 border-ink/15 bg-riso-blue">
+              {safeUrl(form.cover_url)
+                ? <img src={safeUrl(form.cover_url)} alt="" className="h-full w-full object-cover" />
+                : <p className="flex h-full items-center justify-center px-4 text-center text-sm text-white/85">בלי תמונת כיסוי, הכיסוי יורכב מהכלים והתפקידים שלכם</p>}
+            </div>
+            <input ref={coverRef} type="file" accept={ACCEPT.image} hidden onChange={onImage("cover_url")} />
+            <div className="flex flex-wrap gap-2">
+              <Button type="button" variant="outline" size="sm" onClick={() => coverRef.current?.click()} disabled={!!uploading}>
+                {uploading === "cover_url" ? <Loader2 className="animate-spin" /> : <ImageIcon />}תמונת כיסוי
+              </Button>
+              {form.cover_url && <Button type="button" variant="ghost" size="sm" onClick={() => setForm((f) => ({ ...f, cover_url: null }))}>הסרה</Button>}
+            </div>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <Field id="full_name" label="שם מלא">

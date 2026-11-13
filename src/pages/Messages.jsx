@@ -142,14 +142,17 @@ export default function Messages() {
     <div className="mx-auto max-w-5xl px-0 py-0 md:px-4 md:py-6">
       <Card className="grid h-[calc(100dvh-8.5rem)] overflow-hidden rounded-none md:h-[calc(100dvh-8rem)] md:grid-cols-[320px_1fr] md:rounded-xl">
         <div className={cn("overflow-y-auto border-e", conversationId && "hidden md:block")}>
-          <h1 className="border-b p-4 text-lg font-bold">הודעות</h1>
+          <h1 className="riso border-b-2 border-ink/10 px-4 pb-2 pt-4 font-display text-5xl font-bold leading-none">הודעות</h1>
           {isLoading ? <PageLoader /> : <ConversationList conversations={conversations} activeId={conversationId} />}
         </div>
         <div className={cn("min-h-0", !conversationId && "hidden md:block")}>
           {conversationId ? (
             !isLoading && !active ? <EmptyState title="השיחה לא נמצאה" /> : <Thread key={conversationId} conversationId={conversationId} other={other} />
           ) : (
-            <div className="flex h-full items-center justify-center text-muted-foreground">בחרו שיחה מהרשימה</div>
+            <div className="grain flex h-full min-h-[320px] flex-col items-center justify-center gap-2 bg-riso-blue/[0.04] p-8 text-center">
+              <p className="riso font-display text-6xl font-bold leading-none">על מה מדברים?</p>
+              <p className="text-sm text-muted-foreground">בחרו שיחה מהרשימה, או פתחו חדשה מהפרופיל של מוזיקאי/ת.</p>
+            </div>
           )}
         </div>
       </Card>
