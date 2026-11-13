@@ -107,7 +107,7 @@ export default function Discover() {
           <Field label="מחפשים"><TagPicker options={LOOKING_FOR} value={f.lookingFor} onChange={set("lookingFor")} label="מחפשים" /></Field>
           <div className="flex flex-wrap items-end gap-4">
             <Field id="loc" label="מיקום"><Input id="loc" value={f.location} onChange={(e) => set("location")(e.target.value)} placeholder="עיר" className="w-48" /></Field>
-            <label className="flex items-center gap-2 pb-2 text-sm"><Switch checked={f.openOnly} onCheckedChange={set("openOnly")} />רק פתוחים לשיתופי פעולה</label>
+            <label className="flex items-center gap-2 pb-2 text-sm"><Switch aria-label="רק פתוחים לשיתופי פעולה" checked={f.openOnly} onCheckedChange={set("openOnly")} />רק פתוחים לשיתופי פעולה</label>
             {activeCount > 0 && <Button variant="ghost" onClick={() => setF({ ...EMPTY, q: f.q })}>ניקוי סינון</Button>}
           </div>
         </Card>

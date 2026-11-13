@@ -44,8 +44,8 @@ export function ProjectFields({ value, onChange }) {
       <div className="grid gap-4 sm:grid-cols-2">
         <Field id="loc" label="מיקום (לא חובה)"><Input id="loc" value={value.location} onChange={set("location")} maxLength={100} /></Field>
         <div className="space-y-3 pt-6">
-          <label className="flex items-center gap-2 text-sm"><Switch checked={value.is_remote} onCheckedChange={set("is_remote")} />אפשר לעבוד מרחוק</label>
-          <label className="flex items-center gap-2 text-sm"><Switch checked={value.is_public} onCheckedChange={set("is_public")} />פרויקט ציבורי (כולם יכולים לראות ולבקש להצטרף)</label>
+          <label className="flex items-center gap-2 text-sm"><Switch aria-label="אפשר לעבוד מרחוק" checked={value.is_remote} onCheckedChange={set("is_remote")} />אפשר לעבוד מרחוק</label>
+          <label className="flex items-center gap-2 text-sm"><Switch aria-label="פרויקט ציבורי" checked={value.is_public} onCheckedChange={set("is_public")} />פרויקט ציבורי (כולם יכולים לראות ולבקש להצטרף)</label>
         </div>
       </div>
     </div>

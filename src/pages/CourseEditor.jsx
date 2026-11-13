@@ -41,7 +41,7 @@ function LessonDialog({ open, onOpenChange, initial, onSave, saving }) {
         <Field id="ld" label="תיאור / הערות לשיעור"><Textarea id="ld" value={l.description} onChange={set("description")} maxLength={10000} rows={5} /></Field>
         <div className="flex flex-wrap items-end gap-4">
           <Field id="lm" label="משך (דקות)"><Input id="lm" type="number" min={0} max={600} value={l.duration_minutes} onChange={set("duration_minutes")} className="w-28" /></Field>
-          <label className="flex items-center gap-2 pb-2 text-sm"><Switch checked={l.is_preview} onCheckedChange={set("is_preview")} />שיעור לצפייה חינם (גם בלי הרשמה)</label>
+          <label className="flex items-center gap-2 pb-2 text-sm"><Switch aria-label="שיעור לצפייה חינם" checked={l.is_preview} onCheckedChange={set("is_preview")} />שיעור לצפייה חינם (גם בלי הרשמה)</label>
         </div>
         <DialogFooter><Button onClick={() => onSave(l)} disabled={!l.title.trim() || !videoOk || saving}>שמירה</Button></DialogFooter>
       </DialogContent>
@@ -198,7 +198,7 @@ export default function CourseEditor() {
             <Button type="button" variant="secondary" onClick={addPoint}>הוספה</Button>
           </div>
         </Field>
-        <label className="flex items-center gap-2 text-sm"><Switch checked={!form.is_free} onCheckedChange={(v) => setForm({ ...form, is_free: !v })} />קורס Pro (רק למנויי Pro ו-Premium)</label>
+        <label className="flex items-center gap-2 text-sm"><Switch aria-label="קורס Pro" checked={!form.is_free} onCheckedChange={(v) => setForm({ ...form, is_free: !v })} />קורס Pro (רק למנויי Pro ו-Premium)</label>
         <div className="flex justify-end">
           <Button onClick={() => save.mutate({})} disabled={form.title.trim().length < 3 || save.isPending}>{isNew ? "יצירת קורס" : "שמירת פרטים"}</Button>
         </div>

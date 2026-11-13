@@ -75,12 +75,13 @@ export default function CourseView() {
             </div>
           )}
         </div>
-        <div className="aspect-video bg-gradient-to-br from-primary/80 to-secondary md:aspect-auto">
+        <div className="grain relative aspect-video overflow-hidden bg-riso-blue md:aspect-auto">
+          {!safeUrl(c.cover_url) && <span className="absolute -bottom-12 -start-12 h-48 w-48 rounded-full bg-riso-pink/85 mix-blend-multiply" aria-hidden />}
           {safeUrl(c.cover_url) && <img src={safeUrl(c.cover_url)} alt="" className="h-full w-full object-cover" />}
         </div>
       </Card>
 
-      <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
+      <div className={`grid gap-6 ${c.description || c.what_you_learn?.length ? "lg:grid-cols-[1fr_360px]" : ""}`}>
         <div className="space-y-6">
           {c.what_you_learn?.length > 0 && (
             <Card className="p-5">

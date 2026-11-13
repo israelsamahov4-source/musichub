@@ -20,7 +20,7 @@ export function CourseCard({ c, extra }) {
   return (
     <Link to={`/courses/${c.id}`} className="block">
       <Card className="flex h-full flex-col overflow-hidden transition-shadow hover:shadow-md">
-        <div className="relative aspect-[16/9] bg-gradient-to-br from-primary/80 to-secondary">
+        <div className="grain relative aspect-[16/9] overflow-hidden bg-riso-blue">
           {safeUrl(c.cover_url) ? <img src={safeUrl(c.cover_url)} alt="" loading="lazy" className="h-full w-full object-cover" />
             : <GraduationCap className="absolute inset-0 m-auto h-12 w-12 text-primary-foreground/80" aria-hidden />}
           {!c.is_free && <span className="absolute start-2 top-2 inline-flex items-center gap-1 rounded-full bg-card px-2 py-0.5 text-[11px] font-bold text-primary"><Star className="h-3 w-3" aria-hidden />Pro</span>}
