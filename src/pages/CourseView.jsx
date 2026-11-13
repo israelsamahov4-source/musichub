@@ -76,7 +76,7 @@ export default function CourseView() {
           )}
         </div>
         <div className="grain relative aspect-video overflow-hidden bg-riso-blue md:aspect-auto">
-          {!safeUrl(c.cover_url) && <span className="absolute -bottom-12 -start-12 h-48 w-48 rounded-full bg-riso-pink/85 mix-blend-multiply" aria-hidden />}
+          {!safeUrl(c.cover_url) && <span className="absolute -bottom-12 -start-12 h-48 w-48 rounded-full bg-riso-pink" aria-hidden />}
           {safeUrl(c.cover_url) && <img src={safeUrl(c.cover_url)} alt="" className="h-full w-full object-cover" />}
         </div>
       </Card>

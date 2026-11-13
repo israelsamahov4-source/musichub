@@ -17,8 +17,8 @@ export default function AuthShell({ title, subtitle, children, footer }) {
       <aside className="grain relative hidden overflow-hidden bg-riso-blue lg:flex lg:flex-col lg:justify-end lg:p-12" aria-hidden>
         <p className="riso-on-blue font-display text-[8.5rem] font-bold leading-[0.8]">תמצאו<br />עם מי<br />לנגן.</p>
         <p className="mt-6 max-w-xs text-white/75">גיטריסטים, זמרות, מפיקים ומורים, מכל ז'אנר ומכל הארץ.</p>
-        <span className="absolute -start-24 -top-24 h-72 w-72 rounded-full bg-riso-pink/80 mix-blend-multiply" />
-        <span className="absolute -start-6 -top-6 h-24 w-24 rounded-full bg-riso-yellow/90 mix-blend-multiply" />
+        <span className="absolute -start-24 -top-24 h-72 w-72 rounded-full bg-riso-pink" />
+        <span className="absolute -start-6 -top-6 h-24 w-24 rounded-full bg-riso-yellow" />
       </aside>
     </div>
   );

@@ -110,8 +110,8 @@ export default function Profile() {
     <div className="page space-y-6">
       <Card className="overflow-hidden">
         <div className="grain relative h-28 overflow-hidden bg-riso-blue sm:h-36" aria-hidden>
-          <span className="absolute -end-10 -top-16 h-56 w-56 rounded-full bg-riso-pink/85 mix-blend-multiply" />
-          <span className="absolute end-36 top-6 h-16 w-16 rounded-full bg-riso-yellow/90 mix-blend-multiply" />
+          <span className="absolute -end-10 -top-16 h-56 w-56 rounded-full bg-riso-pink" />
+          <span className="absolute end-36 top-6 h-16 w-16 rounded-full bg-riso-yellow" />
         </div>
         <div className="px-5 pb-5">
           <div className="-mt-12 flex flex-wrap items-end gap-4">
