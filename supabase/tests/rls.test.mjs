@@ -241,6 +241,35 @@ await ok('posting is rate-limited (21st post in an hour is refused)', async () =
   assert(refused, 'expected rate limit');
 });
 
+console.log('\nProfessional profile (musical CV)');
+await ok('every user has a CV row, editable by its owner', async () => {
+  await as('bob', `update profile_details set headline = 'בסיסט ומפיק', open_to = '{projects,sessions}',
+    experience = '[{"title":"בסיסט","org":"להקת הדרך","start_year":2019}]' where user_id = $1`, [users.bob]);
+});
+await denied('nobody else can edit my CV', () => as('carol', `update profile_details set headline = 'x' where user_id = $1`, [users.bob]));
+await denied('javascript: links in portfolio are rejected', () => as('bob', `update profile_details set portfolio = '[{"title":"x","url":"javascript:alert(1)"}]' where user_id = $1`, [users.bob]));
+await ok('members-only CV: visible to members, hidden from visitors', async () => {
+  assert((await as('carol', 'select headline from profile_details where user_id = $1', [users.bob])).rowCount === 1);
+  assert((await as(null, 'select headline from profile_details where user_id = $1', [users.bob])).rowCount === 0);
+});
+await ok('public CV is visible to visitors', async () => {
+  await as('bob', `update profile_details set visibility = 'public' where user_id = $1`, [users.bob]);
+  assert((await as(null, 'select headline from profile_details where user_id = $1', [users.bob])).rowCount === 1);
+});
+await ok('"applications" CV: hidden from strangers, visible to the owner of a project I asked to join', async () => {
+  await as('dave', `update profile_details set visibility = 'applications', headline = 'מתופף' where user_id = $1`, [users.dave]);
+  assert((await as('carol', 'select 1 from profile_details where user_id = $1', [users.dave])).rowCount === 0, 'stranger must not see');
+  const pid = (await as('carol', `insert into collab_projects (owner_id, title) values ($1, 'Band') returning id`, [users.carol])).rows[0].id;
+  await as('dave', `insert into collab_members (project_id, user_id, status) values ($1, $2, 'requested')`, [pid, users.dave]);
+  assert((await as('carol', 'select headline from profile_details where user_id = $1', [users.dave])).rowCount === 1, 'project owner must see applicant');
+  assert((await as('bob', 'select 1 from profile_details where user_id = $1', [users.dave])).rowCount === 0, 'others still must not see');
+});
+await ok('blocking hides my CV from the blocked user', async () => {
+  await as('bob', 'insert into blocks (blocker_id, blocked_id) values ($1, $2)', [users.bob, users.carol]);
+  assert((await as('carol', 'select 1 from profile_details where user_id = $1', [users.bob])).rowCount === 0);
+  await as('bob', 'delete from blocks where blocker_id = $1', [users.bob]);
+});
+
 console.log('\nStorage');
 await ok('user uploads into own folder', async () => {
   await as('alice', `insert into storage.objects (bucket_id, name) values ('avatars', $1)`, [`${users.alice}/me.png`]);

@@ -16,6 +16,8 @@ import PageLoader from "@/components/PageLoader";
 import ReportDialog from "@/components/ReportDialog";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import { LINK_FIELDS } from "@/components/ProfileForm";
+import CvView, { OpenToBadges } from "@/components/CvView";
+import { fetchDetails } from "@/api/details";
 import { supabase, unwrap } from "@/lib/supabase";
 import { useAuth } from "@/auth/AuthProvider";
 import { label } from "@/lib/config";
@@ -59,6 +61,12 @@ export default function Profile() {
       ]);
       return { followers, following, posts };
     },
+  });
+
+  const { data: cv, isLoading: cvLoading } = useQuery({
+    queryKey: ["profile-details", p?.id, user?.id],
+    enabled: Boolean(p),
+    queryFn: () => fetchDetails(p.id),
   });
 
   const { data: projects = [] } = useQuery({
@@ -132,10 +140,12 @@ export default function Profile() {
           </div>
           <div className="mt-3">
             <div className="flex flex-wrap items-center gap-2">
-              <h1 className="text-2xl font-bold">{p.full_name || p.username}</h1>
+              <h1 className="font-display text-6xl font-bold leading-[0.9]">{p.full_name || p.username}</h1>
               <PlanBadge tier={p.plan_tier} />
             </div>
-            <p className="ltr text-sm text-muted-foreground">@{p.username}</p>
+            {cv?.headline && <p className="mt-1 text-lg font-medium text-ink/85">{cv.headline}</p>}
+            <p className="ltr w-fit text-sm text-muted-foreground">@{p.username}</p>
+            {cv?.open_to?.length > 0 && <div className="mt-3 flex flex-wrap items-center gap-2"><span className="text-sm font-medium">פתוח/ה ל:</span><OpenToBadges openTo={cv.open_to} /></div>}
             <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
               {roles.length > 0 && <span>{roles.map((r) => label("roles", r)).join(", ")}{level && `, ${label("levels", level)}`}</span>}
               {p.location && <span className="flex items-center gap-1"><MapPin className="h-3.5 w-3.5" aria-hidden />{p.location}</span>}
@@ -176,11 +186,24 @@ export default function Profile() {
             </Card>
           )}
         </aside>
-        <Tabs defaultValue="posts" dir="rtl" className="min-w-0">
+        <Tabs defaultValue="cv" dir="rtl" className="min-w-0">
           <TabsList className="mb-4">
+            <TabsTrigger value="cv">קורות חיים</TabsTrigger>
             <TabsTrigger value="posts">פוסטים</TabsTrigger>
             <TabsTrigger value="projects">פרויקטים ({projects.length})</TabsTrigger>
           </TabsList>
+          <TabsContent value="cv">
+            <Card className="p-5 sm:p-6">
+              {cvLoading ? null : mine && !cv?.headline && !cv?.experience?.length ? (
+                <EmptyState title="עוד לא מילאתם קורות חיים" text="ניסיון, לימודים ותיק עבודות עוזרים למנהלי פרויקטים להחליט לעבוד איתכם."
+                  action={<Button asChild><Link to="/profile/edit">מילוי קורות חיים</Link></Button>} />
+              ) : (
+                <CvView cv={cv} hiddenText={user ? "הקורות חיים של המשתמש/ת גלויים רק לאנשים שהם פונים אליהם, למשל מנהלי פרויקטים שביקשו להצטרף אליהם."
+                  : "התחברו כדי לראות את קורות החיים המוזיקליים."} />
+              )}
+              {mine && cv && <p className="mt-6 text-xs text-muted-foreground">מי רואה את זה: {{ public: "כולם", members: "חברי הקהילה", applications: "רק מי שאתם פונים אליו" }[cv.visibility]}. <Link to="/profile/edit" className="text-primary underline">שינוי</Link></p>}
+            </Card>
+          </TabsContent>
           <TabsContent value="posts">
             <PostList queryKey={["author", p.id]} filters={{ authorId: p.id }} empty={<EmptyState title="עדיין אין פוסטים" />} />
           </TabsContent>

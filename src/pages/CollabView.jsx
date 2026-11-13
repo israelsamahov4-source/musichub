@@ -15,6 +15,8 @@ import PageLoader from "@/components/PageLoader";
 import EmptyState from "@/components/EmptyState";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import { ProjectFields } from "@/pages/Collabs";
+import CvView, { OpenToBadges } from "@/components/CvView";
+import { fetchDetailsMap } from "@/api/details";
 import { supabase, unwrap } from "@/lib/supabase";
 import { useAuth } from "@/auth/AuthProvider";
 import { PROJECT_STATUS, TASK_STATUS, label } from "@/lib/config";
@@ -159,6 +161,12 @@ export default function CollabView() {
   const [join, setJoin] = useState({ instrument: "", note: "" });
   const [inviteOpen, setInviteOpen] = useState(false);
 
+  const applicantIds = (p?.members ?? []).filter((m) => m.status !== "active" || m.role !== "owner").map((m) => m.user_id);
+  const { data: cvs = {} } = useQuery({
+    queryKey: ["project-cvs", id, applicantIds.join(",")],
+    enabled: Boolean(p && user && applicantIds.length),
+    queryFn: () => fetchDetailsMap(applicantIds),
+  });
   const refresh = () => { qc.invalidateQueries({ queryKey: ["project", id] }); qc.invalidateQueries({ queryKey: ["projects"] }); };
   const onErr = (e) => toast.error(errorMessage(e));
   const memberOp = useMutation({
@@ -268,7 +276,7 @@ export default function CollabView() {
                   <Link to={`/u/${m.profile?.username}`}><UserAvatar profile={m.profile} /></Link>
                   <div className="min-w-0 flex-1 text-sm">
                     <Link to={`/u/${m.profile?.username}`} className="block truncate font-medium hover:underline">{m.profile?.full_name || m.profile?.username}</Link>
-                    <span className="text-xs text-muted-foreground">{m.role === "owner" ? "מנהל/ת" : m.instrument || "חבר/ה"}</span>
+                    <span className="block truncate text-xs text-muted-foreground">{m.role === "owner" ? "מנהל/ת" : cvs[m.user_id]?.headline || m.instrument || "חבר/ה"}</span>
                   </div>
                   {isOwner && m.role !== "owner" && (
                     <ConfirmDialog trigger={<Button size="icon" variant="ghost" className="h-7 w-7" aria-label="הסרה מהפרויקט"><X /></Button>}
@@ -284,13 +292,21 @@ export default function CollabView() {
               <h2 className="mb-3 font-semibold">בקשות הצטרפות ({requests.length})</h2>
               <ul className="space-y-3">
                 {requests.map((m) => (
-                  <li key={m.user_id} className="space-y-2 rounded-md border p-2.5">
-                    <Link to={`/u/${m.profile?.username}`} className="flex items-center gap-2 text-sm font-medium hover:underline"><UserAvatar profile={m.profile} size="xs" />{m.profile?.full_name || m.profile?.username}</Link>
-                    {m.instrument && <p className="text-xs text-muted-foreground">תפקיד: {m.instrument}</p>}
-                    {m.note && <p className="whitespace-pre-wrap text-sm">{m.note}</p>}
-                    <div className="flex gap-2">
+                  <li key={m.user_id} className="space-y-3 rounded-xl border border-ink/10 p-3">
+                    <Link to={`/u/${m.profile?.username}`} className="flex items-center gap-2 hover:underline">
+                      <UserAvatar profile={m.profile} />
+                      <span className="min-w-0">
+                        <span className="block truncate font-semibold">{m.profile?.full_name || m.profile?.username}</span>
+                        {cvs[m.user_id]?.headline && <span className="block truncate text-xs text-muted-foreground">{cvs[m.user_id].headline}</span>}
+                      </span>
+                    </Link>
+                    {m.instrument && <p className="text-xs text-muted-foreground">מציע/ה: {m.instrument}</p>}
+                    {m.note && <p className="whitespace-pre-wrap rounded-lg bg-muted px-3 py-2 text-sm">{m.note}</p>}
+                    {cvs[m.user_id] && <><OpenToBadges openTo={cvs[m.user_id].open_to} /><CvView cv={cvs[m.user_id]} compact /></>}
+                    <div className="flex flex-wrap gap-2">
                       <Button size="sm" onClick={() => memberOp.mutate({ op: "update", userId: m.user_id, values: { status: "active" } })}><Check />אישור</Button>
                       <Button size="sm" variant="outline" onClick={() => memberOp.mutate({ op: "delete", userId: m.user_id })}>דחייה</Button>
+                      <Button asChild size="sm" variant="ghost"><Link to={`/u/${m.profile?.username}`}>לפרופיל המלא</Link></Button>
                     </div>
                   </li>
                 ))}

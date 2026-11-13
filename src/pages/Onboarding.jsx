@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import PageLoader from "@/components/PageLoader";
 import ProfileForm, { formToProfile, profileToForm, validateProfile } from "@/components/ProfileForm";
+import CvEditor, { EMPTY_CV, cvToRow } from "@/components/CvEditor";
 import { supabase, unwrap } from "@/lib/supabase";
 import { useAuth } from "@/auth/AuthProvider";
 import { APP_NAME } from "@/lib/config";
@@ -15,6 +16,7 @@ const STEPS = [
   { title: `ברוכים הבאים ל-${APP_NAME}!`, text: "נתחיל מהבסיס: איך יכירו אתכם", sections: ["basics"] },
   { title: "המוזיקה שלכם", text: "כך מוזיקאים אחרים ימצאו אתכם", sections: ["music"] },
   { title: "מה אתם מחפשים?", text: "נתאים לכם אנשים ופרויקטים", sections: ["about"] },
+  { title: "קורות חיים מוזיקליים", text: "מה שמנהלי פרויקטים יראו כשתפנו אליהם. אפשר להשלים ניסיון ותיק עבודות אחר כך", cv: ["basics", "visibility"] },
 ];
 
 export default function Onboarding() {
@@ -23,6 +25,7 @@ export default function Onboarding() {
   const [form, setForm] = useState(null);
   const [step, setStep] = useState(0);
   const [saving, setSaving] = useState(false);
+  const [cv, setCv] = useState(EMPTY_CV);
 
   useEffect(() => { if (profile && !form) setForm(profileToForm(profile)); }, [profile, form]);
   useEffect(() => { if (profile?.onboarding_completed) navigate("/feed", { replace: true }); }, [profile, navigate]);
@@ -36,6 +39,7 @@ export default function Onboarding() {
     if (step < STEPS.length - 1) return setStep(step + 1);
     setSaving(true);
     try {
+      unwrap(await supabase.from("profile_details").update(cvToRow(cv)).eq("user_id", user.id));
       unwrap(await supabase.from("profiles").update({ ...formToProfile(form), onboarding_completed: true }).eq("id", user.id));
       await refreshProfile();
       toast.success("הפרופיל מוכן!");
@@ -57,7 +61,7 @@ export default function Onboarding() {
           <p className="text-sm text-muted-foreground">שלב {step + 1} מתוך {STEPS.length}</p>
           <h1 className="mt-1 font-display text-5xl font-bold leading-[0.95]">{s.title}</h1>
           <p className="mb-6 text-muted-foreground">{s.text}</p>
-          <ProfileForm form={form} setForm={setForm} userId={user.id} sections={s.sections} />
+          {s.cv ? <CvEditor cv={cv} setCv={setCv} sections={s.cv} /> : <ProfileForm form={form} setForm={setForm} userId={user.id} sections={s.sections} />}
           <div className="mt-8 flex justify-between">
             <Button variant="ghost" onClick={() => setStep(step - 1)} disabled={step === 0}>חזרה</Button>
             <Button onClick={next} disabled={saving}>{step === STEPS.length - 1 ? (saving ? "שומר…" : "סיום") : "המשך"}</Button>

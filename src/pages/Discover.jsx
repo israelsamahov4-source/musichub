@@ -35,7 +35,7 @@ function MusicianCard({ p }) {
         <Link to={`/u/${p.username}`}><UserAvatar profile={p} size="md" /></Link>
         <div className="min-w-0 flex-1">
           <Link to={`/u/${p.username}`} className="block truncate font-semibold hover:underline">{p.full_name || p.username}</Link>
-          <p className="truncate text-sm text-muted-foreground">{roles.slice(0, 2).join(", ") || (p.user_type === "listener" ? "חובב/ת מוזיקה" : "מוזיקאי/ת")}</p>
+          <p className="truncate text-sm text-muted-foreground">{p.details?.headline || roles.slice(0, 2).join(", ") || (p.user_type === "listener" ? "חובב/ת מוזיקה" : "מוזיקאי/ת")}</p>
           {p.location && <p className="mt-0.5 flex items-center gap-1 text-xs text-muted-foreground"><MapPin className="h-3 w-3" aria-hidden />{p.location}</p>}
         </div>
         <PlanBadge tier={p.plan_tier} />
@@ -46,7 +46,8 @@ function MusicianCard({ p }) {
         {p.genres.slice(0, 2).map((g) => <span key={g} className="chip">{label("genres", g)}</span>)}
       </div>
       <div className="mt-auto flex items-center justify-between pt-4">
-        {p.open_for_collaboration ? <span className="text-xs font-medium text-emerald-700">פתוח/ה לשיתופי פעולה</span> : <span />}
+        {p.details?.open_to?.length ? <span className="truncate text-xs font-medium text-emerald-700">פתוח/ה ל{label("openTo", p.details.open_to[0])}{p.details.open_to.length > 1 && ` ועוד ${p.details.open_to.length - 1}`}</span>
+          : p.open_for_collaboration ? <span className="text-xs font-medium text-emerald-700">פתוח/ה לשיתופי פעולה</span> : <span />}
         <FollowButton profileId={p.id} />
       </div>
     </Card>
@@ -67,7 +68,7 @@ export default function Discover() {
     initialPageParam: 0,
     queryFn: async ({ pageParam }) => {
       let s = supabase.from("profiles")
-        .select("id, username, full_name, avatar_url, bio, location, user_type, instruments, genres, musical_roles, open_for_collaboration, plan_tier")
+        .select("id, username, full_name, avatar_url, bio, location, user_type, instruments, genres, musical_roles, open_for_collaboration, plan_tier, details:profile_details(headline, open_to)")
         .eq("onboarding_completed", true).neq("id", user.id)
         .order("created_at", { ascending: false }).range(pageParam * PAGE, pageParam * PAGE + PAGE - 1);
       if (q) s = s.or(`full_name.ilike.%${q}%,username.ilike.%${q}%,bio.ilike.%${q}%`);
