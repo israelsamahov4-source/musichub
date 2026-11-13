@@ -34,7 +34,7 @@ export function CourseCard({ c, extra }) {
         </div>
         <div className="flex flex-1 flex-col p-4">
           <p className="text-xs text-muted-foreground">{label("courseCategories", c.category)}, {label("courseLevels", c.level)}</p>
-          <h3 className="mt-1 text-[1.05rem] font-semibold leading-snug">{c.title}</h3>
+          <h3 className={safeUrl(c.cover_url) ? "mt-1 text-[1.05rem] font-semibold leading-snug" : "sr-only"}>{c.title}</h3>
           <div className="mt-auto flex items-center gap-2 pt-3 text-sm text-muted-foreground">
             <UserAvatar profile={c.instructor} size="xs" />
             <span className="truncate">{c.instructor?.full_name || c.instructor?.username}</span>
