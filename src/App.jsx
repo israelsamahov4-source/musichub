@@ -1,9 +1,24 @@
-import { lazy, Suspense } from "react";
+import { lazy as reactLazy, Suspense } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import AppLayout from "@/components/AppLayout";
 import PageLoader from "@/components/PageLoader";
 import { GuestOnly, RequireAuth } from "@/auth/guards";
 import { useAuth } from "@/auth/AuthProvider";
+
+// After a new deploy, old page files disappear. If a tab still running the
+// old version can't load one, reload once to pick up the new version.
+const lazy = (load) =>
+  reactLazy(() =>
+    load().catch((err) => {
+      const key = "mh-chunk-reload";
+      if (!sessionStorage.getItem(key)) {
+        sessionStorage.setItem(key, "1");
+        window.location.reload();
+        return new Promise(() => {});
+      }
+      throw err;
+    }).then((mod) => { sessionStorage.removeItem("mh-chunk-reload"); return mod; }),
+  );
 
 const Landing = lazy(() => import("@/pages/Landing"));
 const Login = lazy(() => import("@/pages/auth/Login"));
