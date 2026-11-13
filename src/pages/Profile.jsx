@@ -27,7 +27,7 @@ import { errorMessage, formatDate, safeUrl } from "@/lib/utils";
 function Stat({ value, text }) {
   return (
     <div className="flex items-baseline gap-1.5">
-      <span className="font-display text-3xl font-bold leading-none text-ink">{value ?? "–"}</span>
+      <span className="text-2xl font-extrabold leading-none text-ink">{value ?? "–"}</span>
       <span className="text-sm text-muted-foreground">{text}</span>
     </div>
   );

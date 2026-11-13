@@ -155,7 +155,7 @@ export default function CourseEditor() {
   return (
     <div className="page-narrow space-y-5">
       <div className="flex flex-wrap items-center gap-2">
-        <h1 className="page-title flex-1">{isNew ? "קורס חדש" : "עריכת קורס"}</h1>
+        <h1 className="page-title riso flex-1">{isNew ? "קורס חדש" : "עריכת קורס"}</h1>
         {!isNew && <Button asChild variant="outline"><Link to={`/courses/${id}`}><Eye />תצוגה</Link></Button>}
       </div>
 

@@ -56,7 +56,7 @@ export default function LessonView() {
     <div className="mx-auto grid max-w-6xl gap-6 px-4 py-6 lg:grid-cols-[1fr_300px]">
       <div className="min-w-0 space-y-4">
         <Link to={`/courses/${id}`} className="text-sm text-muted-foreground hover:underline">{c.title}</Link>
-        <h1 className="text-2xl font-bold">{l.title}</h1>
+        <h1 className="riso font-display text-5xl font-bold leading-[0.9]">{l.title}</h1>
         {l.video_url ? <MediaView url={l.video_url} type="video" title={l.title} /> : <Card className="p-6 text-center text-sm text-muted-foreground">לשיעור הזה אין וידאו.</Card>}
         {l.description && <Card className="p-5"><p className="whitespace-pre-wrap break-words leading-relaxed">{l.description}</p></Card>}
         <div className="flex flex-wrap items-center gap-2">

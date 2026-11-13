@@ -31,7 +31,7 @@ function Stats() {
       {items.map(([label, value]) => (
         <div key={label} className="bg-white p-4">
           <dt className="text-xs text-muted-foreground">{label}</dt>
-          <dd className="font-display text-4xl font-bold leading-none">{value ?? "–"}</dd>
+          <dd className="text-3xl font-black leading-none">{value ?? "–"}</dd>
         </div>
       ))}
     </dl>

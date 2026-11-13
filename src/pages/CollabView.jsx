@@ -210,14 +210,14 @@ export default function CollabView() {
 
   return (
     <div className="page space-y-5">
-      <Card className="p-5">
+      <Card className="border-2 border-ink p-5 shadow-[6px_6px_0_0_#2F45C2]">
         <div className="flex flex-wrap items-start gap-3">
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               {p.is_public ? <Globe className="h-4 w-4" aria-hidden /> : <Lock className="h-4 w-4" aria-hidden />}
               {label("projectTypes", p.type)}, {label("projectStatus", p.status)}
             </div>
-            <h1 className="mt-1 text-2xl font-bold">{p.title}</h1>
+            <h1 className="riso riso-animate mt-2 font-display text-5xl font-bold leading-[0.9] md:text-6xl">{p.title}</h1>
             <Link to={`/u/${p.owner?.username}`} className="mt-2 inline-flex items-center gap-2 text-sm hover:underline">
               <UserAvatar profile={p.owner} size="xs" />{p.owner?.full_name || p.owner?.username}
             </Link>

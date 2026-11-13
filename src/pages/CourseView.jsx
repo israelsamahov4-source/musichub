@@ -54,10 +54,10 @@ export default function CourseView() {
   return (
     <div className="page space-y-6">
       {!c.is_published && <p className="rounded-md bg-amber-50 px-3 py-2 text-sm text-amber-900">הקורס הוא טיוטה ורק אתם רואים אותו. פרסמו אותו מעמוד העריכה.</p>}
-      <Card className="grid overflow-hidden md:grid-cols-[1fr_340px]">
+      <Card className="grid overflow-hidden border-2 border-ink md:grid-cols-[1fr_340px]">
         <div className="p-6">
           <p className="text-sm text-muted-foreground">{label("courseCategories", c.category)}, {label("courseLevels", c.level)}</p>
-          <h1 className="mt-1 text-2xl font-bold md:text-3xl">{c.title}</h1>
+          <h1 className="riso riso-animate mt-2 font-display text-5xl font-bold leading-[0.9] md:text-6xl">{c.title}</h1>
           <Link to={`/u/${c.instructor?.username}`} className="mt-3 inline-flex items-center gap-2 hover:underline">
             <UserAvatar profile={c.instructor} /><span className="font-medium">{c.instructor?.full_name || c.instructor?.username}</span>
           </Link>
@@ -76,7 +76,12 @@ export default function CourseView() {
           )}
         </div>
         <div className="grain relative aspect-video overflow-hidden bg-riso-blue md:aspect-auto">
-          {!safeUrl(c.cover_url) && <span className="absolute -bottom-12 -start-12 h-48 w-48 rounded-full bg-riso-pink" aria-hidden />}
+          {!safeUrl(c.cover_url) && (
+            <div className="absolute inset-0 flex items-end p-6" aria-hidden>
+              <span className="font-display text-[7rem] font-bold leading-[0.8] text-white/[0.18]">{label("courseCategories", c.category)}</span>
+              <span className="tape end-8 top-6 rotate-[6deg]" />
+            </div>
+          )}
           {safeUrl(c.cover_url) && <img src={safeUrl(c.cover_url)} alt="" className="h-full w-full object-cover" />}
         </div>
       </Card>

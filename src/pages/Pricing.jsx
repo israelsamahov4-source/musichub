@@ -68,7 +68,7 @@ export default function Pricing() {
                 <h2 id={`plan-${plan.tier}`} className={cn("font-display text-4xl font-bold leading-none", hot ? "text-riso-yellow" : "text-riso-blue")}>{plan.name}</h2>
                 <p className={cn("mt-2 text-sm", hot ? "text-white/75" : "text-muted-foreground")}>{plan.tagline}</p>
                 <p className="mt-5 flex items-baseline gap-1">
-                  <span className="font-display text-6xl font-bold leading-none">₪{plan.price[cycle]}</span>
+                  <span className="text-5xl font-black leading-none tracking-tight">₪{plan.price[cycle]}</span>
                   <span className={hot ? "text-white/70" : "text-muted-foreground"}>/ {cycle === "monthly" ? "חודש" : "שנה"}</span>
                 </p>
                 <ul className="my-6 flex-1 space-y-2.5">
