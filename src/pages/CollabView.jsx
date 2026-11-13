@@ -28,9 +28,9 @@ function useProject(id) {
   return useQuery({
     queryKey: ["project", id],
     queryFn: async () => {
-      const project = unwrap(await supabase.from("collab_projects").select(`*, owner:profiles(${PERSON})`).eq("id", id).maybeSingle());
+      const project = unwrap(await supabase.from("collab_projects").select(`*, owner:profiles!collab_projects_owner_id_fkey(${PERSON})`).eq("id", id).maybeSingle());
       if (!project) return null;
-      const members = unwrap(await supabase.from("collab_members").select(`user_id, role, status, instrument, note, created_at, profile:profiles(${PERSON})`)
+      const members = unwrap(await supabase.from("collab_members").select(`user_id, role, status, instrument, note, created_at, profile:profiles!collab_members_user_id_fkey(${PERSON})`)
         .eq("project_id", id).order("created_at"));
       return { ...project, members };
     },

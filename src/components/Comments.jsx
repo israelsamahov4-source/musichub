@@ -20,7 +20,7 @@ export default function Comments({ post }) {
   const { data: comments = [], isLoading } = useQuery({
     queryKey: key,
     queryFn: async () =>
-      unwrap(await supabase.from("post_comments").select(`id, content, created_at, author_id, author:profiles(${AUTHOR})`)
+      unwrap(await supabase.from("post_comments").select(`id, content, created_at, author_id, author:profiles!post_comments_author_id_fkey(${AUTHOR})`)
         .eq("post_id", post.id).order("created_at")),
   });
 

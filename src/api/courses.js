@@ -1,9 +1,9 @@
 import { supabase, unwrap } from "@/lib/supabase";
 
-export const COURSE_CARD = "id, title, description, category, level, cover_url, is_free, is_published, created_at, instructor:profiles(id, username, full_name, avatar_url)";
+export const COURSE_CARD = "id, title, description, category, level, cover_url, is_free, is_published, created_at, instructor:profiles!courses_instructor_id_fkey(id, username, full_name, avatar_url)";
 
 export async function fetchCourse(id) {
-  const course = unwrap(await supabase.from("courses").select(`*, instructor:profiles(id, username, full_name, avatar_url, bio)`).eq("id", id).maybeSingle());
+  const course = unwrap(await supabase.from("courses").select(`*, instructor:profiles!courses_instructor_id_fkey(id, username, full_name, avatar_url, bio)`).eq("id", id).maybeSingle());
   if (!course) return null;
   const [outline, stats] = await Promise.all([
     supabase.rpc("course_outline", { cid: id }).then(unwrap),

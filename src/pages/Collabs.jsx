@@ -21,7 +21,7 @@ import { useAuth } from "@/auth/AuthProvider";
 import { GENRES, PROJECT_TYPES, ROLES, label } from "@/lib/config";
 import { errorMessage, timeAgo } from "@/lib/utils";
 
-const PROJECT_SELECT = "id, title, description, type, status, genres, looking_for_roles, location, is_remote, is_public, created_at, owner:profiles(id, username, full_name, avatar_url), members:collab_members(count)";
+const PROJECT_SELECT = "id, title, description, type, status, genres, looking_for_roles, location, is_remote, is_public, created_at, owner:profiles!collab_projects_owner_id_fkey(id, username, full_name, avatar_url), members:collab_members(count)";
 
 export const EMPTY_PROJECT = { title: "", description: "", type: "single", genres: [], looking_for_roles: [], location: "", is_remote: true, is_public: true };
 
