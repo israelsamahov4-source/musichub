@@ -137,7 +137,7 @@ export default function Profile() {
             </div>
             <p className="ltr text-sm text-muted-foreground">@{p.username}</p>
             <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
-              {roles.length > 0 && <span>{roles.map((r) => label("roles", r)).join(" · ")}{level && ` · ${label("levels", level)}`}</span>}
+              {roles.length > 0 && <span>{roles.map((r) => label("roles", r)).join(", ")}{level && `, ${label("levels", level)}`}</span>}
               {p.location && <span className="flex items-center gap-1"><MapPin className="h-3.5 w-3.5" aria-hidden />{p.location}</span>}
               <span>הצטרף/ה ב{formatDate(p.created_at, "MMMM yyyy")}</span>
             </div>
@@ -192,7 +192,7 @@ export default function Profile() {
                     <Card className="p-4 transition-shadow hover:shadow-md">
                       <div className="font-semibold">{project.title}</div>
                       <div className="mt-1 text-sm text-muted-foreground">
-                        {label("projectTypes", project.type)} · {label("projectStatus", project.status)}{role === "owner" && " · מנהל/ת"}
+                        {label("projectTypes", project.type)}, {label("projectStatus", project.status)}{role === "owner" && ", מנהל/ת"}
                       </div>
                     </Card>
                   </Link>

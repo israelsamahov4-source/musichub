@@ -5,13 +5,19 @@ export default {
     content: ["./index.html", "./src/**/*.{js,jsx}"],
   theme: {
   	extend: {
-  		fontFamily: { sans: ['Heebo', 'system-ui', 'sans-serif'] },
+  		fontFamily: {
+  			sans: ['Rubik', 'system-ui', 'sans-serif'],
+  			display: ['Karantina', 'Rubik', 'sans-serif'],
+  		},
   		borderRadius: {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',
   			sm: 'calc(var(--radius) - 4px)'
   		},
   		colors: {
+  			ink: '#1E1B3A',
+  			paper: '#F2F3F7',
+  			riso: { blue: '#2F45C2', pink: '#FF4F81', yellow: '#FFD84D' },
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {

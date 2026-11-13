@@ -35,7 +35,7 @@ function MusicianCard({ p }) {
         <Link to={`/u/${p.username}`}><UserAvatar profile={p} size="md" /></Link>
         <div className="min-w-0 flex-1">
           <Link to={`/u/${p.username}`} className="block truncate font-semibold hover:underline">{p.full_name || p.username}</Link>
-          <p className="truncate text-sm text-muted-foreground">{roles.slice(0, 2).join(" · ") || (p.user_type === "listener" ? "חובב/ת מוזיקה" : "מוזיקאי/ת")}</p>
+          <p className="truncate text-sm text-muted-foreground">{roles.slice(0, 2).join(", ") || (p.user_type === "listener" ? "חובב/ת מוזיקה" : "מוזיקאי/ת")}</p>
           {p.location && <p className="mt-0.5 flex items-center gap-1 text-xs text-muted-foreground"><MapPin className="h-3 w-3" aria-hidden />{p.location}</p>}
         </div>
         <PlanBadge tier={p.plan_tier} />

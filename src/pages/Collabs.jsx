@@ -61,7 +61,7 @@ function ProjectCard({ p, badge }) {
           {badge}
           {!p.is_public && <Lock className="h-4 w-4 text-muted-foreground" aria-label="פרויקט פרטי" />}
         </div>
-        <p className="mt-1 text-xs text-muted-foreground">{label("projectTypes", p.type)} · {label("projectStatus", p.status)} · {timeAgo(p.created_at)}</p>
+        <p className="mt-1 text-xs text-muted-foreground">{label("projectTypes", p.type)}, {label("projectStatus", p.status)}, {timeAgo(p.created_at)}</p>
         {p.description && <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">{p.description}</p>}
         {p.looking_for_roles?.length > 0 && (
           <div className="mt-3 flex flex-wrap gap-1.5">

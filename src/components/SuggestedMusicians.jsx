@@ -39,7 +39,7 @@ export default function SuggestedMusicians() {
             <Link to={`/u/${p.username}`}><UserAvatar profile={p} /></Link>
             <div className="min-w-0 flex-1">
               <Link to={`/u/${p.username}`} className="block truncate text-sm font-semibold hover:underline">{p.full_name || p.username}</Link>
-              <p className="truncate text-xs text-muted-foreground">{p.instruments.slice(0, 2).map((i) => label("instruments", i)).join(" · ") || p.location}</p>
+              <p className="truncate text-xs text-muted-foreground">{p.instruments.slice(0, 2).map((i) => label("instruments", i)).join(", ") || p.location}</p>
             </div>
             <FollowButton profileId={p.id} />
           </li>

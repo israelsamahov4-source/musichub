@@ -50,12 +50,12 @@ export default function Onboarding() {
 
   const s = STEPS[step];
   return (
-    <div className="min-h-screen bg-gradient-to-b from-secondary to-background px-4 py-10">
+    <div className="grain min-h-screen px-4 py-10">
       <div className="mx-auto max-w-2xl">
         <Progress value={((step + 1) / STEPS.length) * 100} className="mb-6 h-1.5" aria-label={`שלב ${step + 1} מתוך ${STEPS.length}`} />
         <Card className="p-6 sm:p-8">
           <p className="text-sm text-muted-foreground">שלב {step + 1} מתוך {STEPS.length}</p>
-          <h1 className="mt-1 text-2xl font-bold">{s.title}</h1>
+          <h1 className="mt-1 font-display text-5xl font-bold leading-[0.95]">{s.title}</h1>
           <p className="mb-6 text-muted-foreground">{s.text}</p>
           <ProfileForm form={form} setForm={setForm} userId={user.id} sections={s.sections} />
           <div className="mt-8 flex justify-between">

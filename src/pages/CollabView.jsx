@@ -207,7 +207,7 @@ export default function CollabView() {
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               {p.is_public ? <Globe className="h-4 w-4" aria-hidden /> : <Lock className="h-4 w-4" aria-hidden />}
-              {label("projectTypes", p.type)} · {label("projectStatus", p.status)}
+              {label("projectTypes", p.type)}, {label("projectStatus", p.status)}
             </div>
             <h1 className="mt-1 text-2xl font-bold">{p.title}</h1>
             <Link to={`/u/${p.owner?.username}`} className="mt-2 inline-flex items-center gap-2 text-sm hover:underline">

@@ -27,7 +27,7 @@ export function CourseCard({ c, extra }) {
           {!c.is_published && <span className="absolute end-2 top-2 rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-bold text-amber-800">טיוטה</span>}
         </div>
         <div className="flex flex-1 flex-col p-4">
-          <p className="text-xs text-muted-foreground">{label("courseCategories", c.category)} · {label("courseLevels", c.level)}</p>
+          <p className="text-xs text-muted-foreground">{label("courseCategories", c.category)}, {label("courseLevels", c.level)}</p>
           <h3 className="mt-1 font-semibold leading-snug">{c.title}</h3>
           <div className="mt-auto flex items-center gap-2 pt-3 text-sm text-muted-foreground">
             <UserAvatar profile={c.instructor} size="xs" />

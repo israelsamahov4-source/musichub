@@ -64,7 +64,7 @@ export default function PostCard({ post, defaultShowComments = false, onDeleted 
             <PlanBadge tier={a.plan_tier} />
           </div>
           <Link to={`/posts/${post.id}`} className="text-xs text-muted-foreground hover:underline">
-            <span className="ltr">@{a.username}</span> · {timeAgo(post.created_at)}
+            <span className="ltr">@{a.username}</span> {timeAgo(post.created_at)}
           </Link>
         </div>
         <DropdownMenu dir="rtl">

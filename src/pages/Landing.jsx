@@ -1,99 +1,163 @@
 import { Link } from "react-router-dom";
-import { ArrowLeft, GraduationCap, Handshake, MessageCircle, Music, Search, UserRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { APP_NAME } from "@/lib/config";
 
-const PILLARS = [
-  { icon: Handshake, title: "מוצאים שותפים", text: "מחפשים מתופף ללהקה, זמרת לסינגל או מפיק לאלבום? פותחים פרויקט, מגדירים את מי מחפשים, ומנהלים יחד את המשימות." },
-  { icon: GraduationCap, title: "לומדים ממוזיקאים", text: "קורסים קצרים וממוקדים של מוזיקאים פעילים: נגינה, הפקה, מיקס וכתיבה. לומדים בקצב שלכם ועוקבים אחרי ההתקדמות." },
-  { icon: UserRound, title: "בונים נוכחות מקצועית", text: "פרופיל שמרכז את הכלים, הז'אנרים, הקישורים והפרויקטים שלכם, כדי שהאנשים הנכונים ימצאו אתכם." },
+const SETLIST = [
+  { song: "מתופף ללהקה", note: "120 BPM" },
+  { song: "שיר עם זמרת מחיפה", note: "Am" },
+  { song: "שיעור מיקס ממפיק", note: "6/8" },
+  { song: "דמו ותגובות מאנשים", note: "הדרן" },
 ];
 
-const STEPS = [
-  { icon: UserRound, title: "יוצרים פרופיל", text: "שתי דקות: כלי נגינה, ז'אנרים ומה אתם מחפשים." },
-  { icon: Search, title: "מגלים מוזיקאים", text: "מסננים לפי כלי, ז'אנר, תפקיד ואזור." },
-  { icon: MessageCircle, title: "מדברים ויוצרים", text: "שולחים הודעה, מצטרפים לפרויקט ומתחילים לעבוד." },
+const LINEUP = [
+  "גיטריסטים", "זמרות", "מתופפים", "מפיקות", "בסיסטים", "כותבות שירים",
+  "קלידנים", "נגני עוד", "DJs", "מורות לנגינה", "סאונדמנים", "מעבדות", "כנרים", "ראפרים",
+];
+
+const SIDES = [
+  {
+    side: "A",
+    title: "יוצרים ביחד",
+    text: "פותחים פרויקט לשיר, לאלבום או ללהקה, כותבים את מי מחפשים, ומנהלים את העבודה באותו מקום.",
+    points: ["בקשות הצטרפות שאתם מאשרים", "לוח משימות לכל חברי הפרויקט", "הודעות פרטיות בזמן אמת"],
+    cta: { to: "/collabs", label: "לפרויקטים פתוחים" },
+    tone: "bg-riso-blue text-white",
+    label: "bg-riso-pink",
+  },
+  {
+    side: "B",
+    title: "לומדים ממוזיקאים",
+    text: "קורסים קצרים של מוזיקאים פעילים: נגינה, הפקה, מיקס וכתיבה. כל שיעור בקצב שלכם.",
+    points: ["שיעורי וידאו עם תיאור ותרגול", "מעקב אחרי מה שכבר למדתם", "מורים פותחים קורסים משלהם"],
+    cta: { to: "/courses", label: "לקטלוג הקורסים" },
+    tone: "bg-white text-ink",
+    label: "bg-riso-blue",
+  },
+];
+
+const COUNT_IN = [
+  { title: "נרשמים", text: "חינם, עם מייל או חשבון Google." },
+  { title: "ממלאים פרופיל", text: "כלים, ז'אנרים, אזור, ומה אתם מחפשים." },
+  { title: "מוצאים אנשים", text: "מסננים לפי כלי, תפקיד, ז'אנר ומיקום." },
+  { title: "מתחילים לנגן", text: "שולחים הודעה או מצטרפים לפרויקט." },
 ];
 
 export default function Landing() {
   return (
-    <div>
-      <section className="relative overflow-hidden bg-gradient-to-b from-secondary via-background to-background">
-        <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-16 md:grid-cols-2 md:py-24">
+    <div className="overflow-hidden">
+      {/* Hero: the poster */}
+      <section className="grain">
+        <div className="mx-auto grid max-w-6xl items-center gap-12 px-5 pb-16 pt-10 md:grid-cols-[1.3fr_1fr] md:pb-24 md:pt-16">
           <div>
-            <span className="inline-flex items-center gap-1.5 rounded-full border bg-card px-3 py-1 text-xs font-medium text-muted-foreground">
-              <Music className="h-3.5 w-3.5 text-primary" aria-hidden />הרשת החברתית למוזיקאים
-            </span>
-            <h1 className="mt-5 text-4xl font-extrabold leading-tight tracking-tight md:text-5xl">
-              המקום שבו מוזיקאים <span className="text-primary">נפגשים, לומדים ויוצרים</span> ביחד
+            <h1 className="riso riso-animate font-display text-[clamp(4.5rem,13vw,10rem)] font-bold leading-[0.8] tracking-tight">
+              תמצאו<br />עם מי<br />לנגן.
             </h1>
-            <p className="mt-5 max-w-lg text-lg text-muted-foreground">
-              {APP_NAME} מחברת בין מוזיקאים מתחילים למקצוענים: מוצאים שותפים לפרויקטים, לומדים מקורסים של מוזיקאים אחרים, ובונים פרופיל מקצועי.
+            <p className="mt-8 max-w-[34rem] text-lg leading-relaxed text-ink/80">
+              {APP_NAME} היא רשת חברתית למוזיקאים בישראל. מוצאים שותפים לשיר, ללהקה או להפקה, לומדים ממוזיקאים אחרים, ובונים פרופיל שמראה מה אתם עושים.
             </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Button asChild size="lg"><Link to="/signup">הצטרפות חינם<ArrowLeft /></Link></Button>
-              <Button asChild size="lg" variant="outline"><Link to="/collabs">לפרויקטים פתוחים</Link></Button>
+            <div className="mt-8 flex flex-wrap items-center gap-4">
+              <Button asChild size="lg" className="h-12 rounded-full px-7 text-base shadow-[4px_4px_0_#FF4F81] transition-shadow hover:shadow-[2px_2px_0_#FF4F81]">
+                <Link to="/signup">פתיחת פרופיל חינם</Link>
+              </Button>
+              <Link to="/collabs" className="text-base font-medium text-ink underline decoration-riso-pink decoration-2 underline-offset-[6px] hover:decoration-4">
+                פרויקטים שמחפשים אנשים
+              </Link>
             </div>
-            <p className="mt-3 text-sm text-muted-foreground">ללא כרטיס אשראי. הרשת, ההודעות והפרויקטים חינמיים.</p>
           </div>
-          <div className="relative hidden md:block" aria-hidden>
-            <div className="absolute -inset-6 rounded-3xl bg-primary/10 blur-2xl" />
-            <Card className="relative space-y-3 p-5 shadow-xl">
-              <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary to-indigo-300" />
-                <div><div className="h-3 w-28 rounded bg-foreground/80" /><div className="mt-1.5 h-2.5 w-20 rounded bg-muted-foreground/40" /></div>
-                <span className="ms-auto rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-800">מחפש/ת שותפים</span>
-              </div>
-              <p className="text-sm">סיימתי דמו לשיר חדש בסגנון אינדי-פופ. מחפשת בסיסט/ית ומתופף/ת להקלטה באולפן בתל אביב 🎸🥁</p>
-              <div className="flex h-12 items-end gap-1 rounded-lg bg-muted p-2">
-                {[40, 70, 55, 90, 60, 80, 45, 75, 50, 85, 65, 40, 70, 55, 90, 60, 35, 75].map((h, i) => (
-                  <div key={i} className="flex-1 rounded-sm bg-primary/70" style={{ height: `${h}%` }} />
+
+          {/* The setlist, taped to the stage floor */}
+          <div className="relative mx-auto w-full max-w-sm md:-rotate-2" aria-label="מה עושים כאן">
+            <span className="tape -top-3 start-10 -rotate-6" aria-hidden />
+            <span className="tape -bottom-3 end-8 rotate-3" aria-hidden />
+            <div className="bg-white px-7 pb-8 pt-7 shadow-[0_18px_40px_-18px_rgba(30,27,58,0.45)] [background-image:repeating-linear-gradient(to_bottom,transparent_0,transparent_43px,#E6E8F2_43px,#E6E8F2_44px)] [background-position:0_62px]">
+              <p className="font-display text-4xl font-bold text-riso-pink">סטליסט</p>
+              <ol className="mt-3">
+                {SETLIST.map((s, i) => (
+                  <li key={s.song} className="flex h-11 items-baseline gap-3 font-display text-[1.6rem] leading-[2.75rem] text-ink">
+                    <span className="w-5 text-riso-blue">{i + 1}</span>
+                    <span className="flex-1 truncate">{s.song}</span>
+                    <span className="text-lg text-ink/45">{s.note}</span>
+                  </li>
                 ))}
-              </div>
-              <div className="flex gap-2 text-xs">
-                <span className="chip">אינדי</span><span className="chip">פופ</span><span className="chip border-primary/30 text-primary">מחפשים: בס</span>
-              </div>
-            </Card>
+                <li className="flex h-11 items-baseline gap-3 font-display text-[1.6rem] leading-[2.75rem] text-ink/35">
+                  <span className="w-5" />
+                  <span className="line-through decoration-riso-pink decoration-2">לחפש בפייסבוק</span>
+                </li>
+              </ol>
+            </div>
           </div>
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-4 py-16">
-        <h2 className="text-center text-3xl font-bold">כל מה שמוזיקאי צריך, במקום אחד</h2>
-        <p className="mx-auto mt-3 max-w-2xl text-center text-muted-foreground">רוב הפלטפורמות מתמקדות בהפצה או בשיתוף קבצים. אנחנו משלבים קהילה, עבודה משותפת ולמידה.</p>
-        <div className="mt-10 grid gap-5 md:grid-cols-3">
-          {PILLARS.map((p) => (
-            <Card key={p.title} className="p-6">
-              <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-secondary text-primary"><p.icon className="h-5 w-5" aria-hidden /></div>
-              <h3 className="mt-4 text-lg font-semibold">{p.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{p.text}</p>
-            </Card>
+      {/* Festival line-up of who the site is for */}
+      <section className="grain bg-riso-blue text-white">
+        <div className="mx-auto max-w-6xl px-5 py-16 text-center md:py-20">
+          <h2 className="text-lg text-white/75">הבמה פתוחה ל</h2>
+          <p className="mx-auto mt-4 max-w-5xl font-display text-[clamp(2.4rem,6vw,4.5rem)] font-bold leading-[1.02]">
+            {LINEUP.map((role, i) => (
+              <span key={role} className={"whitespace-nowrap " + (i % 3 === 1 ? "text-[#FFA6C0]" : i % 3 === 2 ? "text-riso-yellow" : "")}>
+                {role}{i < LINEUP.length - 1 && <span className="mx-3 inline-block text-white/40" aria-hidden>/</span>}
+              </span>
+            ))}
+          </p>
+          <p className="mx-auto mt-6 max-w-xl text-white/80">מתחילים ומקצוענים, מכל ז'אנר ומכל הארץ.</p>
+        </div>
+      </section>
+
+      {/* Side A / Side B */}
+      <section className="mx-auto max-w-6xl px-5 py-16 md:py-24">
+        <div className="grid overflow-hidden rounded-[1.75rem] border-2 border-ink md:grid-cols-2">
+          {SIDES.map((s) => (
+            <div key={s.side} className={`relative flex flex-col p-8 md:p-10 ${s.tone}`}>
+              <div className="flex items-center gap-4">
+                <span className={`relative flex h-14 w-14 shrink-0 items-center justify-center rounded-full ${s.label}`} aria-hidden>
+                  <span className="absolute h-2.5 w-2.5 rounded-full bg-paper" />
+                  <span className="sr-only">צד {s.side}</span>
+                </span>
+                <div>
+                  <p className="text-sm opacity-70">צד {s.side}</p>
+                  <h2 className="font-display text-5xl font-bold leading-none">{s.title}</h2>
+                </div>
+              </div>
+              <p className="mt-6 max-w-md text-[1.05rem] leading-relaxed opacity-90">{s.text}</p>
+              <ul className="mt-6 space-y-2">
+                {s.points.map((p) => (
+                  <li key={p} className="flex gap-3"><span className="mt-2.5 h-1.5 w-4 shrink-0 rounded-full bg-riso-pink" aria-hidden />{p}</li>
+                ))}
+              </ul>
+              <Link to={s.cta.to} className="mt-8 w-fit font-semibold underline decoration-riso-pink decoration-2 underline-offset-[6px] hover:decoration-4">
+                {s.cta.label}
+              </Link>
+            </div>
           ))}
         </div>
       </section>
 
-      <section className="border-y bg-card">
-        <div className="mx-auto max-w-6xl px-4 py-16">
-          <h2 className="text-center text-3xl font-bold">איך זה עובד</h2>
-          <ol className="mt-10 grid gap-8 md:grid-cols-3">
-            {STEPS.map((s, i) => (
-              <li key={s.title} className="text-center">
-                <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary text-lg font-bold text-primary-foreground">{i + 1}</div>
-                <h3 className="mt-4 font-semibold">{s.title}</h3>
-                <p className="mt-1 text-sm text-muted-foreground">{s.text}</p>
+      {/* Count-in: four steps, four beats */}
+      <section className="border-y-2 border-ink bg-white">
+        <div className="mx-auto max-w-6xl px-5 py-16 md:py-20">
+          <h2 className="font-display text-5xl font-bold md:text-6xl">ספירה לפני שמתחילים</h2>
+          <ol className="mt-10 grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+            {COUNT_IN.map((step, i) => (
+              <li key={step.title}>
+                <span className="riso block font-display text-8xl font-bold leading-none" aria-hidden>{i + 1}</span>
+                <h3 className="mt-2 text-xl font-semibold">{step.title}</h3>
+                <p className="mt-1 text-muted-foreground">{step.text}</p>
               </li>
             ))}
           </ol>
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-4 py-16">
-        <Card className="flex flex-col items-center gap-4 bg-primary p-10 text-center text-primary-foreground">
-          <h2 className="text-3xl font-bold">הפרויקט הבא שלכם מתחיל כאן</h2>
-          <p className="max-w-xl text-primary-foreground/85">הצטרפו לקהילה, הציגו את המוזיקה שלכם ומצאו את האנשים שתרצו ליצור איתם.</p>
-          <Button asChild size="lg" variant="secondary"><Link to="/signup">יצירת חשבון חינם</Link></Button>
-        </Card>
+      {/* Closing poster */}
+      <section className="mx-auto max-w-6xl px-5 py-16 md:py-24">
+        <div className="grain relative overflow-hidden rounded-[1.75rem] bg-ink px-8 py-14 text-center md:py-20">
+          <h2 className="riso-on-blue font-display text-[clamp(4rem,10vw,7.5rem)] font-bold leading-[0.85]">הבמה פנויה.</h2>
+          <p className="mx-auto mt-5 max-w-md text-lg text-white/75">פותחים פרופיל בשתי דקות, ומתחילים לחפש את האנשים שתרצו לנגן איתם.</p>
+          <Button asChild size="lg" className="mt-8 h-12 rounded-full bg-white px-8 text-base text-ink shadow-[4px_4px_0_#FF4F81] hover:bg-white hover:shadow-[2px_2px_0_#FF4F81]">
+            <Link to="/signup">פתיחת פרופיל חינם</Link>
+          </Button>
+        </div>
       </section>
     </div>
   );

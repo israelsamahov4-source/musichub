@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Bell, GraduationCap, Handshake, Home, LogOut, MessageCircle, Music, Search, Settings, Sparkles, User } from "lucide-react";
+import { Bell, GraduationCap, Handshake, Home, LogOut, MessageCircle, Search, Settings, Sparkles, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger,
@@ -64,7 +64,7 @@ function useUnreadCounts(userId) {
 function CountBadge({ count, className }) {
   if (!count) return null;
   return (
-    <span className={cn("min-w-[18px] rounded-full bg-rose-600 px-1 text-center text-[10px] font-bold leading-[18px] text-white", className)}>
+    <span className={cn("min-w-[18px] rounded-full bg-riso-pink px-1 text-center text-[10px] font-bold leading-[18px] text-ink", className)}>
       {count > 99 ? "99+" : count}
     </span>
   );
@@ -72,12 +72,9 @@ function CountBadge({ count, className }) {
 
 function Logo() {
   return (
-    <Link to="/" className="flex shrink-0 items-center gap-2.5" aria-label={`${APP_NAME} — דף הבית`}>
-      <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground"><Music className="h-5 w-5" aria-hidden /></div>
-      <div className="hidden leading-tight sm:block">
-        <div className="text-lg font-bold tracking-tight">{APP_NAME}</div>
-        <div className="text-[11px] text-muted-foreground">{APP_TAGLINE}</div>
-      </div>
+    <Link to="/" className="group flex shrink-0 items-baseline gap-2" aria-label={`${APP_NAME} — דף הבית`}>
+      <span className="riso font-display text-[2.1rem] font-bold leading-none tracking-tight">{APP_NAME}</span>
+      <span className="hidden text-xs text-muted-foreground lg:inline">{APP_TAGLINE}</span>
     </Link>
   );
 }
@@ -93,14 +90,14 @@ export default function AppLayout() {
   return (
     <div className="flex min-h-screen flex-col">
       <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:start-2 focus:top-2 focus:z-50 focus:rounded focus:bg-card focus:px-3 focus:py-2">דילוג לתוכן</a>
-      <header className="sticky top-0 z-40 border-b bg-card/95 backdrop-blur">
+      <header className="sticky top-0 z-40 border-b-2 border-ink bg-white/95 backdrop-blur">
         <div className="mx-auto flex h-16 max-w-6xl items-center gap-4 px-4">
           <Logo />
           <nav className="hidden flex-1 items-center gap-1 md:flex" aria-label="ניווט ראשי">
             {items.map((n) => (
               <NavLink key={n.to} to={n.to} className={({ isActive }) => cn(
-                "relative flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors",
-                isActive ? "bg-secondary text-secondary-foreground" : "text-muted-foreground hover:bg-muted hover:text-foreground")}>
+                "relative flex items-center gap-2 rounded-full px-3.5 py-2 text-sm font-medium transition-colors",
+                isActive ? "bg-ink text-white" : "text-ink/70 hover:bg-muted hover:text-ink")}>
                 <n.icon className="h-4 w-4" aria-hidden />{n.label}
                 {n.badge === "messages" && <CountBadge count={counts.messages} />}
               </NavLink>
@@ -134,7 +131,7 @@ export default function AppLayout() {
             ) : (
               <>
                 <Button asChild variant="ghost"><Link to="/login">התחברות</Link></Button>
-                <Button asChild><Link to="/signup">הרשמה</Link></Button>
+                <Button asChild className="rounded-full shadow-[3px_3px_0_#FF4F81]"><Link to="/signup">הרשמה</Link></Button>
               </>
             )}
           </div>
@@ -145,7 +142,7 @@ export default function AppLayout() {
         <Outlet />
       </main>
 
-      <footer className={cn("border-t bg-card", user && "mb-16 md:mb-0")}>
+      <footer className={cn("border-t-2 border-ink bg-white", user && "mb-16 md:mb-0")}>
         <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-5 gap-y-2 px-4 py-5 text-sm text-muted-foreground">
           <span>© {new Date().getFullYear()} {APP_NAME}</span>
           <Link to="/terms" className="hover:text-foreground">תנאי שימוש</Link>
@@ -156,7 +153,7 @@ export default function AppLayout() {
       </footer>
 
       {user && (
-        <nav className="fixed inset-x-0 bottom-0 z-40 border-t bg-card md:hidden" aria-label="ניווט תחתון">
+        <nav className="fixed inset-x-0 bottom-0 z-40 border-t-2 border-ink bg-white md:hidden" aria-label="ניווט תחתון">
           <div className="grid grid-cols-5">
             {NAV.map((n) => (
               <NavLink key={n.to} to={n.to} className={({ isActive }) => cn(

@@ -56,7 +56,7 @@ export default function CourseView() {
       {!c.is_published && <p className="rounded-md bg-amber-50 px-3 py-2 text-sm text-amber-900">הקורס הוא טיוטה ורק אתם רואים אותו. פרסמו אותו מעמוד העריכה.</p>}
       <Card className="grid overflow-hidden md:grid-cols-[1fr_340px]">
         <div className="p-6">
-          <p className="text-sm text-muted-foreground">{label("courseCategories", c.category)} · {label("courseLevels", c.level)}</p>
+          <p className="text-sm text-muted-foreground">{label("courseCategories", c.category)}, {label("courseLevels", c.level)}</p>
           <h1 className="mt-1 text-2xl font-bold md:text-3xl">{c.title}</h1>
           <Link to={`/u/${c.instructor?.username}`} className="mt-3 inline-flex items-center gap-2 hover:underline">
             <UserAvatar profile={c.instructor} /><span className="font-medium">{c.instructor?.full_name || c.instructor?.username}</span>
