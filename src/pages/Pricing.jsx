@@ -3,7 +3,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import { Check, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import PageHeader from "@/components/PageHeader";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/auth/AuthProvider";
 import { PAYMENTS_ENABLED, PLANS } from "@/lib/config";
@@ -41,39 +41,53 @@ export default function Pricing() {
     return <Button className="w-full" onClick={() => checkout(plan.tier)} disabled={!!busy}>{busy === plan.tier ? <Loader2 className="animate-spin" /> : null}שדרוג ל-{plan.name}</Button>;
   };
 
-  return (
-    <div className="page">
-      <div className="mx-auto max-w-2xl text-center">
-        <h1 className="page-title">תוכניות ומחירים</h1>
-        <p className="mt-2 text-muted-foreground">הרשת החברתית, ההודעות והפרויקטים חינמיים לגמרי. מנוי פותח גישה לקורסים מתקדמים ולאפשרות ללמד.</p>
-        <div className="mt-6 inline-flex rounded-lg border bg-card p-1" role="radiogroup" aria-label="מחזור חיוב">
-          {[["monthly", "חודשי"], ["yearly", "שנתי (חודשיים מתנה)"]].map(([v, t]) => (
-            <button key={v} role="radio" aria-checked={cycle === v} onClick={() => setCycle(v)}
-              className={cn("rounded-md px-4 py-1.5 text-sm font-medium", cycle === v ? "bg-primary text-primary-foreground" : "text-muted-foreground")}>{t}</button>
-          ))}
-        </div>
-      </div>
-      <div className="mt-8 grid gap-5 md:grid-cols-3">
-        {PLANS.map((plan) => (
-          <Card key={plan.tier} className={cn("flex flex-col p-6", plan.highlight && "border-primary shadow-lg ring-1 ring-primary")}>
-            {plan.highlight && <span className="mb-2 w-fit rounded-full bg-primary px-2.5 py-0.5 text-xs font-semibold text-primary-foreground">הכי פופולרי</span>}
-            <h2 className="text-xl font-bold">{plan.name}</h2>
-            <p className="mt-1 text-sm text-muted-foreground">{plan.tagline}</p>
-            <p className="mt-4">
-              <span className="text-4xl font-extrabold">₪{plan.price[cycle]}</span>
-              <span className="text-muted-foreground"> / {cycle === "monthly" ? "חודש" : "שנה"}</span>
-            </p>
-            <ul className="my-6 flex-1 space-y-2">
-              {plan.features.map((f) => <li key={f} className="flex gap-2 text-sm"><Check className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" aria-hidden />{f}</li>)}
-            </ul>
-            {action(plan)}
-          </Card>
-        ))}
-      </div>
-      <p className="mt-6 text-center text-xs text-muted-foreground">
-        המחירים כוללים מע"מ. אפשר לבטל בכל עת, והמנוי יישאר פעיל עד סוף תקופת החיוב.
-        התשלום מאובטח ומתבצע אצל Paddle, ספק התשלומים שלנו. פרטי הכרטיס לא עוברים דרכנו ולא נשמרים אצלנו.
-      </p>
+  const toggle = (
+    <div className="inline-flex rounded-full border-2 border-white/80 p-1" role="radiogroup" aria-label="מחזור חיוב">
+      {[["monthly", "חודשי"], ["yearly", "שנתי · חודשיים מתנה"]].map(([v, t]) => (
+        <button key={v} role="radio" aria-checked={cycle === v} onClick={() => setCycle(v)}
+          className={cn("rounded-full px-4 py-1.5 text-sm font-semibold transition-colors",
+            cycle === v ? "bg-riso-yellow text-ink" : "text-white/85 hover:text-white")}>{t}</button>
+      ))}
     </div>
+  );
+
+  return (
+    <>
+      <PageHeader tone="blue" title="תוכניות ומחירים"
+        text="הרשת, ההודעות והפרויקטים חינמיים לגמרי. מנוי פותח קורסים מתקדמים ואת האפשרות ללמד."
+        actions={toggle} />
+      <div className="page">
+        <div className="grid items-start gap-6 md:grid-cols-3">
+          {PLANS.map((plan) => {
+            const hot = plan.highlight;
+            return (
+              <section key={plan.tier} aria-labelledby={`plan-${plan.tier}`}
+                className={cn("relative flex h-full flex-col rounded-2xl border-2 border-ink p-6",
+                  hot ? "grain bg-ink text-white shadow-[6px_6px_0_0_#FF4F81] md:-translate-y-3" : "bg-card")}>
+                {hot && <span className="tape absolute -top-3 left-6 rotate-[-4deg] bg-riso-yellow px-3 py-1 text-xs font-bold text-ink">הכי פופולרי</span>}
+                <h2 id={`plan-${plan.tier}`} className={cn("font-display text-4xl font-bold leading-none", hot ? "text-riso-yellow" : "text-riso-blue")}>{plan.name}</h2>
+                <p className={cn("mt-2 text-sm", hot ? "text-white/75" : "text-muted-foreground")}>{plan.tagline}</p>
+                <p className="mt-5 flex items-baseline gap-1">
+                  <span className="font-display text-6xl font-bold leading-none">₪{plan.price[cycle]}</span>
+                  <span className={hot ? "text-white/70" : "text-muted-foreground"}>/ {cycle === "monthly" ? "חודש" : "שנה"}</span>
+                </p>
+                <ul className="my-6 flex-1 space-y-2.5">
+                  {plan.features.map((f) => (
+                    <li key={f} className="flex gap-2 text-sm">
+                      <Check className={cn("mt-0.5 h-4 w-4 shrink-0", hot ? "text-riso-yellow" : "text-riso-pink")} aria-hidden />{f}
+                    </li>
+                  ))}
+                </ul>
+                <div className={hot ? "[&_button]:bg-riso-yellow [&_button]:text-ink [&_a]:bg-riso-yellow [&_a]:text-ink" : ""}>{action(plan)}</div>
+              </section>
+            );
+          })}
+        </div>
+        <p className="mx-auto mt-8 max-w-2xl text-center text-xs leading-relaxed text-muted-foreground">
+          המחירים כוללים מע"מ. אפשר לבטל בכל עת, והמנוי יישאר פעיל עד סוף תקופת החיוב.
+          התשלום מתבצע אצל Paddle, ספק התשלומים שלנו. פרטי הכרטיס לא עוברים דרכנו ולא נשמרים אצלנו.
+        </p>
+      </div>
+    </>
   );
 }

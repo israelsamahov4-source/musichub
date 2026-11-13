@@ -3,18 +3,17 @@
 ## מצב נוכחי (13.11.2026)
 
 - **האתר:** https://musichub-wheat.vercel.app (Vercel, מתעדכן אוטומטית מכל דחיפה ל-`main`)
-- **מסד הנתונים:** פרויקט Supabase בשם `musichub` (מזהה `jrhzkarxjqbcqokfowbv`, אזור אירופה). שלוש המיגרציות הורצו.
-- **פונקציות שרת:** `delete-account` פעילה. היא נפרסה מהעורך בדשבורד (`supabase/functions/delete-account/standalone.ts`), ובדיקת JWT כבויה כי הפונקציה מאמתת את המשתמש בעצמה.
-- **חשבון מייסד:** `israelsamahov4` הוא מנהל ומורה.
-- **עוד לא הוגדר:** שרת מיילים (SMTP) ותבניות מייל בעברית, דומיין, תשלומים, התחברות עם Google, וגיבויים (בתוכנית Pro של Supabase).
-
+- **מסד הנתונים:** פרויקט Supabase בשם `musichub` (מזהה `jrhzkarxjqbcqokfowbv`, אזור אירופה). כל חמש המיגרציות הורצו.
+- **פונקציות שרת (פעילות):** `delete-account`, `paddle-checkout`, `paddle-webhook`, `billing-portal`. כולן הועלו מהעורך בדשבורד, ובדיקת ה-JWT כבויה בכולן כי הן מאמתות את המשתמש (או את החתימה של Paddle) בעצמן.
+- **חשבון מייסד:** `israelsamahov4` הוא מנהל ומורה. עמוד הניהול: `/admin`.
+- **עוד לא הוגדר:** חשבון Paddle והמפתחות שלו (עד אז כפתורי השדרוג מציגים "בקרוב"), שרת מיילים (SMTP) ותבניות מייל בעברית, דומיין, התחברות עם Google, וגיבויים (בתוכנית Pro של Supabase).
 
 גרסה ראשונה לשוק (MVP). האתר נבנה מחדש על התשתית שלכם, בלי תלות ב-Base44:
 
 - **אתר:** React + Vite + Tailwind, בעברית ומימין לשמאל, מותאם לנייד.
 - **מסד נתונים, התחברות, קבצים והודעות בזמן אמת:** [Supabase](https://supabase.com).
 - **אחסון האתר:** [Vercel](https://vercel.com).
-- **תשלומים (כבויים כברירת מחדל):** Stripe, דרך פונקציות שרת של Supabase.
+- **תשלומים (נדלקים כשמגדירים מפתח):** [Paddle](https://www.paddle.com), שמשמשת "מוכר רשמי" (Merchant of Record): היא גובה, מנפיקה חשבוניות ומטפלת במע"מ, ותומכת בעסקים ישראליים.
 
 ## מה יש בגרסה הזו
 
@@ -27,7 +26,9 @@
 | הודעות | שיחות פרטיות בזמן אמת עם מונה הודעות שלא נקראו |
 | פרויקטים משותפים | פתיחת פרויקט, בקשות הצטרפות והזמנות, אישור חברים, לוח משימות |
 | קורסים | קטלוג, הרשמה, שיעורי וידאו, מעקב התקדמות, עורך קורסים למורים, קורסי Pro |
-| בטיחות | חסימת משתמשים, דיווח על תוכן, מגבלות קצב נגד ספאם, מחיקת חשבון |
+| בטיחות ופרטיות | חסימת משתמשים, דיווח על תוכן, מגבלות קצב נגד ספאם, אימות דו-שלבי, הורדת כל המידע האישי, מחיקת חשבון |
+| ניהול | עמוד מנהל: נתונים, טיפול בדיווחים (הסרת תוכן), חיפוש משתמשים, השעיה והפיכה למורה |
+| קורות חיים מוזיקליים | ניסיון, השכלה, תיק עבודות, כישורים ושפות, עם בחירה מי רואה אותם |
 | משפטי | טיוטות של תנאי שימוש, מדיניות פרטיות והצהרת נגישות (צריך להשלים ולהעביר לעורך דין) |
 
 ## אבטחה: מה מוגן ואיך
@@ -42,10 +43,13 @@
 - קישורים מסוג `javascript:` נחסמים בשרת ובאתר (הגנה מפני XSS).
 - וידאו של שיעור נעול לא נשלח למי שלא נרשם לקורס.
 - מגבלות קצב: למשל עד 20 פוסטים בשעה, 30 הודעות בדקה, ו-30 שיחות חדשות ביום.
-- התשלומים מאומתים בחתימה של Stripe. בקשה מזויפת נדחית.
+- מי שלא מחובר רואה רק שם, שם משתמש, תמונה ותחומים. ביוגרפיה, מיקום, עוקבים וקורות חיים גלויים רק למשתמשים רשומים (וקורות חיים לפי ההגדרה של כל משתמש).
+- אימות דו-שלבי (קוד מאפליקציה) נאכף במסד הנתונים עצמו: מי שהפעיל אותו ונכנס רק עם סיסמה לא יכול לקרוא או לכתוב כלום.
+- משתמש מושעה לא יכול לפרסם, להגיב, לשלוח הודעות או לפתוח פרויקטים.
+- פרטי כרטיס האשראי לא עוברים באתר בכלל: התשלום מתבצע בחלון של Paddle. הודעות מ-Paddle מאומתות בחתימה, ובקשה מזויפת או ישנה (שידור חוזר) נדחית.
 - כותרות אבטחה באתר (CSP, HSTS, חסימת הטמעה בתוך iframe) מוגדרות בקובץ `vercel.json`.
 
-יש **78 בדיקות אבטחה אוטומטיות** שמנסות לבצע את ההתקפות האלה ומוודאות שהן נכשלות (`supabase/tests/rls.test.mjs`).
+יש **102 בדיקות אבטחה אוטומטיות** שמנסות לבצע את ההתקפות האלה ומוודאות שהן נכשלות (`supabase/tests/rls.test.mjs`).
 
 ---
 
@@ -86,32 +90,21 @@ npm run dev                     # האתר יעלה ב-http://localhost:5173
 3. ב-**Environment Variables** מוסיפים את `VITE_SUPABASE_URL` ואת `VITE_SUPABASE_ANON_KEY`.
 4. לוחצים **Deploy**, ואז מחברים דומיין ב-**Settings → Domains**. חשוב לעדכן את הדומיין גם ב-Site URL של Supabase (שלב 2).
 
-### 5. תשלומים (כשתהיו מוכנים)
+### 5. תשלומים עם Paddle
 
-> **חשוב:** Stripe לא תמכה בעבר בעסקים שרשומים בישראל, ובאוקטובר 2026 פורסם שהיא מתכננת להתרחב לישראל. לפני שמתחילים, בדקו ב-stripe.com/global אם אפשר לפתוח חשבון לעסק ישראלי. אם לא, יש שתי חלופות: לעבוד דרך חברה בחו"ל, או להחליף ספק. כל קוד התשלומים נמצא בתיקייה `supabase/functions`, כך שהחלפה ל-Paddle או לסולק ישראלי (Grow, Cardcom, PayPlus) נוגעת רק בה.
+הפונקציות כבר באוויר. נשאר לחבר חשבון. מתחילים בסביבת ניסוי (Sandbox), שבה משלמים בכרטיסי בדיקה ולא מחויבים באמת.
 
-ההמלצה: **להשיק קודם בחינם**, לצבור משתמשים ותוכן, ורק אז להפעיל מנויים. עד אז כפתורי השדרוג מציגים "בקרוב".
-
-כשמפעילים:
-
-1. ב-Stripe יוצרים שני מוצרים, Pro ו-Premium, ולכל אחד מחיר חודשי ומחיר שנתי. סך הכל 4 מזהי מחיר (Price IDs).
-2. מתקינים את Supabase CLI ומריצים:
-   ```bash
-   supabase login
-   supabase link --project-ref <מזהה-הפרויקט>
-   supabase secrets set SITE_URL=https://musichub.co.il STRIPE_SECRET_KEY=sk_live_... \
-     STRIPE_PRICE_PRO_MONTHLY=price_... STRIPE_PRICE_PRO_YEARLY=price_... \
-     STRIPE_PRICE_PREMIUM_MONTHLY=price_... STRIPE_PRICE_PREMIUM_YEARLY=price_...
-   supabase functions deploy create-checkout
-   supabase functions deploy billing-portal
-   supabase functions deploy delete-account
-   supabase functions deploy stripe-webhook --no-verify-jwt
-   ```
-3. ב-Stripe נכנסים ל-**Developers → Webhooks → Add endpoint**. בכתובת שמים `https://<project>.supabase.co/functions/v1/stripe-webhook`, ומסמנים את האירועים `checkout.session.completed`, `customer.subscription.created`, `customer.subscription.updated`, `customer.subscription.deleted` ו-`invoice.payment_failed`. את ה-Signing secret שומרים: `supabase secrets set STRIPE_WEBHOOK_SECRET=whsec_...`.
-4. מפעילים את **Customer portal** בהגדרות של Stripe.
-5. ב-Vercel מגדירים `VITE_PAYMENTS_ENABLED=true` ומעלים מחדש.
-
-> הפונקציה `delete-account` (מחיקת חשבון) עובדת גם בלי Stripe, וצריך להעלות אותה כבר בהשקה הראשונה.
+1. פותחים חשבון ב-https://sandbox-vendors.paddle.com.
+2. **Catalog → Products:** יוצרים שני מוצרים, Pro ו-Premium. לכל אחד מוסיפים שני מחירים בשקלים (ILS): חודשי (₪29 / ₪59) ושנתי (₪290 / ₪590), עם חיוב חוזר. מעתיקים את 4 מזהי המחיר (מתחילים ב-`pri_`).
+3. **Developer tools → Authentication:** יוצרים API key, ובנפרד Client-side token (מתחיל ב-`test_`).
+4. **Developer tools → Notifications → New destination:** כתובת `https://jrhzkarxjqbcqokfowbv.supabase.co/functions/v1/paddle-webhook`, ומסמנים את כל האירועים שמתחילים ב-`subscription.`. מעתיקים את ה-Secret key.
+5. **Checkout → Website approval:** מוסיפים את כתובת האתר.
+6. ב-Supabase: **Edge Functions → Secrets**, מוסיפים:
+   `PADDLE_API_KEY`, `PADDLE_WEBHOOK_SECRET`, `PADDLE_ENV=sandbox`, `SITE_URL=https://musichub-wheat.vercel.app`,
+   `PADDLE_PRICE_PRO_MONTHLY`, `PADDLE_PRICE_PRO_YEARLY`, `PADDLE_PRICE_PREMIUM_MONTHLY`, `PADDLE_PRICE_PREMIUM_YEARLY`.
+7. ב-Vercel: **Settings → Environment Variables**, מוסיפים `VITE_PADDLE_CLIENT_TOKEN` (ה-Client-side token) ו-`VITE_PADDLE_ENV=sandbox`, ומעלים מחדש (Redeploy). כפתורי השדרוג נדלקים.
+8. בודקים תשלום עם כרטיס הבדיקה של Paddle (`4242 4242 4242 4242`). אחרי כמה שניות התוכנית בהגדרות מתעדכנת.
+9. כשהכול עובד ואחרי שהחשבון האמיתי של Paddle אושר: חוזרים על שלבים 2 עד 7 ב-https://vendors.paddle.com, עם `PADDLE_ENV=production` ו-`VITE_PADDLE_ENV=production`.
 
 ---
 
