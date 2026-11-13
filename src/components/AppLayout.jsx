@@ -73,7 +73,7 @@ function CountBadge({ count, className }) {
 function Logo() {
   return (
     <Link to="/" className="group flex shrink-0 items-baseline gap-2" aria-label={`${APP_NAME} — דף הבית`}>
-      <span className="riso font-display text-[2.1rem] font-bold leading-none tracking-tight">{APP_NAME}</span>
+      <span className="riso font-display text-[2.5rem] font-bold leading-none tracking-tight">{APP_NAME}</span>
       <span className="hidden text-xs text-muted-foreground lg:inline">{APP_TAGLINE}</span>
     </Link>
   );

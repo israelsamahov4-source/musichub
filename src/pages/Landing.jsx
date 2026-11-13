@@ -69,17 +69,17 @@ export default function Landing() {
           <div className="relative mx-auto w-full max-w-sm md:-rotate-2" aria-label="מה עושים כאן">
             <span className="tape -top-3 start-10 -rotate-6" aria-hidden />
             <span className="tape -bottom-3 end-8 rotate-3" aria-hidden />
-            <div className="bg-white px-7 pb-8 pt-7 shadow-[0_18px_40px_-18px_rgba(30,27,58,0.45)] [background-image:repeating-linear-gradient(to_bottom,transparent_0,transparent_43px,#E6E8F2_43px,#E6E8F2_44px)] [background-position:0_62px]">
-              <p className="font-display text-4xl font-bold text-riso-pink">סטליסט</p>
+            <div className="bg-white px-7 pb-8 pt-7 shadow-[0_18px_40px_-18px_rgba(30,27,58,0.45)]">
+              <p className="font-display text-5xl font-bold text-riso-pink">סטליסט</p>
               <ol className="mt-3">
                 {SETLIST.map((s, i) => (
-                  <li key={s.song} className="flex h-11 items-baseline gap-3 font-display text-[1.6rem] leading-[2.75rem] text-ink">
+                  <li key={s.song} className="flex h-12 items-end gap-3 border-b border-[#E3E6F2] pb-1 font-display text-[2.1rem] leading-none text-ink">
                     <span className="w-5 text-riso-blue">{i + 1}</span>
                     <span className="flex-1 truncate">{s.song}</span>
-                    <span className="text-lg text-ink/45">{s.note}</span>
+                    <span className="text-xl text-ink/45">{s.note}</span>
                   </li>
                 ))}
-                <li className="flex h-11 items-baseline gap-3 font-display text-[1.6rem] leading-[2.75rem] text-ink/35">
+                <li className="flex h-12 items-end gap-3 border-b border-[#E3E6F2] pb-1 font-display text-[2.1rem] leading-none text-ink/35">
                   <span className="w-5" />
                   <span className="line-through decoration-riso-pink decoration-2">לחפש בפייסבוק</span>
                 </li>
