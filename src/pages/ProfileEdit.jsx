@@ -19,12 +19,24 @@ export default function ProfileEdit() {
   const [form, setForm] = useState(null);
   const [cv, setCv] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [cvFailed, setCvFailed] = useState(false);
   useEffect(() => { if (profile && !form) setForm(profileToForm(profile)); }, [profile, form]);
   useEffect(() => {
-    if (!user || cv) return;
-    fetchDetails(user.id).then((d) => setCv({ ...EMPTY_CV, ...(d || {}), years_experience: d?.years_experience ?? "" }))
-      .catch(() => setCv(EMPTY_CV));
-  }, [user, cv]);
+    if (!user || cv || cvFailed) return;
+    fetchDetails(user.id).then((d) => {
+      if (!d) throw new Error("not loaded");
+      setCv({ ...EMPTY_CV, ...d, years_experience: d.years_experience ?? "" });
+    }).catch(() => setCvFailed(true));
+  }, [user, cv, cvFailed]);
+  if (cvFailed) {
+    return (
+      <div className="page-narrow py-16 text-center">
+        <h1 className="font-display text-4xl font-bold text-ink">לא הצלחנו לטעון את הפרופיל לעריכה</h1>
+        <p className="mt-2 text-muted-foreground">כדי לא למחוק בטעות את קורות החיים, העריכה נעצרה. נסו שוב.</p>
+        <Button className="mt-5" onClick={() => setCvFailed(false)}>לנסות שוב</Button>
+      </div>
+    );
+  }
   if (!form || !cv) return <PageLoader />;
 
   const save = async (e) => {

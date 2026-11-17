@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Flag, Handshake, Heart, Link2, MessageCircle, MoreHorizontal, Trash2 } from "lucide-react";
@@ -17,6 +17,17 @@ import { useAuth } from "@/auth/AuthProvider";
 import { label } from "@/lib/config";
 import { cn, errorMessage, timeAgo, textDir } from "@/lib/utils";
 
+/** Applies a like / unlike to one post inside a cached list (plain array or infinite-query pages). */
+function patchPost(old, id, liked) {
+  const fix = (p) => (p?.id === id && p.liked_by_me !== liked
+    ? { ...p, liked_by_me: liked, like_count: Math.max(0, (p.like_count ?? 0) + (liked ? 1 : -1)) } : p);
+  if (!old) return old;
+  if (Array.isArray(old)) return old.map(fix);
+  if (Array.isArray(old.pages)) return { ...old, pages: old.pages.map((pg) => (Array.isArray(pg) ? pg.map(fix) : pg)) };
+  if (old.id === id) return fix(old);
+  return old;
+}
+
 export default function PostCard({ post, defaultShowComments = false, onDeleted }) {
   const { user } = useAuth();
   const qc = useQueryClient();
@@ -25,15 +36,21 @@ export default function PostCard({ post, defaultShowComments = false, onDeleted 
   const [reportOpen, setReportOpen] = useState(false);
   const [liked, setLiked] = useState(post.liked_by_me);
   const [likeCount, setLikeCount] = useState(post.like_count);
+  // A list re-created from the cache brings fresh values: follow them.
+  useEffect(() => { setLiked(post.liked_by_me); setLikeCount(post.like_count); }, [post.liked_by_me, post.like_count]);
   const mine = user?.id === post.author_id;
 
   const like = useMutation({
     mutationFn: async (next) => {
-      if (next) unwrap(await supabase.from("post_likes").insert({ post_id: post.id, user_id: user.id }));
+      if (next) unwrap(await supabase.from("post_likes").upsert({ post_id: post.id, user_id: user.id }, { onConflict: "post_id,user_id", ignoreDuplicates: true }));
       else unwrap(await supabase.from("post_likes").delete().eq("post_id", post.id).eq("user_id", user.id));
     },
     onMutate: (next) => { setLiked(next); setLikeCount((c) => c + (next ? 1 : -1)); },
     onError: (e, next) => { setLiked(!next); setLikeCount((c) => c + (next ? -1 : 1)); toast.error(errorMessage(e)); },
+    onSuccess: (_, next) => {
+      // Update this post in every cached list (feed tabs, profile, post page) so it doesn't flip back.
+      qc.setQueriesData({ queryKey: ["posts"] }, (old) => patchPost(old, post.id, next));
+    },
   });
 
   const remove = useMutation({
@@ -45,12 +62,17 @@ export default function PostCard({ post, defaultShowComments = false, onDeleted 
   const startChat = async () => {
     const { data, error } = await supabase.rpc("start_conversation", { other_user: post.author_id });
     if (error) return toast.error(errorMessage(error));
+    await qc.invalidateQueries({ queryKey: ["conversations"] });
     navigate(`/messages/${data}`);
   };
 
   const copyLink = async () => {
-    await navigator.clipboard?.writeText(`${window.location.origin}/posts/${post.id}`);
-    toast.success("הקישור הועתק");
+    try {
+      await navigator.clipboard.writeText(`${window.location.origin}/posts/${post.id}`);
+      toast.success("הקישור הועתק");
+    } catch {
+      toast.error("לא הצלחנו להעתיק. אפשר להעתיק את הכתובת מהדפדפן");
+    }
   };
 
   const a = post.author || {};

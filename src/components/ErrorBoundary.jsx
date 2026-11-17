@@ -12,7 +12,7 @@ export default class ErrorBoundary extends Component {
   render() {
     if (!this.state.error) return this.props.children;
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-4 p-6 text-center">
+      <div className={this.props.inline ? "flex flex-col items-center gap-4 px-6 py-20 text-center" : "flex min-h-screen flex-col items-center justify-center gap-4 p-6 text-center"}>
         <h1 className="text-xl font-bold">אופס, משהו השתבש</h1>
         <p className="text-muted-foreground">אפשר לרענן את הדף ולנסות שוב.</p>
         <Button onClick={() => window.location.reload()}>רענון</Button>

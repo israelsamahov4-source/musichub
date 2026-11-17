@@ -13,6 +13,7 @@ import { useAuth } from "@/auth/AuthProvider";
 import { APP_NAME, APP_TAGLINE } from "@/lib/config";
 import { cn } from "@/lib/utils";
 import { useAuthHref } from "@/auth/returnTo";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 const NAV = [
   { to: "/feed", label: "פיד", icon: Home, auth: true },
@@ -167,7 +168,7 @@ export default function AppLayout() {
         </div>
       )}
       <main id="main" tabIndex={-1} className={cn("flex-1 outline-none", user && "pb-20 md:pb-0")}>
-        <Outlet />
+        <ErrorBoundary key={location.pathname} inline><Outlet /></ErrorBoundary>
       </main>
 
       <footer className={cn("border-t-2 border-ink bg-white", user && "mb-16 md:mb-0")}>

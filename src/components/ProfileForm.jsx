@@ -32,7 +32,7 @@ export function profileToForm(p) {
     location: p.location || "",
     user_type: p.user_type || "musician",
     instruments: p.instruments || [],
-    roles: (p.musical_roles || []).map((r) => r.role),
+    roles: (Array.isArray(p.musical_roles) ? p.musical_roles : []).map((r) => r?.role).filter((r) => typeof r === "string"),
     level: p.musical_roles?.[0]?.level || "intermediate",
     genres: p.genres || [],
     looking_for: p.looking_for || [],

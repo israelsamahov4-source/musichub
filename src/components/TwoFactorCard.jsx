@@ -57,6 +57,7 @@ export default function TwoFactorCard() {
     await supabase.auth.refreshSession();
     toast.success("האימות הדו-שלבי כובה");
     qc.invalidateQueries({ queryKey: ["mfa-factors"] });
+    qc.invalidateQueries({ queryKey: ["mfa-level"] });
   };
 
   return (

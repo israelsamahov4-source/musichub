@@ -11,7 +11,10 @@ function loadPaddle() {
       const s = document.createElement("script");
       s.src = "https://cdn.paddle.com/paddle/v2/paddle.js";
       s.async = true;
+      const timer = setTimeout(() => { loading = null; reject(new Error("failed to fetch payment form")); }, 15_000);
       s.onload = () => {
+        clearTimeout(timer);
+        if (!window.Paddle) { loading = null; reject(new Error("failed to fetch payment form")); return; }
         if (PADDLE_ENV === "sandbox") window.Paddle.Environment.set("sandbox");
         window.Paddle.Initialize({
           token: PADDLE_CLIENT_TOKEN,
@@ -19,7 +22,7 @@ function loadPaddle() {
         });
         resolve(window.Paddle);
       };
-      s.onerror = () => { loading = null; reject(new Error("failed to fetch payment form")); };
+      s.onerror = () => { clearTimeout(timer); loading = null; reject(new Error("failed to fetch payment form")); };
       document.head.appendChild(s);
     });
   }

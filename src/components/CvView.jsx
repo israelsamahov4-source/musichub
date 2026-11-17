@@ -3,6 +3,8 @@ import MediaView from "@/components/MediaView";
 import { label } from "@/lib/config";
 import { safeUrl, videoEmbedUrl, textDir } from "@/lib/utils";
 
+const hostOf = (url) => { try { return new URL(url).hostname; } catch { return url || "קישור"; } };
+
 const years = (a, b) => (a ? `${a}–${b || "היום"}` : b ? `עד ${b}` : "");
 
 export function OpenToBadges({ openTo }) {
@@ -81,7 +83,7 @@ export default function CvView({ cv, compact = false, hiddenText }) {
                 {videoEmbedUrl(p.url) ? <MediaView url={p.url} type="video" title={p.title} /> : (
                   <a href={safeUrl(p.url)} target="_blank" rel="noopener noreferrer nofollow"
                     className="flex items-center gap-2 rounded-xl border border-ink/10 bg-muted/40 p-4 font-medium hover:bg-muted">
-                    <ExternalLink className="h-4 w-4 text-primary" aria-hidden />{p.title || new URL(p.url).hostname}
+                    <ExternalLink className="h-4 w-4 text-primary" aria-hidden />{p.title || hostOf(p.url)}
                   </a>
                 )}
                 {videoEmbedUrl(p.url) && p.title && <figcaption className="text-sm font-medium">{p.title}</figcaption>}

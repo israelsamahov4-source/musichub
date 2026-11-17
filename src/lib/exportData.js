@@ -1,29 +1,57 @@
-import { supabase } from "@/lib/supabase";
+import { supabase, unwrap } from "@/lib/supabase";
 import { MEMBER_PROFILE_COLS } from "@/api/profiles";
 
-/** Collects everything the database stores about the signed-in user and downloads it as JSON. */
+const PAGE = 1000;
+
+/** Every row of a query, page by page (the server returns at most 1000 rows per request). Throws on any error. */
+async function all(build) {
+  const rows = [];
+  for (let from = 0; ; from += PAGE) {
+    const page = unwrap(await build().range(from, from + PAGE - 1));
+    rows.push(...page);
+    if (page.length < PAGE) return rows;
+  }
+}
+
+/**
+ * Collects everything the database stores about the signed-in user and downloads it as JSON.
+ * If any part fails the download is cancelled (with an error), so the user never gets a silently partial file.
+ */
 export async function downloadMyData(userId, email) {
-  const q = (table, col = "user_id", select = "*") => supabase.from(table).select(select).eq(col, userId).then((r) => r.data ?? []);
-  const [profile, cv, subscription, posts, comments, likes, following, followers, notifications, memberships, tasks,
-    courses, enrollments, progress, blocks, reports, conversations] = await Promise.all([
-    supabase.from("profiles").select(MEMBER_PROFILE_COLS).eq("id", userId).single().then((r) => r.data),
-    supabase.from("profile_details").select("*").eq("user_id", userId).maybeSingle().then((r) => r.data),
-    supabase.from("subscriptions").select("tier, status, billing_cycle, current_period_end, provider").eq("user_id", userId).maybeSingle().then((r) => r.data),
-    q("posts", "author_id"), q("post_comments", "author_id"), q("post_likes"),
-    q("follows", "follower_id"), q("follows", "following_id"), q("notifications"),
-    q("collab_members"), q("collab_tasks", "created_by"), q("courses", "instructor_id"),
-    q("enrollments"), q("lesson_progress"), q("blocks", "blocker_id"), q("reports", "reporter_id"),
-    supabase.rpc("my_conversations").then((r) => r.data ?? []),
+  const mine = (table, col = "user_id", select = "*") => all(() => supabase.from(table).select(select).eq(col, userId).order("created_at"));
+  const [profile, cv, subscription, posts, comments, likes, following, followers, notifications, memberships,
+    projectsOwned, tasksCreated, tasksAssigned, courses, enrollments, progress, blocks, reports, conversations] = await Promise.all([
+    supabase.from("profiles").select(MEMBER_PROFILE_COLS).eq("id", userId).single().then(unwrap),
+    supabase.from("profile_details").select("*").eq("user_id", userId).maybeSingle().then(unwrap),
+    supabase.from("subscriptions").select("tier, status, billing_cycle, current_period_end, provider").eq("user_id", userId).maybeSingle().then(unwrap),
+    mine("posts", "author_id"), mine("post_comments", "author_id"), mine("post_likes"),
+    mine("follows", "follower_id"), mine("follows", "following_id"), mine("notifications"),
+    mine("collab_members"), mine("collab_projects", "owner_id"), mine("collab_tasks", "created_by"), mine("collab_tasks", "assignee_id"),
+    mine("courses", "instructor_id"), mine("enrollments"),
+    all(() => supabase.from("lesson_progress").select("*").eq("user_id", userId).order("completed_at")),
+    mine("blocks", "blocker_id"), mine("reports", "reporter_id"),
+    supabase.rpc("my_conversations").then(unwrap),
   ]);
-  const ids = conversations.map((c) => c.conversation_id);
-  const messages = ids.length
-    ? (await supabase.from("messages").select("conversation_id, sender_id, content, created_at").in("conversation_id", ids).order("created_at")).data ?? []
+  if (!profile) throw new Error("not loaded");
+
+  const courseIds = courses.map((c) => c.id);
+  const lessons = courseIds.length
+    ? await all(() => supabase.from("lessons").select("*").in("course_id", courseIds).order("position"))
     : [];
+  // One request per conversation: keeps URLs short and each conversation complete.
+  const threads = [];
+  for (const c of conversations ?? []) {
+    const messages = await all(() => supabase.from("messages").select("sender_id, content, created_at")
+      .eq("conversation_id", c.conversation_id).order("created_at"));
+    threads.push({ ...c, messages });
+  }
+
   const data = {
     exported_at: new Date().toISOString(), account: { id: userId, email }, profile, cv, subscription,
-    posts, comments, likes, following, followers, notifications, project_memberships: memberships, tasks_created: tasks,
-    courses_taught: courses, enrollments, lesson_progress: progress, blocked_users: blocks, reports_sent: reports,
-    conversations: conversations.map((c) => ({ ...c, messages: messages.filter((m) => m.conversation_id === c.conversation_id) })),
+    posts, comments, likes, following, followers, notifications,
+    projects_owned: projectsOwned, project_memberships: memberships, tasks_created: tasksCreated, tasks_assigned: tasksAssigned,
+    courses_taught: courses, lessons_taught: lessons, enrollments, lesson_progress: progress,
+    blocked_users: blocks, reports_sent: reports, conversations: threads,
   };
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
   const url = URL.createObjectURL(blob);

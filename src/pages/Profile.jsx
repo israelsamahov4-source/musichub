@@ -25,6 +25,7 @@ import { label } from "@/lib/config";
 import { errorMessage, formatDate, safeUrl, textDir } from "@/lib/utils";
 import { useAuthHref } from "@/auth/returnTo";
 import { usePageTitle } from "@/lib/usePageTitle";
+import LoadError from "@/components/LoadError";
 
 function Stat({ value, text }) {
   return (
@@ -71,7 +72,7 @@ export default function Profile() {
   const qc = useQueryClient();
   const [reportOpen, setReportOpen] = useState(false);
 
-  const { data: p, isLoading } = useQuery({
+  const { data: p, isLoading, isError, refetch } = useQuery({
     queryKey: ["profile", "by-username", username, Boolean(user)],
     queryFn: async () => unwrap(await supabase.from("profiles").select(user ? MEMBER_PROFILE_COLS : PUBLIC_PROFILE_COLS)
       .eq("username", username.toLowerCase()).maybeSingle()),
@@ -115,16 +116,18 @@ export default function Profile() {
   });
 
   if (isLoading) return <PageLoader />;
+  if (isError) return <div className="page"><LoadError onRetry={refetch} /></div>;
   if (!p) return <div className="page"><EmptyState title="המשתמש לא נמצא" text="אולי שם המשתמש השתנה?" /></div>;
 
   const mine = user?.id === p.id;
-  const roles = (p.musical_roles || []).map((r) => r.role);
+  const roles = (Array.isArray(p.musical_roles) ? p.musical_roles : []).map((r) => r?.role).filter((r) => typeof r === "string");
   const level = p.musical_roles?.[0]?.level;
   const links = LINK_FIELDS.map((l) => ({ ...l, url: safeUrl(p.links?.[l.key]) })).filter((l) => l.url);
 
   const message = async () => {
     const { data, error } = await supabase.rpc("start_conversation", { other_user: p.id });
     if (error) return toast.error(errorMessage(error));
+    await qc.invalidateQueries({ queryKey: ["conversations"] });
     navigate(`/messages/${data}`);
   };
   const block = async () => {

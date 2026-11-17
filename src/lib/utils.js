@@ -71,6 +71,7 @@ const ERROR_MESSAGES = [
   [/row-level security|permission denied/i, "אין הרשאה לבצע את הפעולה"],
   [/slow down/i, "רגע, אתם מהירים מדי. נסו שוב בעוד דקה"],
   [/check constraint/i, "חלק מהנתונים אינם תקינים"],
+  [/failed to fetch payment form/i, "טופס התשלום לא נטען. אם יש חוסם פרסומות, כבו אותו לאתר הזה ונסו שוב"],
   [/failed to fetch|network/i, "בעיית חיבור לאינטרנט. נסו שוב"],
   [/payload too large|exceeded the maximum allowed size/i, "הקובץ גדול מדי"],
   [/mime type/i, "סוג הקובץ אינו נתמך"],

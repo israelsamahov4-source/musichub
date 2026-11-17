@@ -15,6 +15,7 @@ import { label } from "@/lib/config";
 import { errorMessage, safeUrl } from "@/lib/utils";
 import { useAuthHref } from "@/auth/returnTo";
 import { usePageTitle } from "@/lib/usePageTitle";
+import LoadError from "@/components/LoadError";
 
 export default function CourseView() {
   const signupHref = useAuthHref("/signup");
@@ -22,7 +23,7 @@ export default function CourseView() {
   const { user, profile } = useAuth();
   const navigate = useNavigate();
   const qc = useQueryClient();
-  const { data: c, isLoading } = useQuery({ queryKey: ["course", id], queryFn: () => fetchCourse(id) });
+  const { data: c, isLoading, isError, refetch } = useQuery({ queryKey: ["course", id], queryFn: () => fetchCourse(id) });
   usePageTitle(c?.title);
   const { data: prog } = useQuery({ queryKey: ["course-progress", id, user?.id], queryFn: () => fetchProgress(id, user?.id) });
 
@@ -38,6 +39,7 @@ export default function CourseView() {
   });
 
   if (isLoading) return <PageLoader />;
+  if (isError) return <div className="page"><LoadError onRetry={refetch} /></div>;
   if (!c) return <div className="page"><EmptyState title="הקורס לא נמצא" /></div>;
 
   const mine = user?.id === c.instructor_id;

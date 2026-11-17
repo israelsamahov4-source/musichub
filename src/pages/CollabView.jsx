@@ -23,6 +23,7 @@ import { PROJECT_STATUS, TASK_STATUS, label } from "@/lib/config";
 import { cleanSearch, cn, errorMessage, formatDate, textDir } from "@/lib/utils";
 import { useAuthHref } from "@/auth/returnTo";
 import { usePageTitle } from "@/lib/usePageTitle";
+import LoadError from "@/components/LoadError";
 
 const PERSON = "id, username, full_name, avatar_url";
 
@@ -158,7 +159,7 @@ export default function CollabView() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const qc = useQueryClient();
-  const { data: p, isLoading } = useProject(id);
+  const { data: p, isLoading, isError, refetch } = useProject(id);
   usePageTitle(p?.title);
   const [editOpen, setEditOpen] = useState(false);
   const [edit, setEdit] = useState(null);
@@ -198,6 +199,7 @@ export default function CollabView() {
   });
 
   if (isLoading) return <PageLoader />;
+  if (isError) return <div className="page"><LoadError onRetry={refetch} /></div>;
   if (!p) return <div className="page"><EmptyState title="הפרויקט לא נמצא" text="ייתכן שהוא נמחק או שהוא פרטי." /></div>;
 
   const me = p.members.find((m) => m.user_id === user?.id);
@@ -210,6 +212,7 @@ export default function CollabView() {
   const messageOwner = async () => {
     const { data, error } = await supabase.rpc("start_conversation", { other_user: p.owner_id });
     if (error) return onErr(error);
+    await qc.invalidateQueries({ queryKey: ["conversations"] });
     navigate(`/messages/${data}`);
   };
 

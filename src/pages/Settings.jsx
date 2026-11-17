@@ -20,7 +20,7 @@ import { useAuth } from "@/auth/AuthProvider";
 import { PAYMENTS_ENABLED } from "@/lib/config";
 import { errorMessage, formatDate } from "@/lib/utils";
 
-const STATUS = { active: "פעיל", trialing: "תקופת ניסיון", past_due: "תשלום נכשל", canceled: "בוטל", unpaid: "לא שולם", incomplete: "לא הושלם" };
+const STATUS = { active: "פעיל", trialing: "תקופת ניסיון", past_due: "תשלום נכשל", paused: "מושהה", canceled: "בוטל" };
 
 function PasswordCard() {
   const [pw, setPw] = useState("");
@@ -49,13 +49,19 @@ export default function Settings() {
   const [confirmName, setConfirmName] = useState("");
   const [deleting, setDeleting] = useState(false);
   const [exporting, setExporting] = useState(false);
-  const checkoutDone = new URLSearchParams(window.location.search).get("checkout") === "success";
+  // Read once, then remove ?checkout=success from the address so a reload doesn't repeat the message.
+  const [checkoutDone] = useState(() => new URLSearchParams(window.location.search).get("checkout") === "success");
+  const [pollUntil] = useState(() => Date.now() + 90_000);
+  useEffect(() => {
+    if (checkoutDone) window.history.replaceState(null, "", window.location.pathname);
+  }, [checkoutDone]);
 
   const sub = useQuery({
     queryKey: ["subscription", user.id],
     // Right after paying, the webhook may take a few seconds: poll until the plan shows up.
-    refetchInterval: (q) => (checkoutDone && q.state.data?.tier === "free" ? 3000 : false),
-    queryFn: async () => unwrap(await supabase.from("subscriptions").select("tier, status, billing_cycle, current_period_end, cancel_at_period_end").eq("user_id", user.id).maybeSingle()),
+    // Stop after 90 seconds; if the plan still hasn't arrived something needs a human look.
+    refetchInterval: (q) => (checkoutDone && q.state.data?.tier === "free" && Date.now() < pollUntil ? 3000 : false),
+    queryFn: async () => unwrap(await supabase.from("subscriptions").select("tier, status, billing_cycle, current_period_end, cancel_at_period_end, provider_customer_id").eq("user_id", user.id).maybeSingle()),
   });
   const blocks = useQuery({
     queryKey: ["blocks", user.id],
@@ -132,6 +138,7 @@ export default function Settings() {
         <div className="flex gap-2">
           {s?.tier && s.tier !== "free" && PAYMENTS_ENABLED ? <Button variant="outline" onClick={portal}>ניהול מנוי ואמצעי תשלום</Button>
             : <Button asChild variant="outline"><Link to="/pricing">לתוכניות</Link></Button>}
+          {s?.tier === "free" && s?.provider_customer_id && PAYMENTS_ENABLED && <Button variant="ghost" onClick={portal}>חשבוניות קודמות</Button>}
         </div>
       </Card>
 

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Globe, Handshake, Lock, MapPin, Plus, Users } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -117,10 +117,11 @@ export default function Collabs() {
     },
   });
 
+  const qc = useQueryClient();
   const create = useMutation({
     mutationFn: async () =>
       unwrap(await supabase.from("collab_projects").insert({ ...draft, title: draft.title.trim(), description: draft.description.trim(), owner_id: user.id }).select("id").single()),
-    onSuccess: ({ id }) => { toast.success("הפרויקט נוצר"); setOpen(false); setDraft(EMPTY_PROJECT); navigate(`/collabs/${id}`); },
+    onSuccess: ({ id }) => { qc.invalidateQueries({ queryKey: ["projects"] }); toast.success("הפרויקט נוצר"); setOpen(false); setDraft(EMPTY_PROJECT); navigate(`/collabs/${id}`); },
     onError: (e) => toast.error(errorMessage(e)),
   });
 

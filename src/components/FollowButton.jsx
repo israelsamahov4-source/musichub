@@ -23,7 +23,12 @@ export default function FollowButton({ profileId, size = "sm" }) {
     },
     onMutate: () => qc.setQueryData(key, !following),
     onError: (e) => { qc.setQueryData(key, following); toast.error(errorMessage(e)); },
-    onSettled: () => qc.invalidateQueries({ queryKey: ["profile-stats", profileId] }),
+    onSettled: () => {
+      qc.invalidateQueries({ queryKey: ["profile-stats", profileId] });
+      qc.invalidateQueries({ queryKey: ["following-ids"] });
+      qc.invalidateQueries({ queryKey: ["suggestions"] });
+      qc.invalidateQueries({ queryKey: ["posts", "following"] });
+    },
   });
   if (!user || user.id === profileId) return null;
   return (

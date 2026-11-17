@@ -5,6 +5,8 @@ import { Input } from "@/components/ui/input";
 import Field from "@/components/Field";
 import AuthShell from "./AuthShell";
 import { supabase } from "@/lib/supabase";
+import { toast } from "sonner";
+import { errorMessage } from "@/lib/utils";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
@@ -15,8 +17,10 @@ export default function ForgotPassword() {
     e.preventDefault();
     setBusy(true);
     // Same message whether or not the address exists, so accounts can't be enumerated.
-    await supabase.auth.resetPasswordForEmail(email.trim(), { redirectTo: `${window.location.origin}/reset-password` });
+    const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), { redirectTo: `${window.location.origin}/reset-password` });
     setBusy(false);
+    // Rate limits and network problems are real errors; "no such user" is never reported by the server.
+    if (error && /rate limit|too many|failed to fetch|network/i.test(error.message)) return toast.error(errorMessage(error));
     setSent(true);
   };
 

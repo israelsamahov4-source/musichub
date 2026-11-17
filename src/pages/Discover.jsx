@@ -18,6 +18,7 @@ import { supabase, unwrap } from "@/lib/supabase";
 import { GENRES, INSTRUMENTS, LOOKING_FOR, ROLES, label } from "@/lib/config";
 import { useAuth } from "@/auth/AuthProvider";
 import { cleanSearch, textDir } from "@/lib/utils";
+import LoadError from "@/components/LoadError";
 
 const PAGE = 24;
 const EMPTY = { q: "", location: "", instruments: [], genres: [], lookingFor: [], roles: [], openOnly: false };
@@ -29,7 +30,7 @@ function useDebounced(value, ms = 350) {
 }
 
 function MusicianCard({ p }) {
-  const roles = (p.musical_roles || []).map((r) => label("roles", r.role));
+  const roles = (Array.isArray(p.musical_roles) ? p.musical_roles : []).filter((r) => typeof r?.role === "string").map((r) => label("roles", r.role));
   return (
     <Card className="flex min-w-0 flex-col p-4 transition-[transform,box-shadow] hover:-translate-y-0.5 hover:shadow-[4px_4px_0_0_#1E1B3A]">
       <div className="flex items-start gap-3">
@@ -116,6 +117,8 @@ export default function Discover() {
       <div className="mt-6">
         {query.isLoading ? (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">{Array.from({ length: 6 }, (_, i) => <Skeleton key={i} className="h-48 rounded-xl" />)}</div>
+        ) : query.isError ? (
+          <LoadError onRetry={query.refetch} />
         ) : people.length === 0 ? (
           <EmptyState icon={Users} title="לא מצאנו מוזיקאים שמתאימים לחיפוש" text="נסו להרחיב את הסינון." />
         ) : (
