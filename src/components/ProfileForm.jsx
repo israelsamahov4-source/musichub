@@ -117,7 +117,7 @@ export default function ProfileForm({ form, setForm, userId, sections = ["basics
               {form.cover_url && <Button type="button" variant="ghost" size="sm" onClick={() => setForm((f) => ({ ...f, cover_url: null }))}>הסרה</Button>}
             </div>
           </div>
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <Field id="full_name" label="שם מלא">
               <Input id="full_name" value={form.full_name} onChange={set("full_name")} maxLength={80} required />
             </Field>
@@ -168,7 +168,7 @@ export default function ProfileForm({ form, setForm, userId, sections = ["basics
       )}
 
       {show("links") && (
-        <section className="grid gap-4 sm:grid-cols-2">
+        <section className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {LINK_FIELDS.map((l) => (
             <Field key={l.key} id={`link-${l.key}`} label={l.label}>
               <Input id={`link-${l.key}`} dir="ltr" value={form.links[l.key] || ""} maxLength={300} placeholder="https://"

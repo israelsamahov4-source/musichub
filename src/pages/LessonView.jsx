@@ -11,12 +11,14 @@ import { supabase, unwrap } from "@/lib/supabase";
 import { fetchCourse, fetchProgress } from "@/api/courses";
 import { useAuth } from "@/auth/AuthProvider";
 import { cn, errorMessage } from "@/lib/utils";
+import { usePageTitle } from "@/lib/usePageTitle";
 
 export default function LessonView() {
   const { id, lessonId } = useParams();
   const { user } = useAuth();
   const qc = useQueryClient();
   const course = useQuery({ queryKey: ["course", id], queryFn: () => fetchCourse(id) });
+  usePageTitle(course.data?.title);
   const prog = useQuery({ queryKey: ["course-progress", id, user.id], queryFn: () => fetchProgress(id, user.id) });
   // Row Level Security only returns the lesson if it's a preview, or you're enrolled / the instructor.
   const lesson = useQuery({

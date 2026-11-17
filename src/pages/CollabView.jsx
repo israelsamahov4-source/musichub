@@ -20,7 +20,9 @@ import { fetchDetailsMap } from "@/api/details";
 import { supabase, unwrap } from "@/lib/supabase";
 import { useAuth } from "@/auth/AuthProvider";
 import { PROJECT_STATUS, TASK_STATUS, label } from "@/lib/config";
-import { cleanSearch, cn, errorMessage, formatDate } from "@/lib/utils";
+import { cleanSearch, cn, errorMessage, formatDate, textDir } from "@/lib/utils";
+import { useAuthHref } from "@/auth/returnTo";
+import { usePageTitle } from "@/lib/usePageTitle";
 
 const PERSON = "id, username, full_name, avatar_url";
 
@@ -94,7 +96,8 @@ function Tasks({ projectId, members }) {
                 <li key={t.id} className="group rounded-md border bg-card p-2.5 text-sm shadow-sm">
                   <div className="flex items-start gap-2">
                     <span className={cn("flex-1 break-words", t.status === "done" && "text-muted-foreground line-through")}>{t.title}</span>
-                    <button onClick={() => remove.mutate(t.id)} aria-label="מחיקת משימה" className="text-muted-foreground opacity-0 hover:text-destructive focus:opacity-100 group-hover:opacity-100"><Trash2 className="h-3.5 w-3.5" /></button>
+                    <ConfirmDialog title="למחוק את המשימה?" confirmLabel="מחיקה" destructive onConfirm={() => remove.mutate(t.id)} trigger={
+                      <button type="button" aria-label="מחיקת משימה" className="-m-2 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-muted-foreground hover:text-destructive [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:focus-visible:opacity-100 [@media(hover:hover)]:group-hover:opacity-100"><Trash2 className="h-4 w-4" /></button>} />
                   </div>
                   <div className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
                     {t.assignee && <><UserAvatar profile={t.assignee} size="xs" /><span className="truncate">{t.assignee.full_name || t.assignee.username}</span></>}
@@ -150,11 +153,13 @@ function InviteDialog({ projectId, open, onOpenChange, existing }) {
 }
 
 export default function CollabView() {
+  const signupHref = useAuthHref("/signup");
   const { id } = useParams();
   const { user } = useAuth();
   const navigate = useNavigate();
   const qc = useQueryClient();
   const { data: p, isLoading } = useProject(id);
+  usePageTitle(p?.title);
   const [editOpen, setEditOpen] = useState(false);
   const [edit, setEdit] = useState(null);
   const [joinOpen, setJoinOpen] = useState(false);
@@ -211,19 +216,19 @@ export default function CollabView() {
   return (
     <div className="page space-y-5">
       <Card className="border-2 border-ink p-5 shadow-[6px_6px_0_0_#2F45C2]">
-        <div className="flex flex-wrap items-start gap-3">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               {p.is_public ? <Globe className="h-4 w-4" aria-hidden /> : <Lock className="h-4 w-4" aria-hidden />}
               {label("projectTypes", p.type)}, {label("projectStatus", p.status)}
             </div>
-            <h1 className="riso riso-animate mt-2 font-display text-5xl font-bold leading-[0.9] md:text-6xl">{p.title}</h1>
+            <h1 className="riso riso-animate mt-2 break-words font-display text-4xl font-bold leading-[0.95] sm:text-5xl md:text-6xl">{p.title}</h1>
             <Link to={`/u/${p.owner?.username}`} className="mt-2 inline-flex items-center gap-2 text-sm hover:underline">
               <UserAvatar profile={p.owner} size="xs" />{p.owner?.full_name || p.owner?.username}
             </Link>
           </div>
-          <div className="flex flex-wrap gap-2">
-            {!user && <Button asChild><Link to={`/signup`}>הצטרפו כדי להשתתף</Link></Button>}
+          <div className="flex flex-wrap gap-2 sm:max-w-[45%] sm:justify-end">
+            {!user && <Button asChild><Link to={signupHref}>הצטרפו כדי להשתתף</Link></Button>}
             {user && !me && p.is_public && <Button onClick={() => setJoinOpen(true)}><UserPlus />בקשת הצטרפות</Button>}
             {me?.status === "requested" && (
               <Button variant="outline" onClick={() => memberOp.mutate({ op: "delete", userId: user.id })}>ביטול הבקשה</Button>
@@ -250,7 +255,7 @@ export default function CollabView() {
           </div>
         </div>
         {me?.status === "requested" && <p className="mt-4 rounded-md bg-amber-50 px-3 py-2 text-sm text-amber-900">הבקשה שלכם נשלחה וממתינה לאישור.</p>}
-        {p.description && <p className="mt-4 whitespace-pre-wrap break-words">{p.description}</p>}
+        {p.description && <p dir={textDir(p.description)} className="mt-4 whitespace-pre-wrap break-words text-start">{p.description}</p>}
         <div className="mt-4 flex flex-wrap gap-1.5">
           {p.looking_for_roles.map((r) => <span key={r} className="chip border-primary/30 text-primary">מחפשים: {label("roles", r)}</span>)}
           {p.genres.map((g) => <span key={g} className="chip">{label("genres", g)}</span>)}
@@ -273,7 +278,7 @@ export default function CollabView() {
             <ul className="space-y-2.5">
               {active.map((m) => (
                 <li key={m.user_id} className="flex items-center gap-2">
-                  <Link to={`/u/${m.profile?.username}`}><UserAvatar profile={m.profile} /></Link>
+                  <Link to={`/u/${m.profile?.username}`} aria-hidden="true" tabIndex={-1}><UserAvatar profile={m.profile} /></Link>
                   <div className="min-w-0 flex-1 text-sm">
                     <Link to={`/u/${m.profile?.username}`} className="block truncate font-medium hover:underline">{m.profile?.full_name || m.profile?.username}</Link>
                     <span className="block truncate text-xs text-muted-foreground">{m.role === "owner" ? "מנהל/ת" : cvs[m.user_id]?.headline || m.instrument || "חבר/ה"}</span>
@@ -301,7 +306,7 @@ export default function CollabView() {
                       </span>
                     </Link>
                     {m.instrument && <p className="text-xs text-muted-foreground">מציע/ה: {m.instrument}</p>}
-                    {m.note && <p className="whitespace-pre-wrap rounded-lg bg-muted px-3 py-2 text-sm">{m.note}</p>}
+                    {m.note && <p dir={textDir(m.note)} className="whitespace-pre-wrap rounded-lg bg-muted px-3 py-2 text-start text-sm">{m.note}</p>}
                     {cvs[m.user_id] && <><OpenToBadges openTo={cvs[m.user_id].open_to} /><CvView cv={cvs[m.user_id]} compact /></>}
                     <div className="flex flex-wrap gap-2">
                       <Button size="sm" onClick={() => memberOp.mutate({ op: "update", userId: m.user_id, values: { status: "active" } })}><Check />אישור</Button>

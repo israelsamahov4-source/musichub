@@ -13,13 +13,17 @@ import { fetchCourse, fetchProgress, hasPro } from "@/api/courses";
 import { useAuth } from "@/auth/AuthProvider";
 import { label } from "@/lib/config";
 import { errorMessage, safeUrl } from "@/lib/utils";
+import { useAuthHref } from "@/auth/returnTo";
+import { usePageTitle } from "@/lib/usePageTitle";
 
 export default function CourseView() {
+  const signupHref = useAuthHref("/signup");
   const { id } = useParams();
   const { user, profile } = useAuth();
   const navigate = useNavigate();
   const qc = useQueryClient();
   const { data: c, isLoading } = useQuery({ queryKey: ["course", id], queryFn: () => fetchCourse(id) });
+  usePageTitle(c?.title);
   const { data: prog } = useQuery({ queryKey: ["course-progress", id, user?.id], queryFn: () => fetchProgress(id, user?.id) });
 
   const enroll = useMutation({
@@ -44,7 +48,7 @@ export default function CourseView() {
   const canOpen = (l) => mine || (enrolled && !locked) || l.is_preview;
 
   const cta = () => {
-    if (!user) return <Button asChild size="lg"><Link to={`/signup`}>הצטרפו כדי ללמוד</Link></Button>;
+    if (!user) return <Button asChild size="lg"><Link to={signupHref}>הצטרפו כדי ללמוד</Link></Button>;
     if (mine) return <Button asChild size="lg" variant="outline"><Link to={`/courses/${id}/edit`}><Pencil />עריכת הקורס</Link></Button>;
     if (enrolled && locked) return <Button asChild size="lg"><Link to="/pricing"><Star />המנוי הסתיים: חדשו כדי להמשיך</Link></Button>;
     if (enrolled) return nextLesson && <Button asChild size="lg"><Link to={`/courses/${id}/lessons/${nextLesson.id}`}><PlayCircle />{done ? "להמשיך ללמוד" : "להתחיל ללמוד"}</Link></Button>;

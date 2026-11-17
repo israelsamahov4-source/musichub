@@ -28,7 +28,7 @@ export default function Login() {
   };
 
   return (
-    <AuthShell title="ברוכים השבים" subtitle="התחברו כדי להמשיך" footer={<>אין לכם חשבון? <Link to={signupHref} className="font-medium text-primary hover:underline">הרשמה</Link></>}>
+    <AuthShell title="ברוכים השבים" subtitle="התחברו כדי להמשיך" footer={<>אין לכם חשבון? <Link to={signupHref} className="font-medium text-primary underline decoration-riso-pink decoration-2 underline-offset-4">הרשמה</Link></>}>
       <GoogleButton />
       <form onSubmit={submit} className="space-y-4">
         <Field id="email" label="אימייל">
@@ -37,8 +37,8 @@ export default function Login() {
         <Field id="password" label="סיסמה">
           <Input id="password" type="password" dir="ltr" autoComplete="current-password" required value={password} onChange={(e) => setPassword(e.target.value)} />
         </Field>
-        <div className="text-end text-sm"><Link to="/forgot-password" className="text-primary hover:underline">שכחתי סיסמה</Link></div>
-        <Button type="submit" className="w-full" disabled={busy}>{busy ? "מתחבר…" : "התחברות"}</Button>
+        <div className="text-end text-sm"><Link to="/forgot-password" className="text-primary underline decoration-riso-pink decoration-2 underline-offset-4">שכחתי סיסמה</Link></div>
+        <Button type="submit" className="w-full" disabled={busy}>{busy ? "מתחברים…" : "התחברות"}</Button>
       </form>
     </AuthShell>
   );

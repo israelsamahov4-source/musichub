@@ -22,8 +22,9 @@ import { MEMBER_PROFILE_COLS, PUBLIC_PROFILE_COLS } from "@/api/profiles";
 import { supabase, unwrap } from "@/lib/supabase";
 import { useAuth } from "@/auth/AuthProvider";
 import { label } from "@/lib/config";
-import { errorMessage, formatDate, safeUrl } from "@/lib/utils";
+import { errorMessage, formatDate, safeUrl, textDir } from "@/lib/utils";
 import { useAuthHref } from "@/auth/returnTo";
+import { usePageTitle } from "@/lib/usePageTitle";
 
 function Stat({ value, text }) {
   return (
@@ -75,6 +76,7 @@ export default function Profile() {
     queryFn: async () => unwrap(await supabase.from("profiles").select(user ? MEMBER_PROFILE_COLS : PUBLIC_PROFILE_COLS)
       .eq("username", username.toLowerCase()).maybeSingle()),
   });
+  usePageTitle(p ? (p.full_name || p.username) : null);
 
   const { data: stats } = useQuery({
     queryKey: ["profile-stats", p?.id],
@@ -192,20 +194,20 @@ export default function Profile() {
         <aside className="space-y-4">
           <Card className="space-y-4 p-4">
             {p.open_for_collaboration && <p className="w-fit rotate-[-2deg] rounded-lg border-2 border-ink bg-riso-yellow px-3 py-1.5 text-sm font-bold text-ink shadow-[3px_3px_0_0_#FF4F81]">פתוח/ה לשיתופי פעולה</p>}
-            {p.bio && <p className="whitespace-pre-wrap break-words text-sm">{p.bio}</p>}
+            {p.bio && <p dir={textDir(p.bio)} className="whitespace-pre-wrap break-words text-start text-sm">{p.bio}</p>}
             <ChipGroup title="כלי נגינה" items={p.instruments} group="instruments" />
             <ChipGroup title="ז'אנרים" items={p.genres} group="genres" />
             <ChipGroup title="מחפש/ת" items={p.looking_for} group="lookingFor" />
             {links.length > 0 && (
               <div className="space-y-1.5">
                 {links.map((l) => (
-                  <a key={l.key} href={l.url} target="_blank" rel="noopener noreferrer nofollow" className="flex items-center gap-2 text-sm text-primary hover:underline">
+                  <a key={l.key} href={l.url} target="_blank" rel="noopener noreferrer nofollow" className="flex items-center gap-2 text-sm text-primary underline decoration-riso-pink decoration-2 underline-offset-4">
                     <ExternalLink className="h-3.5 w-3.5" aria-hidden />{l.label}
                   </a>
                 ))}
               </div>
             )}
-            {!user && <p className="text-sm text-muted-foreground"><Link to={signupHref} className="text-primary underline">הצטרפו</Link> כדי לראות את הפרופיל המלא.</p>}
+            {!user && <p className="text-sm text-muted-foreground"><Link to={signupHref} className="text-primary underline decoration-riso-pink decoration-2 underline-offset-4">הצטרפו</Link> כדי לראות את הפרופיל המלא.</p>}
             {user && !p.bio && !p.instruments.length && !links.length && <p className="text-sm text-muted-foreground">עוד אין פרטים בפרופיל.</p>}
           </Card>
           {courses.length > 0 && (
@@ -227,10 +229,10 @@ export default function Profile() {
                 <EmptyState title="עוד לא מילאתם קורות חיים" text="ניסיון, לימודים ותיק עבודות עוזרים למנהלי פרויקטים להחליט לעבוד איתכם."
                   action={<Button asChild><Link to="/profile/edit">מילוי קורות חיים</Link></Button>} />
               ) : (
-                <CvView cv={cv} hiddenText={user ? "הקורות חיים של המשתמש/ת גלויים רק לאנשים שהם פונים אליהם, למשל מנהלי פרויקטים שביקשו להצטרף אליהם."
+                <CvView cv={cv} hiddenText={user ? "קורות החיים של המשתמש/ת גלויים רק לאנשים שהם פונים אליהם, למשל מנהלי פרויקטים שביקשו להצטרף אליהם."
                   : "התחברו כדי לראות את קורות החיים המוזיקליים."} />
               )}
-              {mine && cv && <p className="mt-6 text-xs text-muted-foreground">מי רואה את זה: {{ public: "כולם", members: "חברי הקהילה", applications: "רק מי שאתם פונים אליו" }[cv.visibility]}. <Link to="/profile/edit" className="text-primary underline">שינוי</Link></p>}
+              {mine && cv && <p className="mt-6 text-xs text-muted-foreground">מי רואה את זה: {{ public: "כולם", members: "חברי הקהילה", applications: "רק מי שאתם פונים אליו" }[cv.visibility]}. <Link to="/profile/edit" className="text-primary underline decoration-riso-pink decoration-2 underline-offset-4">שינוי</Link></p>}
             </Card>
           </TabsContent>
           <TabsContent value="posts">

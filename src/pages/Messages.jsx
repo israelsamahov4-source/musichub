@@ -11,7 +11,8 @@ import EmptyState from "@/components/EmptyState";
 import PageLoader from "@/components/PageLoader";
 import { supabase, unwrap } from "@/lib/supabase";
 import { useAuth } from "@/auth/AuthProvider";
-import { cn, errorMessage, formatDate, timeAgo } from "@/lib/utils";
+import { cn, errorMessage, formatDate, timeAgo, textDir } from "@/lib/utils";
+import { usePageTitle } from "@/lib/usePageTitle";
 
 function ConversationList({ conversations, activeId }) {
   if (!conversations.length) {
@@ -112,7 +113,7 @@ function Thread({ conversationId, other }) {
           return (
             <div key={m.id} className={cn("flex", mine ? "justify-start" : "justify-end")}>
               <div className={cn("max-w-[80%] rounded-2xl px-3.5 py-2", mine ? "rounded-ss-sm bg-primary text-primary-foreground" : "rounded-se-sm bg-muted")}>
-                <p className="whitespace-pre-wrap break-words text-sm">{m.content}</p>
+                <p dir={textDir(m.content)} className="whitespace-pre-wrap break-words text-start text-sm">{m.content}</p>
                 <p className={cn("mt-0.5 text-[10px]", mine ? "text-primary-foreground/70" : "text-muted-foreground")}>{formatDate(m.created_at, "d.M HH:mm")}</p>
               </div>
             </div>
@@ -130,6 +131,7 @@ function Thread({ conversationId, other }) {
 }
 
 export default function Messages() {
+  usePageTitle("הודעות");
   const { conversationId } = useParams();
   const { data: conversations = [], isLoading } = useQuery({
     queryKey: ["conversations"],

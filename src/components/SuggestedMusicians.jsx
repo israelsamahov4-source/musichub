@@ -36,7 +36,7 @@ export default function SuggestedMusicians() {
       <ul className="space-y-3">
         {data.map((p) => (
           <li key={p.id} className="flex items-center gap-2">
-            <Link to={`/u/${p.username}`}><UserAvatar profile={p} /></Link>
+            <Link to={`/u/${p.username}`} aria-hidden="true" tabIndex={-1}><UserAvatar profile={p} /></Link>
             <div className="min-w-0 flex-1">
               <Link to={`/u/${p.username}`} className="block truncate text-sm font-semibold hover:underline">{p.full_name || p.username}</Link>
               <p className="truncate text-xs text-muted-foreground">{p.instruments.slice(0, 2).map((i) => label("instruments", i)).join(", ") || p.location}</p>
@@ -45,7 +45,7 @@ export default function SuggestedMusicians() {
           </li>
         ))}
       </ul>
-      <Link to="/discover" className="mt-3 block text-sm text-primary hover:underline">לכל המוזיקאים</Link>
+      <Link to="/discover" className="mt-3 block text-sm text-primary underline decoration-riso-pink decoration-2 underline-offset-4">לכל המוזיקאים</Link>
     </Card>
   );
 }

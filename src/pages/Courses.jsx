@@ -47,8 +47,8 @@ export function CourseCard({ c, extra }) {
 }
 
 const Grid = ({ loading, items, render, empty }) =>
-  loading ? <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{[0, 1, 2].map((i) => <Skeleton key={i} className="h-64 rounded-xl" />)}</div>
-    : items.length ? <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{items.map(render)}</div> : empty;
+  loading ? <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">{[0, 1, 2].map((i) => <Skeleton key={i} className="h-64 rounded-xl" />)}</div>
+    : items.length ? <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">{items.map(render)}</div> : empty;
 
 export default function Courses() {
   const { user, profile } = useAuth();

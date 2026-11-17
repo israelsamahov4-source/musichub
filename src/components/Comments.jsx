@@ -9,8 +9,9 @@ import UserAvatar from "@/components/UserAvatar";
 import { supabase, unwrap } from "@/lib/supabase";
 import { AUTHOR } from "@/api/posts";
 import { useAuth } from "@/auth/AuthProvider";
-import { errorMessage, timeAgo } from "@/lib/utils";
+import { errorMessage, timeAgo, textDir } from "@/lib/utils";
 import { useAuthHref } from "@/auth/returnTo";
+import ConfirmDialog from "@/components/ConfirmDialog";
 
 export default function Comments({ post }) {
   const loginHref = useAuthHref("/login");
@@ -44,18 +45,19 @@ export default function Comments({ post }) {
       {isLoading && <p className="text-sm text-muted-foreground">טוען תגובות…</p>}
       {comments.map((c) => (
         <div key={c.id} className="group flex gap-2">
-          <Link to={`/u/${c.author?.username}`}><UserAvatar profile={c.author} size="xs" /></Link>
+          <Link to={`/u/${c.author?.username}`} aria-hidden="true" tabIndex={-1}><UserAvatar profile={c.author} size="xs" /></Link>
           <div className="min-w-0 flex-1 rounded-lg bg-muted px-3 py-2">
             <div className="flex items-center gap-2 text-xs">
               <Link to={`/u/${c.author?.username}`} className="font-semibold hover:underline">{c.author?.full_name || c.author?.username}</Link>
               <span className="text-muted-foreground">{timeAgo(c.created_at)}</span>
               {user && (c.author_id === user.id || post.author_id === user.id) && (
-                <button onClick={() => remove.mutate(c.id)} className="ms-auto text-muted-foreground opacity-0 transition-opacity hover:text-destructive focus:opacity-100 group-hover:opacity-100" aria-label="מחיקת תגובה">
-                  <Trash2 className="h-3.5 w-3.5" />
-                </button>
+                <ConfirmDialog title="למחוק את התגובה?" confirmLabel="מחיקה" destructive onConfirm={() => remove.mutate(c.id)} trigger={
+                  <button type="button" className="ms-auto -m-2 inline-flex h-10 w-10 items-center justify-center rounded-full text-muted-foreground transition-opacity hover:text-destructive [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:focus-visible:opacity-100 [@media(hover:hover)]:group-hover:opacity-100" aria-label="מחיקת תגובה">
+                    <Trash2 className="h-4 w-4" />
+                  </button>} />
               )}
             </div>
-            <p className="whitespace-pre-wrap break-words text-sm">{c.content}</p>
+            <p dir={textDir(c.content)} className="whitespace-pre-wrap break-words text-start text-sm">{c.content}</p>
           </div>
         </div>
       ))}
@@ -65,7 +67,7 @@ export default function Comments({ post }) {
           <Button type="submit" size="icon" disabled={!text.trim() || add.isPending} aria-label="שליחת תגובה"><Send className="rtl:-scale-x-100" /></Button>
         </form>
       ) : (
-        <p className="text-sm text-muted-foreground"><Link to={loginHref} className="text-primary hover:underline">התחברו</Link> כדי להגיב</p>
+        <p className="text-sm text-muted-foreground"><Link to={loginHref} className="text-primary underline decoration-riso-pink decoration-2 underline-offset-4">התחברו</Link> כדי להגיב</p>
       )}
     </div>
   );

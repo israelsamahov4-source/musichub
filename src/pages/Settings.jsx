@@ -118,7 +118,7 @@ export default function Settings() {
       <Card className="space-y-3 p-5">
         <h2 className="font-semibold">מנוי</h2>
         <div className="flex flex-wrap items-center gap-2">
-          <span>התוכנית שלך:</span>
+          <span>התוכנית שלכם:</span>
           <strong>{(s?.tier ?? "free").replace(/^./, (c) => c.toUpperCase())}</strong>
           <PlanBadge tier={s?.tier} />
           {s?.tier !== "free" && s?.status && <span className="chip">{STATUS[s.status] ?? s.status}</span>}
@@ -158,7 +158,7 @@ export default function Settings() {
         <Button variant="outline" className="w-fit" disabled={exporting} onClick={async () => {
           setExporting(true);
           try { await downloadMyData(user.id, user.email); } catch (e) { toast.error(errorMessage(e)); } finally { setExporting(false); }
-        }}>{exporting ? "מכין קובץ…" : "הורדת המידע שלי"}</Button>
+        }}>{exporting ? "מכינים קובץ…" : "הורדת המידע שלי"}</Button>
       </Card>
 
       <Card className="space-y-3 border-destructive/40 p-5">

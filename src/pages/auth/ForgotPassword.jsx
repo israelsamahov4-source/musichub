@@ -21,7 +21,7 @@ export default function ForgotPassword() {
   };
 
   return (
-    <AuthShell title="איפוס סיסמה" footer={<Link to="/login" className="text-primary hover:underline">חזרה להתחברות</Link>}>
+    <AuthShell title="איפוס סיסמה" footer={<Link to="/login" className="text-primary underline decoration-riso-pink decoration-2 underline-offset-4">חזרה להתחברות</Link>}>
       {sent ? (
         <p>אם קיים חשבון עם הכתובת הזו, שלחנו אליה קישור לאיפוס הסיסמה.</p>
       ) : (

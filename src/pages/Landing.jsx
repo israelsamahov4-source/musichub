@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { APP_NAME } from "@/lib/config";
+import { usePageTitle } from "@/lib/usePageTitle";
 
 const SETLIST = [
   { song: "מתופף ללהקה", note: "120 BPM" },
@@ -43,6 +44,7 @@ const COUNT_IN = [
 ];
 
 export default function Landing() {
+  usePageTitle(null);
   return (
     <div className="overflow-hidden">
       {/* Hero: the poster */}
@@ -76,10 +78,10 @@ export default function Landing() {
                   <li key={s.song} className="flex h-12 items-end gap-3 border-b border-[#E3E6F2] pb-1 font-display text-[2.1rem] leading-none text-ink">
                     <span className="w-5 text-riso-blue">{i + 1}</span>
                     <span className="flex-1 truncate">{s.song}</span>
-                    <span className="text-xl text-ink/45">{s.note}</span>
+                    <span className="ltr font-sans text-base font-semibold text-ink/70">{s.note}</span>
                   </li>
                 ))}
-                <li className="flex h-12 items-end gap-3 border-b border-[#E3E6F2] pb-1 font-display text-[2.1rem] leading-none text-ink/35">
+                <li className="flex h-12 items-end gap-3 border-b border-[#E3E6F2] pb-1 font-display text-[2.1rem] leading-none text-ink/60">
                   <span className="w-5" />
                   <span className="line-through decoration-riso-pink decoration-2">לחפש בפייסבוק</span>
                 </li>

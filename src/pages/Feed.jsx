@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { GraduationCap, Handshake, Users } from "lucide-react";
@@ -9,12 +10,18 @@ import EmptyState from "@/components/EmptyState";
 import SuggestedMusicians from "@/components/SuggestedMusicians";
 import { fetchFollowingIds } from "@/api/posts";
 import { useAuth } from "@/auth/AuthProvider";
+import { usePageTitle } from "@/lib/usePageTitle";
 
 export default function Feed() {
   const { user, profile } = useAuth();
+  usePageTitle("פיד");
   const firstName = (profile?.full_name || "").split(" ")[0];
   const following = useQuery({ queryKey: ["following-ids", user.id], queryFn: () => fetchFollowingIds(user.id) });
   const authorIds = following.data ? [user.id, ...following.data] : null;
+  // New members follow nobody yet: open on the whole community instead of an empty tab.
+  const [picked, setPicked] = useState(null);
+  const tab = picked ?? (following.data && following.data.length === 0 ? "all" : "following");
+  const isNew = following.data?.length === 0;
 
   return (
     <div className="mx-auto grid max-w-6xl gap-6 px-4 py-6 lg:grid-cols-[1fr_320px]">
@@ -23,18 +30,19 @@ export default function Feed() {
           {firstName ? `מה מנגנים היום, ${firstName}?` : "מה מנגנים היום?"}
         </h1>
         <PostComposer />
-        <Tabs defaultValue="following" dir="rtl">
-          <TabsList className="mb-4">
-            <TabsTrigger value="following">אנשים שאני עוקב/ת</TabsTrigger>
-            <TabsTrigger value="all">כל הקהילה</TabsTrigger>
-            <TabsTrigger value="collab">מחפשים שותפים</TabsTrigger>
+        {isNew && <div className="lg:hidden"><SuggestedMusicians /></div>}
+        <Tabs value={tab} onValueChange={setPicked} dir="rtl">
+          <TabsList className="mb-4 flex w-full sm:inline-flex sm:w-auto">
+            <TabsTrigger value="following" className="flex-1 sm:flex-none">עוקב/ת</TabsTrigger>
+            <TabsTrigger value="all" className="flex-1 sm:flex-none">כולם</TabsTrigger>
+            <TabsTrigger value="collab" className="flex-1 sm:flex-none">מחפשים שותפים</TabsTrigger>
           </TabsList>
           <TabsContent value="following">
             <PostList
               queryKey={["following", user.id, authorIds?.length]}
               filters={{ authorIds }}
               enabled={Boolean(authorIds)}
-              empty={<EmptyState icon={Users} title="הפיד שלכם עדיין שקט" text="עקבו אחרי מוזיקאים כדי לראות כאן את מה שהם משתפים."
+              empty={<EmptyState icon={Users} title="עוד לא עוקבים אחרי אף אחד" text="עקבו אחרי כמה מוזיקאים, ומה שהם ישתפו יופיע כאן."
                 action={<Button asChild><Link to="/discover">גילוי מוזיקאים</Link></Button>} />}
             />
           </TabsContent>

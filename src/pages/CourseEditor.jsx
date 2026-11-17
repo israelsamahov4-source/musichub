@@ -20,6 +20,7 @@ import { canTeach } from "@/api/courses";
 import { useAuth } from "@/auth/AuthProvider";
 import { COURSE_CATEGORIES, COURSE_LEVELS } from "@/lib/config";
 import { errorMessage, normalizeUrl, safeUrl, videoEmbedUrl } from "@/lib/utils";
+import { usePageTitle } from "@/lib/usePageTitle";
 
 const EMPTY = { title: "", description: "", category: "guitar", level: "beginner", cover_url: null, what_you_learn: [], is_free: true, is_published: false };
 const EMPTY_LESSON = { title: "", description: "", video_url: "", duration_minutes: "", is_preview: false };
@@ -53,6 +54,7 @@ export default function CourseEditor() {
   const { id } = useParams();
   const isNew = !id;
   const { user, profile } = useAuth();
+  usePageTitle(isNew ? "קורס חדש" : "עריכת קורס");
   const navigate = useNavigate();
   const qc = useQueryClient();
   const [form, setForm] = useState(isNew ? EMPTY : null);
@@ -170,7 +172,7 @@ export default function CourseEditor() {
 
       <Card className="space-y-4 p-5">
         <Field id="ct" label="שם הקורס"><Input id="ct" value={form.title} onChange={set("title")} maxLength={150} /></Field>
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Field id="cc" label="תחום">
             <Select value={form.category} onValueChange={set("category")} dir="rtl">
               <SelectTrigger id="cc"><SelectValue /></SelectTrigger>

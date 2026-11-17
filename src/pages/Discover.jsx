@@ -17,7 +17,7 @@ import Field from "@/components/Field";
 import { supabase, unwrap } from "@/lib/supabase";
 import { GENRES, INSTRUMENTS, LOOKING_FOR, ROLES, label } from "@/lib/config";
 import { useAuth } from "@/auth/AuthProvider";
-import { cleanSearch } from "@/lib/utils";
+import { cleanSearch, textDir } from "@/lib/utils";
 
 const PAGE = 24;
 const EMPTY = { q: "", location: "", instruments: [], genres: [], lookingFor: [], roles: [], openOnly: false };
@@ -31,9 +31,9 @@ function useDebounced(value, ms = 350) {
 function MusicianCard({ p }) {
   const roles = (p.musical_roles || []).map((r) => label("roles", r.role));
   return (
-    <Card className="flex flex-col p-4 transition-[transform,box-shadow] hover:-translate-y-0.5 hover:shadow-[4px_4px_0_0_#1E1B3A]">
+    <Card className="flex min-w-0 flex-col p-4 transition-[transform,box-shadow] hover:-translate-y-0.5 hover:shadow-[4px_4px_0_0_#1E1B3A]">
       <div className="flex items-start gap-3">
-        <Link to={`/u/${p.username}`}><UserAvatar profile={p} size="md" /></Link>
+        <Link to={`/u/${p.username}`} aria-hidden="true" tabIndex={-1}><UserAvatar profile={p} size="md" /></Link>
         <div className="min-w-0 flex-1">
           <Link to={`/u/${p.username}`} className="block truncate font-semibold hover:underline">{p.full_name || p.username}</Link>
           <p className="truncate text-sm text-muted-foreground">{p.details?.headline || roles.slice(0, 2).join(", ") || (p.user_type === "listener" ? "חובב/ת מוזיקה" : "מוזיקאי/ת")}</p>
@@ -41,7 +41,7 @@ function MusicianCard({ p }) {
         </div>
         <PlanBadge tier={p.plan_tier} />
       </div>
-      {p.bio && <p className="mt-3 line-clamp-2 text-sm text-muted-foreground">{p.bio}</p>}
+      {p.bio && <p dir={textDir(p.bio)} className="mt-3 line-clamp-2 text-start text-sm text-muted-foreground">{p.bio}</p>}
       <div className="mt-3 flex flex-wrap gap-1.5">
         {p.instruments.slice(0, 3).map((i) => <span key={i} className="chip">{label("instruments", i)}</span>)}
         {p.genres.slice(0, 2).map((g) => <span key={g} className="chip">{label("genres", g)}</span>)}
@@ -115,12 +115,12 @@ export default function Discover() {
 
       <div className="mt-6">
         {query.isLoading ? (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{Array.from({ length: 6 }, (_, i) => <Skeleton key={i} className="h-48 rounded-xl" />)}</div>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">{Array.from({ length: 6 }, (_, i) => <Skeleton key={i} className="h-48 rounded-xl" />)}</div>
         ) : people.length === 0 ? (
           <EmptyState icon={Users} title="לא מצאנו מוזיקאים שמתאימים לחיפוש" text="נסו להרחיב את הסינון." />
         ) : (
           <>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{people.map((p) => <MusicianCard key={p.id} p={p} />)}</div>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">{people.map((p) => <MusicianCard key={p.id} p={p} />)}</div>
             {query.hasNextPage && (
               <div className="mt-6 flex justify-center">
                 <Button variant="outline" onClick={() => query.fetchNextPage()} disabled={query.isFetchingNextPage}>עוד תוצאות</Button>

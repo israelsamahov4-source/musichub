@@ -1,7 +1,9 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { usePageTitle } from "@/lib/usePageTitle";
 
 export default function NotFound() {
+  usePageTitle("העמוד לא נמצא");
   return (
     <div className="page flex flex-col items-center py-20 text-center">
       <p className="riso riso-animate text-[8rem] font-black leading-none tracking-tighter" aria-hidden>404</p>

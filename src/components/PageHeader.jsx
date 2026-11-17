@@ -1,7 +1,9 @@
 import { cn } from "@/lib/utils";
+import { usePageTitle } from "@/lib/usePageTitle";
 
 /** Poster-style page header: a big overprinted title on a band of paper or riso blue. */
 export default function PageHeader({ title, text, actions, tone = "paper", narrow = false }) {
+  usePageTitle(typeof title === "string" ? title : null);
   const blue = tone === "blue";
   return (
     <header className={cn("grain border-b-2 border-ink", blue && "bg-riso-blue text-white")}>

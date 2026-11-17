@@ -10,9 +10,11 @@ import { fetchDetails } from "@/api/details";
 import { supabase, unwrap } from "@/lib/supabase";
 import { useAuth } from "@/auth/AuthProvider";
 import { errorMessage } from "@/lib/utils";
+import { usePageTitle } from "@/lib/usePageTitle";
 
 export default function ProfileEdit() {
   const { user, profile, refreshProfile } = useAuth();
+  usePageTitle("עריכת פרופיל");
   const navigate = useNavigate();
   const [form, setForm] = useState(null);
   const [cv, setCv] = useState(null);
@@ -58,7 +60,7 @@ export default function ProfileEdit() {
       <Card className="p-5"><h2 className="mb-4 font-semibold">קישורים</h2><ProfileForm form={form} setForm={setForm} userId={user.id} sections={["links"]} /></Card>
       <div className="sticky bottom-20 flex justify-end gap-2 md:bottom-4">
         <Button type="button" variant="outline" onClick={() => navigate(-1)}>ביטול</Button>
-        <Button type="submit" disabled={saving}>{saving ? "שומר…" : "שמירה"}</Button>
+        <Button type="submit" disabled={saving}>{saving ? "שומרים…" : "שמירה"}</Button>
       </div>
     </form>
   );

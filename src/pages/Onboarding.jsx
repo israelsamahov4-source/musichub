@@ -12,6 +12,7 @@ import { useAuth } from "@/auth/AuthProvider";
 import { APP_NAME } from "@/lib/config";
 import { errorMessage } from "@/lib/utils";
 import { safeNext } from "@/auth/guards";
+import { usePageTitle } from "@/lib/usePageTitle";
 
 const STEPS = [
   { title: `ברוכים הבאים ל-${APP_NAME}!`, text: "נתחיל מהבסיס: איך יכירו אתכם", sections: ["basics"] },
@@ -22,6 +23,7 @@ const STEPS = [
 
 export default function Onboarding() {
   const { user, profile, refreshProfile } = useAuth();
+  usePageTitle("בניית פרופיל");
   const navigate = useNavigate();
   const [form, setForm] = useState(null);
   const [step, setStep] = useState(0);
@@ -65,7 +67,7 @@ export default function Onboarding() {
           {s.cv ? <CvEditor cv={cv} setCv={setCv} sections={s.cv} /> : <ProfileForm form={form} setForm={setForm} userId={user.id} sections={s.sections} />}
           <div className="mt-8 flex justify-between">
             <Button variant="ghost" onClick={() => setStep(step - 1)} disabled={step === 0}>חזרה</Button>
-            <Button onClick={next} disabled={saving}>{step === STEPS.length - 1 ? (saving ? "שומר…" : "סיום") : "המשך"}</Button>
+            <Button onClick={next} disabled={saving}>{step === STEPS.length - 1 ? (saving ? "שומרים…" : "סיום") : "המשך"}</Button>
           </div>
         </Card>
       </div>

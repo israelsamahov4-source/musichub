@@ -5,15 +5,18 @@ import PageLoader from "@/components/PageLoader";
 import EmptyState from "@/components/EmptyState";
 import { fetchPost } from "@/api/posts";
 import { useAuth } from "@/auth/AuthProvider";
+import { usePageTitle } from "@/lib/usePageTitle";
 
 export default function PostView() {
   const { id } = useParams();
   const { user } = useAuth();
   const navigate = useNavigate();
   const { data: post, isLoading } = useQuery({ queryKey: ["posts", "one", id, user?.id], queryFn: () => fetchPost(id, user?.id) });
+  usePageTitle(post ? `פוסט של ${post.author?.full_name || post.author?.username || ""}` : null);
   if (isLoading) return <PageLoader />;
   return (
     <div className="page-narrow">
+      {post && <h1 className="sr-only">פוסט של {post.author?.full_name || post.author?.username}</h1>}
       {post ? <PostCard post={post} defaultShowComments onDeleted={() => navigate("/feed")} /> : <EmptyState title="הפוסט לא נמצא" text="ייתכן שהוא נמחק." />}
     </div>
   );

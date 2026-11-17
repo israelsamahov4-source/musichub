@@ -84,3 +84,14 @@ export function errorMessage(err) {
 
 export const initials = (name) =>
   (name || "?").trim().split(/\s+/).slice(0, 2).map((w) => w[0]).join("").toUpperCase();
+
+/**
+ * Text direction for user-written text: Hebrew/Arabic anywhere → right-to-left, otherwise
+ * left-to-right when it has Latin letters. (dir="auto" would flip Hebrew text that starts with "DJ".)
+ */
+export function textDir(text) {
+  const s = String(text ?? "");
+  if (/[֐-׿؀-ۿ]/.test(s)) return "rtl";
+  if (/[A-Za-z]/.test(s)) return "ltr";
+  return undefined;
+}

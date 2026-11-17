@@ -35,18 +35,18 @@ export default function Pricing() {
   const action = (plan) => {
     if (plan.tier === current && user) return <Button variant="outline" disabled className="w-full">התוכנית הנוכחית</Button>;
     if (plan.tier === "free") return user ? null : <Button asChild variant="outline" className="w-full"><Link to="/signup">הרשמה חינם</Link></Button>;
-    if (!PAYMENTS_ENABLED) return <Button disabled className="w-full">בקרוב</Button>;
-    if (!user) return <Button asChild className="w-full"><Link to="/signup">הרשמה</Link></Button>;
+    if (!user) return <Button asChild className="w-full"><Link to="/signup">{PAYMENTS_ENABLED ? "הרשמה" : "הרשמה חינם בינתיים"}</Link></Button>;
+    if (!PAYMENTS_ENABLED) return <p className="rounded-full border-2 border-dashed border-current px-4 py-2 text-center text-sm font-semibold opacity-80">ייפתח בקרוב</p>;
     if (current !== "free") return <Button asChild variant="outline" className="w-full"><Link to="/settings">שינוי תוכנית בהגדרות</Link></Button>;
     return <Button className="w-full" onClick={() => checkout(plan.tier)} disabled={!!busy}>{busy === plan.tier ? <Loader2 className="animate-spin" /> : null}שדרוג ל-{plan.name}</Button>;
   };
 
   const toggle = (
-    <div className="inline-flex rounded-full border-2 border-white/80 p-1" role="radiogroup" aria-label="מחזור חיוב">
-      {[["monthly", "חודשי"], ["yearly", "שנתי · חודשיים מתנה"]].map(([v, t]) => (
-        <button key={v} role="radio" aria-checked={cycle === v} onClick={() => setCycle(v)}
+    <div className="inline-flex rounded-full border-2 border-white/80 p-1" role="group" aria-label="מחזור חיוב">
+      {[["monthly", "חודשי"], ["yearly", "שנתי, חודשיים מתנה"]].map(([v, t]) => (
+        <button key={v} type="button" aria-pressed={cycle === v} onClick={() => setCycle(v)}
           className={cn("rounded-full px-4 py-1.5 text-sm font-semibold transition-colors",
-            cycle === v ? "bg-riso-yellow text-ink" : "text-white/85 hover:text-white")}>{t}</button>
+            cycle === v ? "bg-riso-yellow text-ink" : "text-white/85 hover:text-white", "min-h-10")}>{t}</button>
       ))}
     </div>
   );
@@ -64,7 +64,7 @@ export default function Pricing() {
               <section key={plan.tier} aria-labelledby={`plan-${plan.tier}`}
                 className={cn("relative flex h-full flex-col rounded-2xl border-2 border-ink p-6",
                   hot ? "grain bg-ink text-white shadow-[6px_6px_0_0_#FF4F81] md:-translate-y-3" : "bg-card")}>
-                {hot && <span className="tape absolute -top-3 left-6 rotate-[-4deg] bg-riso-yellow px-3 py-1 text-xs font-bold text-ink">הכי פופולרי</span>}
+                {hot && <span className="absolute -top-3 end-6 rotate-[-4deg] rounded-sm border-2 border-ink bg-riso-yellow px-3 py-1 text-xs font-bold text-ink">מומלץ</span>}
                 <h2 id={`plan-${plan.tier}`} className={cn("font-display text-4xl font-bold leading-none", hot ? "text-riso-yellow" : "text-riso-blue")}>{plan.name}</h2>
                 <p className={cn("mt-2 text-sm", hot ? "text-white/75" : "text-muted-foreground")}>{plan.tagline}</p>
                 <p className="mt-5 flex items-baseline gap-1">
@@ -84,8 +84,14 @@ export default function Pricing() {
           })}
         </div>
         <p className="mx-auto mt-8 max-w-2xl text-center text-xs leading-relaxed text-muted-foreground">
-          המחירים כוללים מע"מ. אפשר לבטל בכל עת, והמנוי יישאר פעיל עד סוף תקופת החיוב.
-          התשלום מתבצע אצל Paddle, ספק התשלומים שלנו. פרטי הכרטיס לא עוברים דרכנו ולא נשמרים אצלנו.
+          {PAYMENTS_ENABLED ? (
+            <>
+              המחירים כוללים מע"מ. אפשר לבטל בכל עת, והמנוי יישאר פעיל עד סוף תקופת החיוב.
+              התשלום מתבצע אצל Paddle, ספק התשלומים שלנו. פרטי הכרטיס לא עוברים דרכנו ולא נשמרים אצלנו.
+            </>
+          ) : (
+            <>המנויים בתשלום ייפתחו בקרוב. בינתיים כל מה שבחינם פתוח לכולם: פרופיל, פרויקטים, הודעות וקורסים חינמיים.</>
+          )}
         </p>
       </div>
     </>

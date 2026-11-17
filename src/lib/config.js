@@ -4,6 +4,18 @@ export const APP_NAME = "MusicHub";
 export const APP_TAGLINE = "הרשת החברתית למוזיקאים";
 export const SUPPORT_EMAIL = "support@example.com"; // TODO: replace with a real address before launch
 
+// Business details shown in the legal pages. Fill these in once (with the lawyer's review) and every page updates.
+export const LEGAL = {
+  businessName: "[שם העסק]",
+  businessId: "[מספר עוסק / ח.פ]",
+  address: "[כתובת]",
+  courtCity: "[עיר]",
+  accessibilityCoordinator: "[שם רכז/ת הנגישות]",
+  phone: "[טלפון]",
+  updated: "[תאריך עדכון]",
+  accessibilityAuditDate: "נובמבר 2026",
+};
+
 // Payments switch on automatically once the Paddle client token is configured in Vercel.
 export const PADDLE_CLIENT_TOKEN = import.meta.env.VITE_PADDLE_CLIENT_TOKEN || "";
 export const PADDLE_ENV = import.meta.env.VITE_PADDLE_ENV === "production" ? "production" : "sandbox";
@@ -176,6 +188,6 @@ export const PLANS = [
     name: "Premium",
     price: { monthly: 59, yearly: 590 },
     tagline: "למורים ויוצרים שרוצים ללמד",
-    features: ["כל מה שב-Pro", "פתיחת קורסים ולימוד תלמידים", "קורסי Pro בתשלום משלך", "תג Premium בפרופיל"],
+    features: ["כל מה שב-Pro", "פתיחת קורסים ולימוד תלמידים", "קורסי Pro בתשלום משלכם", "תג Premium בפרופיל"],
   },
 ];

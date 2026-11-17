@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Bell, GraduationCap, Handshake, Home, LogOut, MessageCircle, Search, Settings, Shield, Sparkles, User } from "lucide-react";
@@ -88,7 +88,13 @@ export default function AppLayout() {
   const location = useLocation();
   const items = NAV.filter((n) => user || !n.auth);
 
-  useEffect(() => { window.scrollTo(0, 0); }, [location.pathname]);
+  // On every page change: back to the top, and move keyboard / screen-reader focus to the new content.
+  const firstRender = useRef(true);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    if (firstRender.current) { firstRender.current = false; return; }
+    document.getElementById("main")?.focus({ preventScroll: true });
+  }, [location.pathname]);
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -140,6 +146,19 @@ export default function AppLayout() {
             )}
           </div>
         </div>
+        {!user && (
+          <nav className="flex gap-1 overflow-x-auto px-4 pb-2 md:hidden" aria-label="ניווט">
+            {items.map((n) => (
+              <NavLink key={n.to} to={n.to} className={({ isActive }) => cn(
+                "flex min-h-10 shrink-0 items-center gap-1.5 rounded-full px-3.5 text-sm font-medium",
+                isActive ? "bg-ink text-white" : "bg-muted text-ink/80")}>
+                <n.icon className="h-4 w-4" aria-hidden />{n.label}
+              </NavLink>
+            ))}
+            <NavLink to="/pricing" className={({ isActive }) => cn("flex min-h-10 shrink-0 items-center rounded-full px-3.5 text-sm font-medium",
+              isActive ? "bg-ink text-white" : "bg-muted text-ink/80")}>מחירים</NavLink>
+          </nav>
+        )}
       </header>
 
       {profile?.is_suspended && (
@@ -147,7 +166,7 @@ export default function AppLayout() {
           החשבון הושעה בעקבות דיווח. אפשר לצפות בתוכן אבל לא לפרסם. לבירור: פנו לצוות האתר.
         </div>
       )}
-      <main id="main" className={cn("flex-1", user && "pb-20 md:pb-0")}>
+      <main id="main" tabIndex={-1} className={cn("flex-1 outline-none", user && "pb-20 md:pb-0")}>
         <Outlet />
       </main>
 

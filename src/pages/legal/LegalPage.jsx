@@ -1,5 +1,7 @@
+import { usePageTitle } from "@/lib/usePageTitle";
 
 export default function LegalPage({ title, updated, children }) {
+  usePageTitle(title);
   return (
     <article className="page-narrow">
       <h1 className="page-title">{title}</h1>

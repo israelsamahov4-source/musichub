@@ -11,7 +11,7 @@ export default function UserAvatar({ profile, size = "sm", className }) {
   return (
     <Avatar className={cn(SIZES[size], "ring-1 ring-ink/20", className)}>
       {safeUrl(profile?.avatar_url) && <AvatarImage src={safeUrl(profile.avatar_url)} alt="" className="object-cover" />}
-      <AvatarFallback className={cn("font-display font-bold tracking-wide", inkFor(profile?.id || name))}>{initials(name)}</AvatarFallback>
+      <AvatarFallback className={cn("font-sans font-semibold", inkFor(profile?.id || name))}>{initials(name)}</AvatarFallback>
     </Avatar>
   );
 }

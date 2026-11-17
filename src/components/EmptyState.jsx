@@ -7,7 +7,7 @@ export default function EmptyState({ icon: Icon, title, text, action }) {
           <Icon className="h-6 w-6" aria-hidden />
         </div>
       )}
-      <h3 className="riso font-display text-4xl font-bold leading-none">{title}</h3>
+      <h2 className="font-display text-4xl font-bold leading-none text-ink">{title}</h2>
       {text && <p className="mt-2 max-w-sm text-sm text-muted-foreground">{text}</p>}
       {action && <div className="mt-5">{action}</div>}
     </div>

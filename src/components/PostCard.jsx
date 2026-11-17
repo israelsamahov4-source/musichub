@@ -15,7 +15,7 @@ import ConfirmDialog from "@/components/ConfirmDialog";
 import { supabase, unwrap } from "@/lib/supabase";
 import { useAuth } from "@/auth/AuthProvider";
 import { label } from "@/lib/config";
-import { cn, errorMessage, timeAgo } from "@/lib/utils";
+import { cn, errorMessage, timeAgo, textDir } from "@/lib/utils";
 
 export default function PostCard({ post, defaultShowComments = false, onDeleted }) {
   const { user } = useAuth();
@@ -57,7 +57,7 @@ export default function PostCard({ post, defaultShowComments = false, onDeleted 
   return (
     <Card className={cn("p-4", post.collaboration_wanted && "border-2 border-ink shadow-[4px_4px_0_0_#FFD84D]")}>
       <div className="flex items-start gap-3">
-        <Link to={`/u/${a.username}`}><UserAvatar profile={a} /></Link>
+        <Link to={`/u/${a.username}`} aria-hidden="true" tabIndex={-1}><UserAvatar profile={a} /></Link>
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-x-2">
             <Link to={`/u/${a.username}`} className="font-semibold hover:underline">{a.full_name || a.username}</Link>
@@ -83,7 +83,7 @@ export default function PostCard({ post, defaultShowComments = false, onDeleted 
           <Handshake className="h-3.5 w-3.5" aria-hidden />מחפש/ת שותפים
         </div>
       )}
-      {post.content && <p className="mt-3 whitespace-pre-wrap break-words leading-relaxed">{post.content}</p>}
+      {post.content && <p dir={textDir(post.content)} className="mt-3 whitespace-pre-wrap break-words text-start leading-relaxed">{post.content}</p>}
       {post.media_url && <div className="mt-3"><MediaView url={post.media_url} type={post.media_type} /></div>}
       {post.genres?.length > 0 && (
         <div className="mt-3 flex flex-wrap gap-1.5">{post.genres.map((g) => <span key={g} className="chip">{label("genres", g)}</span>)}</div>
@@ -91,8 +91,8 @@ export default function PostCard({ post, defaultShowComments = false, onDeleted 
 
       <div className="mt-3 flex items-center gap-1 border-t pt-2">
         <Button variant="ghost" size="sm" aria-pressed={liked} disabled={!user || like.isPending} onClick={() => like.mutate(!liked)}
-          className={cn(liked && "text-riso-pink hover:text-riso-pink")}>
-          <Heart className={cn(liked && "fill-current")} />{likeCount > 0 && likeCount}<span className="sr-only">לייקים</span>
+          className={cn(liked && "text-ink")}>
+          <Heart className={cn(liked && "fill-riso-pink text-riso-pink")} />{likeCount > 0 && likeCount}<span className="sr-only">לייקים</span>
         </Button>
         <Button variant="ghost" size="sm" onClick={() => setShowComments((s) => !s)} aria-expanded={showComments}>
           <MessageCircle />{post.comment_count > 0 && post.comment_count}<span className="sr-only">תגובות</span>

@@ -1,7 +1,7 @@
 import { ExternalLink, Lock } from "lucide-react";
 import MediaView from "@/components/MediaView";
 import { label } from "@/lib/config";
-import { safeUrl, videoEmbedUrl } from "@/lib/utils";
+import { safeUrl, videoEmbedUrl, textDir } from "@/lib/utils";
 
 const years = (a, b) => (a ? `${a}–${b || "היום"}` : b ? `עד ${b}` : "");
 
@@ -42,7 +42,7 @@ export default function CvView({ cv, compact = false, hiddenText }) {
                 <span className="absolute -start-[1.6rem] top-1.5 h-3 w-3 rounded-full border-2 border-white bg-riso-pink" aria-hidden />
                 <p className="font-semibold">{e.title}{e.org && <span className="font-normal text-muted-foreground"> ב{e.org}</span>}</p>
                 {years(e.start_year, e.end_year) && <p className="ltr w-fit text-xs text-muted-foreground">{years(e.start_year, e.end_year)}</p>}
-                {!compact && e.description && <p className="mt-1 whitespace-pre-wrap text-sm leading-relaxed">{e.description}</p>}
+                {!compact && e.description && <p dir={textDir(e.description)} className="mt-1 whitespace-pre-wrap text-start text-sm leading-relaxed">{e.description}</p>}
               </li>
             ))}
           </ol>
@@ -75,7 +75,7 @@ export default function CvView({ cv, compact = false, hiddenText }) {
       {!compact && cv.portfolio?.length > 0 && (
         <section>
           <h3 className="mb-3 font-display text-3xl font-bold">תיק עבודות</h3>
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             {cv.portfolio.map((p, i) => (
               <figure key={i} className="space-y-2">
                 {videoEmbedUrl(p.url) ? <MediaView url={p.url} type="video" title={p.title} /> : (

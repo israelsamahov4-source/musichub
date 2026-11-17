@@ -58,7 +58,7 @@ export default function Signup() {
   }
 
   return (
-    <AuthShell title="הצטרפות" subtitle="יוצרים פרופיל ומתחילים להתחבר למוזיקאים" footer={<>כבר יש לכם חשבון? <Link to={loginHref} className="font-medium text-primary hover:underline">התחברות</Link></>}>
+    <AuthShell title="הצטרפות" subtitle="יוצרים פרופיל ומתחילים להתחבר למוזיקאים" footer={<>כבר יש לכם חשבון? <Link to={loginHref} className="font-medium text-primary underline decoration-riso-pink decoration-2 underline-offset-4">התחברות</Link></>}>
       <GoogleButton />
       <form onSubmit={submit} className="space-y-4">
         <Field id="fullName" label="שם מלא">
@@ -73,10 +73,10 @@ export default function Signup() {
         <div className="flex items-start gap-2">
           <Checkbox id="agree" checked={agree} onCheckedChange={(v) => setAgree(v === true)} className="mt-0.5" />
           <label htmlFor="agree" className="text-sm leading-snug">
-            קראתי ואני מסכים/ה ל<Link to="/terms" target="_blank" className="text-primary hover:underline">תנאי השימוש</Link> ול<Link to="/privacy" target="_blank" className="text-primary hover:underline">מדיניות הפרטיות</Link>
+            קראתי ואני מסכים/ה ל<Link to="/terms" target="_blank" className="text-primary underline decoration-riso-pink decoration-2 underline-offset-4">תנאי השימוש</Link> ול<Link to="/privacy" target="_blank" className="text-primary underline decoration-riso-pink decoration-2 underline-offset-4">מדיניות הפרטיות</Link>
           </label>
         </div>
-        <Button type="submit" className="w-full" disabled={busy}>{busy ? "יוצר חשבון…" : "יצירת חשבון"}</Button>
+        <Button type="submit" className="w-full" disabled={busy}>{busy ? "יוצרים חשבון…" : "יצירת חשבון"}</Button>
       </form>
     </AuthShell>
   );
