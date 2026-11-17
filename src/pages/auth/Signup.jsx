@@ -9,6 +9,8 @@ import Field from "@/components/Field";
 import AuthShell from "./AuthShell";
 import GoogleButton from "./GoogleButton";
 import { supabase } from "@/lib/supabase";
+import { safeNext } from "@/auth/guards";
+import { PENDING_NEXT_KEY, useAuthHref } from "@/auth/returnTo";
 import { errorMessage } from "@/lib/utils";
 
 export default function Signup() {
@@ -18,23 +20,28 @@ export default function Signup() {
   const [busy, setBusy] = useState(false);
   const [sentTo, setSentTo] = useState(null);
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
+  const loginHref = useAuthHref("/login");
+  const next = safeNext(null);
+  const onboarding = next ? `/onboarding?next=${encodeURIComponent(next)}` : "/onboarding";
 
   const submit = async (e) => {
     e.preventDefault();
     if (form.password.length < 8) return toast.error("הסיסמה חייבת להכיל לפחות 8 תווים");
     if (!agree) return toast.error("יש לאשר את תנאי השימוש ומדיניות הפרטיות");
     setBusy(true);
+    // Remember where the visitor came from, so the e-mail link brings them back after onboarding.
+    try { if (next) localStorage.setItem(PENDING_NEXT_KEY, next); } catch { /* private mode */ }
     const { data, error } = await supabase.auth.signUp({
       email: form.email.trim(),
       password: form.password,
       options: {
         data: { full_name: form.fullName.trim().slice(0, 80) },
-        emailRedirectTo: `${window.location.origin}/onboarding`,
+        emailRedirectTo: `${window.location.origin}${onboarding}`,
       },
     });
     setBusy(false);
     if (error) return toast.error(errorMessage(error));
-    if (data.session) navigate("/onboarding", { replace: true });
+    if (data.session) navigate(onboarding, { replace: true });
     else setSentTo(form.email.trim());
   };
 
@@ -51,7 +58,7 @@ export default function Signup() {
   }
 
   return (
-    <AuthShell title="הצטרפות" subtitle="יוצרים פרופיל ומתחילים להתחבר למוזיקאים" footer={<>כבר יש לכם חשבון? <Link to="/login" className="font-medium text-primary hover:underline">התחברות</Link></>}>
+    <AuthShell title="הצטרפות" subtitle="יוצרים פרופיל ומתחילים להתחבר למוזיקאים" footer={<>כבר יש לכם חשבון? <Link to={loginHref} className="font-medium text-primary hover:underline">התחברות</Link></>}>
       <GoogleButton />
       <form onSubmit={submit} className="space-y-4">
         <Field id="fullName" label="שם מלא">

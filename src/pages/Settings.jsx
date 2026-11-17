@@ -15,7 +15,7 @@ import PlanBadge from "@/components/PlanBadge";
 import PageHeader from "@/components/PageHeader";
 import TwoFactorCard from "@/components/TwoFactorCard";
 import { downloadMyData } from "@/lib/exportData";
-import { supabase, unwrap } from "@/lib/supabase";
+import { supabase, unwrap, callFunction } from "@/lib/supabase";
 import { useAuth } from "@/auth/AuthProvider";
 import { PAYMENTS_ENABLED } from "@/lib/config";
 import { errorMessage, formatDate } from "@/lib/utils";
@@ -75,15 +75,23 @@ export default function Settings() {
   }, [checkoutDone, sub.data, qc]);
 
   const portal = async () => {
-    const { data, error } = await supabase.functions.invoke("billing-portal");
-    if (error || !data?.url) return toast.error(errorMessage(error));
-    window.location.assign(data.url);
+    try {
+      const data = await callFunction("billing-portal");
+      if (!data?.url) throw new Error("portal failed");
+      window.location.assign(data.url);
+    } catch (e) {
+      toast.error(errorMessage(e));
+    }
   };
   const deleteAccount = async () => {
     setDeleting(true);
-    const { error } = await supabase.functions.invoke("delete-account", { body: { confirm: profile.username } });
+    try {
+      await callFunction("delete-account", { confirm: profile.username });
+    } catch (e) {
+      setDeleting(false);
+      return toast.error(errorMessage(e));
+    }
     setDeleting(false);
-    if (error) return toast.error(errorMessage(error));
     toast.success("החשבון נמחק");
     await signOut();
   };

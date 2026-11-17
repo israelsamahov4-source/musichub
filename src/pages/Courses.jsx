@@ -76,9 +76,12 @@ export default function Courses() {
   });
   const teaching = useQuery({
     queryKey: ["courses", "teaching", user?.id],
-    enabled: Boolean(user && teacher),
+    enabled: Boolean(user),
     queryFn: async () => unwrap(await supabase.from("courses").select(COURSE_CARD).eq("instructor_id", user.id).order("created_at", { ascending: false })),
   });
+
+  // Instructors whose plan ended still see (and can edit) the courses they already made.
+  const showTeaching = teacher || (teaching.data?.length ?? 0) > 0;
 
   return (
     <div>
@@ -89,7 +92,7 @@ export default function Courses() {
         <TabsList>
           <TabsTrigger value="catalog">כל הקורסים</TabsTrigger>
           {user && <TabsTrigger value="learning">הלמידה שלי</TabsTrigger>}
-          {teacher && <TabsTrigger value="teaching">הקורסים שלי</TabsTrigger>}
+          {showTeaching && <TabsTrigger value="teaching">הקורסים שלי</TabsTrigger>}
         </TabsList>
         <TabsContent value="catalog" className="space-y-4">
           <div className="flex flex-wrap gap-2">
@@ -121,7 +124,7 @@ export default function Courses() {
               empty={<EmptyState icon={GraduationCap} title="עוד לא נרשמתם לקורס" text="בחרו קורס מהקטלוג והתחילו ללמוד." />} />
           </TabsContent>
         )}
-        {teacher && (
+        {showTeaching && (
           <TabsContent value="teaching">
             <Grid loading={teaching.isLoading} items={teaching.data ?? []} render={(c) => <CourseCard key={c.id} c={c} />}
               empty={<EmptyState icon={GraduationCap} title="עוד לא יצרתם קורס" action={<Button asChild><Link to="/courses/new">יצירת קורס</Link></Button>} />} />

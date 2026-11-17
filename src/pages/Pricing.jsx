@@ -4,7 +4,7 @@ import { Check, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import PageHeader from "@/components/PageHeader";
-import { supabase } from "@/lib/supabase";
+import { callFunction } from "@/lib/supabase";
 import { useAuth } from "@/auth/AuthProvider";
 import { PAYMENTS_ENABLED, PLANS } from "@/lib/config";
 import { cn, errorMessage } from "@/lib/utils";
@@ -22,8 +22,8 @@ export default function Pricing() {
   const checkout = async (tier) => {
     setBusy(tier);
     try {
-      const { data, error } = await supabase.functions.invoke("paddle-checkout", { body: { tier, cycle } });
-      if (error || !data?.transactionId) throw error ?? new Error("checkout failed");
+      const data = await callFunction("paddle-checkout", { tier, cycle });
+      if (!data?.transactionId) throw new Error("checkout failed");
       await openCheckout({ transactionId: data.transactionId, email: user.email });
     } catch (e) {
       toast.error(errorMessage(e));

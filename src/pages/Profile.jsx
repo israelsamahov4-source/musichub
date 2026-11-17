@@ -23,6 +23,7 @@ import { supabase, unwrap } from "@/lib/supabase";
 import { useAuth } from "@/auth/AuthProvider";
 import { label } from "@/lib/config";
 import { errorMessage, formatDate, safeUrl } from "@/lib/utils";
+import { useAuthHref } from "@/auth/returnTo";
 
 function Stat({ value, text }) {
   return (
@@ -62,6 +63,7 @@ function ChipGroup({ title, items, group }) {
 }
 
 export default function Profile() {
+  const signupHref = useAuthHref("/signup");
   const { username } = useParams();
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -203,7 +205,7 @@ export default function Profile() {
                 ))}
               </div>
             )}
-            {!user && <p className="text-sm text-muted-foreground"><Link to="/signup" className="text-primary underline">הצטרפו</Link> כדי לראות את הפרופיל המלא.</p>}
+            {!user && <p className="text-sm text-muted-foreground"><Link to={signupHref} className="text-primary underline">הצטרפו</Link> כדי לראות את הפרופיל המלא.</p>}
             {user && !p.bio && !p.instruments.length && !links.length && <p className="text-sm text-muted-foreground">עוד אין פרטים בפרופיל.</p>}
           </Card>
           {courses.length > 0 && (

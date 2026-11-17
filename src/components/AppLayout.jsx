@@ -12,6 +12,7 @@ import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/auth/AuthProvider";
 import { APP_NAME, APP_TAGLINE } from "@/lib/config";
 import { cn } from "@/lib/utils";
+import { useAuthHref } from "@/auth/returnTo";
 
 const NAV = [
   { to: "/feed", label: "פיד", icon: Home, auth: true },
@@ -80,6 +81,8 @@ function Logo() {
 }
 
 export default function AppLayout() {
+  const loginHref = useAuthHref("/login");
+  const signupHref = useAuthHref("/signup");
   const { user, profile, signOut } = useAuth();
   const counts = useUnreadCounts(user?.id);
   const location = useLocation();
@@ -131,8 +134,8 @@ export default function AppLayout() {
               </>
             ) : (
               <>
-                <Button asChild variant="ghost"><Link to="/login">התחברות</Link></Button>
-                <Button asChild className="rounded-full shadow-[3px_3px_0_#FF4F81]"><Link to="/signup">הרשמה</Link></Button>
+                <Button asChild variant="ghost"><Link to={loginHref}>התחברות</Link></Button>
+                <Button asChild className="rounded-full shadow-[3px_3px_0_#FF4F81]"><Link to={signupHref}>הרשמה</Link></Button>
               </>
             )}
           </div>

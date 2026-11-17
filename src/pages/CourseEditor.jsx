@@ -129,7 +129,16 @@ export default function CourseEditor() {
     onError: onErr,
   });
 
-  if (!canTeach(profile)) {
+  // Opening a new course needs teaching rights; an instructor whose plan ended can still edit their own.
+  if (!isNew && (course.isError || (course.isSuccess && (!course.data || course.data.instructor_id !== user?.id)))) {
+    return (
+      <div className="page-narrow">
+        <EmptyState title="הקורס לא נמצא" text="אולי הוא נמחק, או שאין לכם הרשאה לערוך אותו."
+          action={<Button asChild><Link to="/courses">לכל הקורסים</Link></Button>} />
+      </div>
+    );
+  }
+  if (isNew && !canTeach(profile)) {
     return (
       <div className="page-narrow">
         <EmptyState title="פתיחת קורסים זמינה למורים" text="כדי ללמד צריך מנוי Premium או אישור מורה מהצוות."

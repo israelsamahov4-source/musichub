@@ -60,7 +60,8 @@ await ok('profile + free subscription are created on sign-up', async () => {
   const r = await db.query('select p.username, p.full_name, s.tier from public.profiles p join public.subscriptions s on s.user_id = p.id order by p.created_at');
   assert(r.rowCount === 4);
   const names = r.rows.map(x => x.username);
-  assert(names.includes('alice') && names.includes('bob') && names.includes('carolc'), names.join());
+  assert(names.includes('alice') && names.filter(n => /^user_[a-z0-9]{8,10}$/.test(n)).length === 3, names.join());
+  assert(!names.some(n => n.includes('carol') || n.includes('bob')), 'username must not reveal the e-mail address');
   assert(new Set(names).size === 4, 'usernames must be unique');
 });
 
@@ -133,7 +134,7 @@ await ok('both members can send and read', async () => {
 });
 await ok('inbox shows unread count', async () => {
   const r = await as('alice', 'select * from my_conversations()');
-  assert(r.rowCount === 1 && Number(r.rows[0].unread_count) === 1 && r.rows[0].other_username === 'bob');
+  assert(r.rowCount === 1 && Number(r.rows[0].unread_count) === 1 && r.rows[0].other_id === users.bob);
 });
 await denied('outsider cannot read the conversation', () => as('carol', 'select * from messages'));
 await denied('outsider cannot write into the conversation', () => as('carol', `insert into messages (conversation_id, sender_id, content) values ($1, $2, 'intrude')`, [convId, users.carol]));
@@ -231,8 +232,8 @@ await denied('a non-instructor cannot make a course Pro-only', async () => {
 console.log('\nSearch & rate limits');
 await ok('roles are searchable', async () => {
   await as('bob', `update profiles set musical_roles = '[{"role":"producer","level":"advanced"}]' where id = $1`, [users.bob]);
-  const r = await as('carol', `select username from profiles where role_list && array['producer']`);
-  assert(r.rowCount === 1 && r.rows[0].username === 'bob');
+  const r = await as('carol', `select id from profiles where role_list && array['producer']`);
+  assert(r.rowCount === 1 && r.rows[0].id === users.bob);
 });
 await ok('posting is rate-limited (21st post in an hour is refused)', async () => {
   for (let i = 0; i < 19; i++) await as('bob', `insert into posts (author_id, content) values ($1, 'spam ' || $2)`, [users.bob, i]);
@@ -331,6 +332,92 @@ await ok('the same user with password + code (aal2) works normally', async () =>
 });
 await ok('users without 2FA are not affected', async () => {
   assert((await as('carol', 'select * from subscriptions')).rowCount === 1);
+});
+
+console.log('\nAudit fixes (November 2026)');
+await ok('SEC-1: with 2FA on, a password-only session gets nothing from functions either', async () => {
+  await db.query(`insert into auth.mfa_factors (user_id, status) values ($1, 'verified'), ($2, 'verified')`, [users.bob, users.dave]);
+  assert((await as('bob', 'select * from my_conversations()')).rowCount === 0, 'inbox must be empty at aal1');
+  assert((await as('bob', 'select * from my_conversations()', [], 'aal2')).rowCount === 1, 'inbox works at aal2');
+  let refused = false;
+  try { await as('bob', 'select start_conversation($1)', [users.carol]); } catch { refused = true; }
+  assert(refused, 'start_conversation must refuse at aal1');
+  refused = false;
+  try { await as('dave', 'select admin_stats()'); } catch { refused = true; }
+  assert(refused, 'admin functions must refuse at aal1');
+  assert((await as('dave', 'select admin_stats() as s', [], 'aal2')).rows[0].s, 'admin works at aal2');
+  await db.query('delete from auth.mfa_factors where user_id in ($1, $2)', [users.bob, users.dave]);
+});
+await ok('SEC-3: a client cannot choose created_at (rate limits and feed order hold)', async () => {
+  const r = await as('carol', `insert into posts (author_id, content, created_at) values ($1, 'pinned?', '2099-01-01') returning created_at`, [users.carol]);
+  assert(new Date(r.rows[0].created_at).getFullYear() < 2099, 'created_at must be set by the server');
+});
+await ok('SEC-5: a join-request note is visible only to the owner and the applicant', async () => {
+  const p2 = (await as('alice', `insert into collab_projects (owner_id, title) values ($1, 'Winter EP') returning id`, [users.alice])).rows[0].id;
+  await as('bob', `insert into collab_members (project_id, user_id, status, note) values ($1, $2, 'requested', 'call me 054-0000000')`, [p2, users.bob]);
+  assert((await as(null, 'select note from collab_members where project_id = $1 and user_id = $2', [p2, users.bob])).rowCount === 0, 'anon must not see it');
+  assert((await as('carol', 'select note from collab_members where project_id = $1 and user_id = $2', [p2, users.bob])).rowCount === 0, 'others must not see it');
+  assert((await as('alice', 'select note from collab_members where project_id = $1 and user_id = $2', [p2, users.bob])).rows[0]?.note.includes('054'), 'owner sees it');
+  assert((await as('bob', 'select note from collab_members where project_id = $1 and user_id = $2', [p2, users.bob])).rowCount === 1, 'applicant sees it');
+  assert((await as(null, `select 1 from collab_members where project_id = $1 and role = 'owner'`, [p2])).rowCount === 1, 'active members stay public');
+});
+await denied('SEC-7: a malformed musical role is refused', () => as('bob', `update profiles set musical_roles = '[null]' where id = $1`, [users.bob]));
+await denied('SEC-7: a role that is not text is refused', () => as('bob', `update profiles set musical_roles = '[{"role":{"a":1}}]' where id = $1`, [users.bob]));
+await ok('SEC-7: a normal role list is still accepted', async () => {
+  await as('bob', `update profiles set musical_roles = '[{"role":"producer","level":"professional"}]' where id = $1`, [users.bob]);
+});
+await ok('SEC-4: opening a conversation does not unlock an "applications-only" CV; a reply does', async () => {
+  users.erin = (await db.query(`insert into auth.users (email, raw_user_meta_data) values ('erin@x.com', '{}') returning id`)).rows[0].id;
+  await as('erin', `update profile_details set visibility = 'applications' where user_id = $1`, [users.erin]);
+  const cv = () => as('carol', 'select headline from profile_details where user_id = $1', [users.erin]);
+  assert((await cv()).rowCount === 0, 'carol must not see it before');
+  const cid = (await as('carol', 'select start_conversation($1) as id', [users.erin])).rows[0].id;
+  assert((await cv()).rowCount === 0, 'opening a conversation alone must not unlock it');
+  await as('erin', `insert into messages (conversation_id, sender_id, content) values ($1, $2, 'hi')`, [cid, users.erin]);
+  assert((await cv()).rowCount === 1, 'after erin writes, carol may see it');
+});
+await ok('SEC-8: a suspended user cannot edit content but can still mark things read', async () => {
+  await as('server', 'update profiles set is_suspended = true where id = $1', [users.carol]);
+  let refused = false;
+  try { await as('carol', `update profiles set bio = 'spam' where id = $1`, [users.carol]); } catch (e) { refused = /suspended/.test(e.message); }
+  assert(refused, 'profile edit must be refused');
+  await as('carol', 'update notifications set read_at = now() where user_id = $1', [users.carol]);
+  await as('server', 'update profiles set is_suspended = false where id = $1', [users.carol]);
+});
+await ok('SEC-12: cancelling Pro closes paid lessons again', async () => {
+  await as('server', `insert into lessons (course_id, title, position, is_preview, video_url) values ($1, 'Paid lesson', 99, false, 'https://youtu.be/x')`, [courseId]);
+  await as('server', `update courses set is_published = true where id = $1`, [courseId]);
+  const paid = () => as('carol', 'select 1 from lessons where course_id = $1 and not is_preview', [courseId]);
+  assert((await paid()).rowCount >= 1, 'Pro member sees paid lessons');
+  await as('server', `update profiles set plan_tier = 'free' where id = $1`, [users.carol]);
+  assert((await paid()).rowCount === 0, 'after cancelling, paid lessons are closed');
+  await as('server', `update profiles set plan_tier = 'pro' where id = $1`, [users.carol]);
+});
+await ok('CODE-9: when a member leaves, their tasks become unassigned', async () => {
+  await as('server', `insert into collab_members (project_id, user_id, status) values ($1, $2, 'active') on conflict (project_id, user_id) do update set status = 'active'`, [projId, users.dave]);
+  const t = (await as('server', `insert into collab_tasks (project_id, title, created_by, assignee_id) values ($1, 'Mix', $2, $3) returning id`, [projId, users.alice, users.dave])).rows[0].id;
+  await as('dave', 'delete from collab_members where project_id = $1 and user_id = $2', [projId, users.dave]);
+  const r = await as('server', 'select assignee_id from collab_tasks where id = $1', [t]);
+  assert(r.rows[0].assignee_id === null);
+});
+await denied('SEC-13: a blocked user cannot send a join request to the blocker', async () => {
+  await as('server', 'insert into blocks (blocker_id, blocked_id) values ($1, $2)', [users.alice, users.dave]);
+  try { return await as('dave', `insert into collab_members (project_id, user_id, status) values ($1, $2, 'requested')`, [projId, users.dave]); }
+  finally { await as('server', 'delete from blocks where blocker_id = $1 and blocked_id = $2', [users.alice, users.dave]); }
+});
+await ok('SEC-9: follow, unfollow, follow again sends one notification', async () => {
+  for (let i = 0; i < 3; i++) {
+    await as('carol', 'insert into follows (follower_id, following_id) values ($1, $2) on conflict do nothing', [users.carol, users.dave]);
+    await as('carol', 'delete from follows where follower_id = $1 and following_id = $2', [users.carol, users.dave]);
+  }
+  const r = await as('server', `select count(*)::int n from notifications where user_id = $1 and actor_id = $2 and type = 'follow'`, [users.dave, users.carol]);
+  assert(r.rows[0].n === 1, `got ${r.rows[0].n}`);
+});
+await ok('CODE-18: read time comes from the server clock', async () => {
+  await as('server', `insert into notifications (user_id, type, message) values ($1, 'system', 't')`, [users.carol]);
+  await as('carol', `update notifications set read_at = '2000-01-01' where user_id = $1`, [users.carol]);
+  const r = await as('server', 'select min(read_at) m from notifications where user_id = $1 and read_at is not null', [users.carol]);
+  assert(new Date(r.rows[0].m).getFullYear() > 2000);
 });
 
 console.log('\nStorage');

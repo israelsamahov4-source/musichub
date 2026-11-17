@@ -11,6 +11,7 @@ import { supabase, unwrap } from "@/lib/supabase";
 import { useAuth } from "@/auth/AuthProvider";
 import { APP_NAME } from "@/lib/config";
 import { errorMessage } from "@/lib/utils";
+import { safeNext } from "@/auth/guards";
 
 const STEPS = [
   { title: `ברוכים הבאים ל-${APP_NAME}!`, text: "נתחיל מהבסיס: איך יכירו אתכם", sections: ["basics"] },
@@ -28,7 +29,7 @@ export default function Onboarding() {
   const [cv, setCv] = useState(EMPTY_CV);
 
   useEffect(() => { if (profile && !form) setForm(profileToForm(profile)); }, [profile, form]);
-  useEffect(() => { if (profile?.onboarding_completed) navigate("/feed", { replace: true }); }, [profile, navigate]);
+  useEffect(() => { if (profile?.onboarding_completed) navigate(safeNext("/feed"), { replace: true }); }, [profile, navigate]);
   if (!form) return <PageLoader />;
 
   const next = async () => {
@@ -43,7 +44,7 @@ export default function Onboarding() {
       unwrap(await supabase.from("profiles").update({ ...formToProfile(form), onboarding_completed: true }).eq("id", user.id));
       await refreshProfile();
       toast.success("הפרופיל מוכן!");
-      navigate("/feed", { replace: true });
+      navigate(safeNext("/feed"), { replace: true });
     } catch (e) {
       toast.error(errorMessage(e));
       if (/username/i.test(e.message)) setStep(0);

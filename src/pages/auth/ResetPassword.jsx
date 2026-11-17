@@ -8,16 +8,21 @@ import PageLoader from "@/components/PageLoader";
 import AuthShell from "./AuthShell";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/auth/AuthProvider";
+import MfaChallenge from "@/auth/MfaChallenge";
+import { useQueryClient } from "@tanstack/react-query";
 import { errorMessage } from "@/lib/utils";
 
 export default function ResetPassword() {
-  const { user, loading } = useAuth();
+  const { user, loading, mfaRequired } = useAuth();
+  const qc = useQueryClient();
   const navigate = useNavigate();
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [busy, setBusy] = useState(false);
 
   if (loading) return <PageLoader />;
+  // With two-step verification on, the server only accepts a new password after the code.
+  if (user && mfaRequired) return <MfaChallenge onDone={() => qc.invalidateQueries({ queryKey: ["mfa-level"] })} />;
   if (!user) {
     return (
       <AuthShell title="הקישור פג תוקף">

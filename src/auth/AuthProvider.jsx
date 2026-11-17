@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { supabase, unwrap } from "@/lib/supabase";
@@ -17,6 +17,11 @@ export function AuthProvider({ children }) {
       setSession(newSession ?? null);
       if (event === "PASSWORD_RECOVERY") navigate("/reset-password");
       if (event === "SIGNED_OUT") queryClient.clear();
+      // Re-check two-step status only when it can change (not on the hourly token refresh,
+      // which used to reload the page and throw away whatever the user was typing).
+      if (["SIGNED_IN", "MFA_CHALLENGE_VERIFIED", "USER_UPDATED"].includes(event)) {
+        queryClient.invalidateQueries({ queryKey: ["mfa-level"] });
+      }
     });
     return () => sub.subscription.unsubscribe();
   }, [navigate, queryClient]);
@@ -25,7 +30,7 @@ export function AuthProvider({ children }) {
 
   // Two-step verification: has the user turned it on but not entered the code yet?
   const mfaQuery = useQuery({
-    queryKey: ["mfa-level", session?.access_token],
+    queryKey: ["mfa-level", user?.id],
     enabled: Boolean(user),
     queryFn: async () => {
       const { data, error } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
@@ -49,12 +54,26 @@ export function AuthProvider({ children }) {
     staleTime: 60_000,
   });
 
+  // A device that was signed in before two-step verification was turned on elsewhere has a stale
+  // session: the database returns nothing. Refresh the session once so the code prompt appears.
+  const recovered = useRef(false);
+  useEffect(() => {
+    if (!user || !profileQuery.isError || recovered.current) return;
+    recovered.current = true;
+    supabase.auth.refreshSession().finally(() => {
+      queryClient.invalidateQueries({ queryKey: ["mfa-level"] });
+      queryClient.invalidateQueries({ queryKey: ["profile", "me"] });
+    });
+  }, [user, profileQuery.isError, queryClient]);
+
   const value = useMemo(
     () => ({
       session,
       user,
       profile: profileQuery.data ?? null,
       mfaRequired,
+      profileError: Boolean(user) && !mfaRequired && profileQuery.isError && !profileQuery.isFetching,
+      retryProfile: () => profileQuery.refetch(),
       loading: session === undefined || (Boolean(user) && (mfaQuery.isLoading || (!mfaRequired && profileQuery.isLoading))),
       refreshProfile: () => queryClient.invalidateQueries({ queryKey: ["profile"] }),
       signOut: async () => {
@@ -62,7 +81,7 @@ export function AuthProvider({ children }) {
         navigate("/");
       },
     }),
-    [session, user, mfaRequired, mfaQuery.isLoading, profileQuery.data, profileQuery.isLoading, queryClient, navigate],
+    [session, user, mfaRequired, mfaQuery.isLoading, profileQuery, queryClient, navigate],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

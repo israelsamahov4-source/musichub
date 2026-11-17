@@ -24,12 +24,35 @@ const admin = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE
   auth: { persistSession: false, autoRefreshToken: false },
 });
 
+/**
+ * The signed-in user, or null. When the user has two-step verification turned on, a session that
+ * only used the password (aal1) is refused, exactly like the database does.
+ */
 async function getUser(req: Request) {
   const jwt = req.headers.get("Authorization")?.replace(/^Bearer\s+/i, "");
   if (!jwt) return null;
   const { data, error } = await admin.auth.getUser(jwt);
-  return error ? null : data.user;
+  if (error || !data.user) return null;
+  const hasFactor = (data.user.factors ?? []).some((f) => f.status === "verified");
+  if (hasFactor) {
+    try {
+      const payload = JSON.parse(atob(jwt.split(".")[1].replace(/-/g, "+").replace(/_/g, "/")));
+      if (payload.aal !== "aal2") return null;
+    } catch {
+      return null;
+    }
+  }
+  return data.user;
 }
+
+const enc = new TextEncoder();
+async function hmacHex(secret: string, message: string) {
+  const key = await crypto.subtle.importKey("raw", enc.encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+  const mac = new Uint8Array(await crypto.subtle.sign("HMAC", key, enc.encode(message)));
+  return Array.from(mac).map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+/** Ties a checkout to the account that started it, so a buyer can't attach a subscription to someone else. */
+const accountSig = (userId: string) => hmacHex(Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!, `paddle-account:${userId}`);
 
 const PADDLE_API = Deno.env.get("PADDLE_ENV") === "production" ? "https://api.paddle.com" : "https://sandbox-api.paddle.com";
 async function paddle(path: string, init: RequestInit = {}) {
@@ -60,8 +83,8 @@ async function removeFolder(bucket: string, folder: string) {
   for (;;) {
     const { data, error } = await admin.storage.from(bucket).list(folder, { limit: 100 });
     if (error || !data?.length) return;
-    await admin.storage.from(bucket).remove(data.map((f) => `${folder}/${f.name}`));
-    if (data.length < 100) return;
+    const { error: removeError } = await admin.storage.from(bucket).remove(data.map((f) => `${folder}/${f.name}`));
+    if (removeError || data.length < 100) return; // never loop forever on a failing remove
   }
 }
 
@@ -75,11 +98,27 @@ Deno.serve(async (req) => {
     const { data: profile } = await admin.from("profiles").select("username").eq("id", user.id).single();
     if (!profile || confirm !== profile.username) return json(req, { error: "confirmation does not match" }, 400);
 
-    const { data: sub } = await admin.from("subscriptions").select("provider_subscription_id").eq("user_id", user.id).single();
-    if (sub?.provider_subscription_id && Deno.env.get("PADDLE_API_KEY")) {
-      await paddle(`/subscriptions/${sub.provider_subscription_id}/cancel`, {
-        method: "POST", body: JSON.stringify({ effective_from: "immediately" }),
-      }).catch((e) => console.error("cancel failed", e));
+    const { data: sub } = await admin.from("subscriptions")
+      .select("provider_customer_id, provider_subscription_id").eq("user_id", user.id).single();
+    if (sub?.provider_customer_id || sub?.provider_subscription_id) {
+      // Never delete an account that is still being charged: the user could no longer sign in to cancel.
+      try {
+        const ids = new Set<string>();
+        if (sub.provider_subscription_id) ids.add(sub.provider_subscription_id);
+        if (sub.provider_customer_id) {
+          const live = await paddle(`/subscriptions?customer_id=${sub.provider_customer_id}&status=active,trialing,past_due,paused`);
+          for (const s of live ?? []) ids.add(s.id);
+        }
+        for (const id of ids) {
+          const s = await paddle(`/subscriptions/${id}`);
+          if (s.status !== "canceled") {
+            await paddle(`/subscriptions/${id}/cancel`, { method: "POST", body: JSON.stringify({ effective_from: "immediately" }) });
+          }
+        }
+      } catch (e) {
+        console.error("cancel failed", e);
+        return json(req, { error: "billing cancel failed" }, 502);
+      }
     }
     await removeFolder("avatars", user.id);
     await removeFolder("media", user.id);

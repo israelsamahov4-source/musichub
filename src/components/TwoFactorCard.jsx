@@ -17,7 +17,8 @@ export default function TwoFactorCard() {
   const [busy, setBusy] = useState(false);
   const factors = useQuery({
     queryKey: ["mfa-factors"],
-    queryFn: async () => (await supabase.auth.mfa.listFactors()).data?.totp ?? [],
+    // `all` includes unverified factors left over from an abandoned attempt; `totp` lists only verified ones.
+    queryFn: async () => ((await supabase.auth.mfa.listFactors()).data?.all ?? []).filter((f) => f.factor_type === "totp"),
   });
   const active = factors.data?.find((f) => f.status === "verified");
 
@@ -25,7 +26,10 @@ export default function TwoFactorCard() {
     setBusy(true);
     // Clean up an abandoned, unverified attempt first
     for (const f of factors.data ?? []) if (f.status !== "verified") await supabase.auth.mfa.unenroll({ factorId: f.id });
-    const { data, error } = await supabase.auth.mfa.enroll({ factorType: "totp", friendlyName: `MusicHub ${new Date().toISOString().slice(0, 10)}` });
+    const { data, error } = await supabase.auth.mfa.enroll({
+      factorType: "totp",
+      friendlyName: `MusicHub ${Math.random().toString(36).slice(2, 8)}`,
+    });
     setBusy(false);
     if (error) return toast.error(errorMessage(error));
     setEnroll({ id: data.id, qr: data.totp.qr_code, secret: data.totp.secret });
@@ -40,6 +44,12 @@ export default function TwoFactorCard() {
     setEnroll(null); setCode("");
     qc.invalidateQueries({ queryKey: ["mfa-factors"] });
     qc.invalidateQueries({ queryKey: ["mfa-level"] });
+  };
+  const cancel = async () => {
+    const id = enroll?.id;
+    setEnroll(null); setCode("");
+    if (id) await supabase.auth.mfa.unenroll({ factorId: id });
+    qc.invalidateQueries({ queryKey: ["mfa-factors"] });
   };
   const disable = async () => {
     const { error } = await supabase.auth.mfa.unenroll({ factorId: active.id });
@@ -74,7 +84,7 @@ export default function TwoFactorCard() {
             <Input value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))} inputMode="numeric" autoComplete="one-time-code"
               dir="ltr" className="w-40 text-center font-mono text-lg tracking-[0.3em]" aria-label="קוד אימות" />
             <Button type="submit" disabled={busy || code.length !== 6}>הפעלה</Button>
-            <Button type="button" variant="ghost" onClick={() => setEnroll(null)}>ביטול</Button>
+            <Button type="button" variant="ghost" onClick={cancel}>ביטול</Button>
           </div>
         </form>
       ) : (

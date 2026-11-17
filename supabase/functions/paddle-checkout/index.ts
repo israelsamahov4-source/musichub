@@ -25,12 +25,35 @@ const admin = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE
   auth: { persistSession: false, autoRefreshToken: false },
 });
 
+/**
+ * The signed-in user, or null. When the user has two-step verification turned on, a session that
+ * only used the password (aal1) is refused, exactly like the database does.
+ */
 async function getUser(req: Request) {
   const jwt = req.headers.get("Authorization")?.replace(/^Bearer\s+/i, "");
   if (!jwt) return null;
   const { data, error } = await admin.auth.getUser(jwt);
-  return error ? null : data.user;
+  if (error || !data.user) return null;
+  const hasFactor = (data.user.factors ?? []).some((f) => f.status === "verified");
+  if (hasFactor) {
+    try {
+      const payload = JSON.parse(atob(jwt.split(".")[1].replace(/-/g, "+").replace(/_/g, "/")));
+      if (payload.aal !== "aal2") return null;
+    } catch {
+      return null;
+    }
+  }
+  return data.user;
 }
+
+const enc = new TextEncoder();
+async function hmacHex(secret: string, message: string) {
+  const key = await crypto.subtle.importKey("raw", enc.encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+  const mac = new Uint8Array(await crypto.subtle.sign("HMAC", key, enc.encode(message)));
+  return Array.from(mac).map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+/** Ties a checkout to the account that started it, so a buyer can't attach a subscription to someone else. */
+const accountSig = (userId: string) => hmacHex(Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!, `paddle-account:${userId}`);
 
 const PADDLE_API = Deno.env.get("PADDLE_ENV") === "production" ? "https://api.paddle.com" : "https://sandbox-api.paddle.com";
 async function paddle(path: string, init: RequestInit = {}) {
@@ -71,11 +94,16 @@ Deno.serve(async (req) => {
     if (sub && sub.tier !== "free" && ["active", "trialing", "past_due"].includes(sub.status)) {
       return json(req, { error: "already subscribed" }, 409);
     }
+    if (sub?.provider_customer_id) {
+      // The webhook may not have arrived yet for a purchase made a moment ago: ask Paddle directly.
+      const live = await paddle(`/subscriptions?customer_id=${sub.provider_customer_id}&status=active,trialing,past_due,paused`);
+      if (Array.isArray(live) && live.length) return json(req, { error: "already subscribed" }, 409);
+    }
     const tx = await paddle("/transactions", {
       method: "POST",
       body: JSON.stringify({
         items: [{ price_id: price, quantity: 1 }],
-        custom_data: { user_id: user.id },
+        custom_data: { user_id: user.id, sig: await accountSig(user.id) },
         ...(sub?.provider_customer_id ? { customer_id: sub.provider_customer_id } : {}),
       }),
     });

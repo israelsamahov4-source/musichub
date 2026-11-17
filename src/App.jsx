@@ -25,6 +25,7 @@ const Login = lazy(() => import("@/pages/auth/Login"));
 const Signup = lazy(() => import("@/pages/auth/Signup"));
 const ForgotPassword = lazy(() => import("@/pages/auth/ForgotPassword"));
 const ResetPassword = lazy(() => import("@/pages/auth/ResetPassword"));
+const AuthConfirm = lazy(() => import("./pages/auth/AuthConfirm"));
 const Onboarding = lazy(() => import("@/pages/Onboarding"));
 const Feed = lazy(() => import("@/pages/Feed"));
 const PostView = lazy(() => import("@/pages/PostView"));
@@ -63,6 +64,7 @@ export default function App() {
         <Route path="/signup" element={<GuestOnly><Signup /></GuestOnly>} />
         <Route path="/forgot-password" element={<GuestOnly><ForgotPassword /></GuestOnly>} />
         <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/auth/confirm" element={<AuthConfirm />} />
         <Route path="/onboarding" element={auth(<Onboarding />, { allowIncompleteProfile: true })} />
 
         <Route element={<AppLayout />}>

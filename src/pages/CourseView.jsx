@@ -41,11 +41,12 @@ export default function CourseView() {
   const done = c.outline.filter((l) => prog?.completed.has(l.id)).length;
   const nextLesson = c.outline.find((l) => !prog?.completed.has(l.id)) ?? c.outline[0];
   const locked = !c.is_free && !hasPro(profile);
-  const canOpen = (l) => mine || enrolled || l.is_preview;
+  const canOpen = (l) => mine || (enrolled && !locked) || l.is_preview;
 
   const cta = () => {
     if (!user) return <Button asChild size="lg"><Link to={`/signup`}>הצטרפו כדי ללמוד</Link></Button>;
     if (mine) return <Button asChild size="lg" variant="outline"><Link to={`/courses/${id}/edit`}><Pencil />עריכת הקורס</Link></Button>;
+    if (enrolled && locked) return <Button asChild size="lg"><Link to="/pricing"><Star />המנוי הסתיים: חדשו כדי להמשיך</Link></Button>;
     if (enrolled) return nextLesson && <Button asChild size="lg"><Link to={`/courses/${id}/lessons/${nextLesson.id}`}><PlayCircle />{done ? "להמשיך ללמוד" : "להתחיל ללמוד"}</Link></Button>;
     if (locked) return <Button asChild size="lg"><Link to="/pricing"><Star />קורס Pro: שדרגו כדי להירשם</Link></Button>;
     return <Button size="lg" onClick={() => enroll.mutate()} disabled={enroll.isPending}>הרשמה לקורס{c.is_free && " (חינם)"}</Button>;

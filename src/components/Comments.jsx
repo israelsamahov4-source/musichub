@@ -10,8 +10,10 @@ import { supabase, unwrap } from "@/lib/supabase";
 import { AUTHOR } from "@/api/posts";
 import { useAuth } from "@/auth/AuthProvider";
 import { errorMessage, timeAgo } from "@/lib/utils";
+import { useAuthHref } from "@/auth/returnTo";
 
 export default function Comments({ post }) {
+  const loginHref = useAuthHref("/login");
   const { user } = useAuth();
   const qc = useQueryClient();
   const [text, setText] = useState("");
@@ -63,7 +65,7 @@ export default function Comments({ post }) {
           <Button type="submit" size="icon" disabled={!text.trim() || add.isPending} aria-label="שליחת תגובה"><Send className="rtl:-scale-x-100" /></Button>
         </form>
       ) : (
-        <p className="text-sm text-muted-foreground"><Link to="/login" className="text-primary hover:underline">התחברו</Link> כדי להגיב</p>
+        <p className="text-sm text-muted-foreground"><Link to={loginHref} className="text-primary hover:underline">התחברו</Link> כדי להגיב</p>
       )}
     </div>
   );

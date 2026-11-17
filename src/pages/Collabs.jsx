@@ -21,6 +21,7 @@ import { supabase, unwrap } from "@/lib/supabase";
 import { useAuth } from "@/auth/AuthProvider";
 import { GENRES, PROJECT_TYPES, ROLES, label } from "@/lib/config";
 import { errorMessage, timeAgo } from "@/lib/utils";
+import { useAuthHref } from "@/auth/returnTo";
 
 const PROJECT_SELECT = "id, title, description, type, status, genres, looking_for_roles, location, is_remote, is_public, created_at, owner:profiles!collab_projects_owner_id_fkey(id, username, full_name, avatar_url), members:collab_members(count)";
 
@@ -87,6 +88,7 @@ const Grid = ({ loading, items, render, empty }) =>
     : items.length ? <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{items.map(render)}</div> : empty;
 
 export default function Collabs() {
+  const signupHref = useAuthHref("/signup");
   const { user } = useAuth();
   const navigate = useNavigate();
   const [type, setType] = useState("all");
@@ -128,7 +130,7 @@ export default function Collabs() {
     <div>
     <PageHeader title="פרויקטים" text="מצאו שותפים לשיר, ללהקה או להפקה, או הצטרפו לפרויקט קיים."
       actions={user ? <Button size="lg" className="shadow-[3px_3px_0_#FF4F81]" onClick={() => setOpen(true)}><Plus />פרויקט חדש</Button>
-        : <Button asChild size="lg"><Link to="/signup">הצטרפו כדי ליצור פרויקט</Link></Button>} />
+        : <Button asChild size="lg"><Link to={signupHref}>הצטרפו כדי ליצור פרויקט</Link></Button>} />
     <div className="page">
       <Tabs defaultValue="explore" dir="rtl">
         <TabsList>

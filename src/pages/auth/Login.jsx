@@ -9,8 +9,10 @@ import GoogleButton from "./GoogleButton";
 import { supabase } from "@/lib/supabase";
 import { errorMessage } from "@/lib/utils";
 import { safeNext } from "@/auth/guards";
+import { useAuthHref } from "@/auth/returnTo";
 
 export default function Login() {
+  const signupHref = useAuthHref("/signup");
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -26,7 +28,7 @@ export default function Login() {
   };
 
   return (
-    <AuthShell title="ברוכים השבים" subtitle="התחברו כדי להמשיך" footer={<>אין לכם חשבון? <Link to="/signup" className="font-medium text-primary hover:underline">הרשמה</Link></>}>
+    <AuthShell title="ברוכים השבים" subtitle="התחברו כדי להמשיך" footer={<>אין לכם חשבון? <Link to={signupHref} className="font-medium text-primary hover:underline">הרשמה</Link></>}>
       <GoogleButton />
       <form onSubmit={submit} className="space-y-4">
         <Field id="email" label="אימייל">
