@@ -9,7 +9,10 @@ export const isConfigured = Boolean(url && anonKey);
 // Row Level Security rules in supabase/migrations.
 export const supabase = isConfigured
   ? createClient(url, anonKey, {
-      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, flowType: "pkce" },
+      // "implicit": links in Supabase's default e-mails then work on any device or browser
+      // (with "pkce" they only worked in the browser that asked for them). Once custom e-mail templates
+      // are enabled, the templates in supabase/templates link to /auth/confirm, which works with either mode.
+      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, flowType: "implicit" },
     })
   : null;
 

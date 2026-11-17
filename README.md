@@ -69,7 +69,7 @@
 - **URL Configuration:** ב-Site URL שמים את כתובת האתר, למשל `https://musichub.co.il`. ב-Redirect URLs מוסיפים את `https://musichub.co.il/**` ואת `http://localhost:5173/**`.
 - **Providers → Email:** משאירים את **Confirm email** דלוק.
 - **Policies / Passwords:** אורך מינימלי 8. אם זמין בתוכנית, מפעילים גם **Leaked password protection**.
-- **Email Templates:** מדביקים את התבניות בעברית מהתיקייה `supabase/templates/`.
+- **Email Templates:** אחרי חיבור SMTP (בלעדיו Supabase לא מאפשר לערוך תבניות), מדביקים את התבניות בעברית מהתיקייה `supabase/templates/`: "Confirm signup" ו-"Reset password". הקישורים בהן עוברים דרך `/auth/confirm` ועובדים מכל מכשיר.
 - **SMTP (חובה לפני השקה):** שרת המייל המובנה של Supabase מוגבל לכמות קטנה של מיילים בשעה, ומיועד לבדיקות בלבד. מחברים ספק מייל כמו Resend, Postmark או SendGrid דרך **Authentication → SMTP Settings**, עם דומיין משלכם.
 - **התחברות עם Google (אופציונלי):** מפעילים את Google ב-Providers לפי ההוראות של Supabase, ומגדירים באתר `VITE_GOOGLE_AUTH_ENABLED=true`.
 
