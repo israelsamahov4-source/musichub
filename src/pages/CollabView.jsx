@@ -24,6 +24,7 @@ import { cleanSearch, cn, errorMessage, formatDate, textDir } from "@/lib/utils"
 import { useAuthHref } from "@/auth/returnTo";
 import { usePageTitle } from "@/lib/usePageTitle";
 import LoadError from "@/components/LoadError";
+import { DIR, tr } from "@/lib/i18n";
 
 const PERSON = "id, username, full_name, avatar_url";
 
@@ -75,18 +76,18 @@ function Tasks({ projectId, members }) {
 
   return (
     <Card className="p-4">
-      <h2 className="mb-3 font-semibold">משימות</h2>
+      <h2 className="mb-3 font-semibold">{tr("משימות")}</h2>
       <form className="mb-4 flex flex-wrap gap-2" onSubmit={(e) => { e.preventDefault(); if (title.trim()) add.mutate(); }}>
-        <Input value={title} onChange={(e) => setTitle(e.target.value)} maxLength={200} placeholder="משימה חדשה, למשל: להקליט גיטרות" className="min-w-[200px] flex-1" aria-label="משימה חדשה" />
-        <Select value={assignee} onValueChange={setAssignee} dir="rtl">
-          <SelectTrigger className="w-40" aria-label="אחראי/ת"><SelectValue /></SelectTrigger>
+        <Input value={title} onChange={(e) => setTitle(e.target.value)} maxLength={200} placeholder={tr("משימה חדשה, למשל: להקליט גיטרות")} className="min-w-[200px] flex-1" aria-label={tr("משימה חדשה")} />
+        <Select value={assignee} onValueChange={setAssignee} dir={DIR}>
+          <SelectTrigger className="w-40" aria-label={tr("אחראי/ת")}><SelectValue /></SelectTrigger>
           <SelectContent>
-            <SelectItem value="none">ללא אחראי/ת</SelectItem>
+            <SelectItem value="none">{tr("ללא אחראי/ת")}</SelectItem>
             {active.map((m) => <SelectItem key={m.user_id} value={m.user_id}>{m.profile?.full_name || m.profile?.username}</SelectItem>)}
           </SelectContent>
         </Select>
-        <Input type="date" value={due} onChange={(e) => setDue(e.target.value)} className="w-40" aria-label="תאריך יעד" />
-        <Button type="submit" disabled={!title.trim() || add.isPending}><Plus />הוספה</Button>
+        <Input type="date" value={due} onChange={(e) => setDue(e.target.value)} className="w-40" aria-label={tr("תאריך יעד")} />
+        <Button type="submit" disabled={!title.trim() || add.isPending}><Plus />{tr("הוספה")}</Button>
       </form>
       <div className="grid gap-3 md:grid-cols-3">
         {TASK_STATUS.map((s) => (
@@ -97,15 +98,15 @@ function Tasks({ projectId, members }) {
                 <li key={t.id} className="group rounded-md border bg-card p-2.5 text-sm shadow-sm">
                   <div className="flex items-start gap-2">
                     <span className={cn("flex-1 break-words", t.status === "done" && "text-muted-foreground line-through")}>{t.title}</span>
-                    <ConfirmDialog title="למחוק את המשימה?" confirmLabel="מחיקה" destructive onConfirm={() => remove.mutate(t.id)} trigger={
-                      <button type="button" aria-label="מחיקת משימה" className="-m-2 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-muted-foreground hover:text-destructive [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:focus-visible:opacity-100 [@media(hover:hover)]:group-hover:opacity-100"><Trash2 className="h-4 w-4" /></button>} />
+                    <ConfirmDialog title={tr("למחוק את המשימה?")} confirmLabel={tr("מחיקה")} destructive onConfirm={() => remove.mutate(t.id)} trigger={
+                      <button type="button" aria-label={tr("מחיקת משימה")} className="-m-2 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-muted-foreground hover:text-destructive [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:focus-visible:opacity-100 [@media(hover:hover)]:group-hover:opacity-100"><Trash2 className="h-4 w-4" /></button>} />
                   </div>
                   <div className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
                     {t.assignee && <><UserAvatar profile={t.assignee} size="xs" /><span className="truncate">{t.assignee.full_name || t.assignee.username}</span></>}
-                    {t.due_date && <span className="ms-auto">עד {formatDate(t.due_date, "d.M")}</span>}
+                    {t.due_date && <span className="ms-auto">{tr("עד")}{" "}{formatDate(t.due_date, "d.M")}</span>}
                   </div>
-                  <Select value={t.status} onValueChange={(v) => update.mutate({ id: t.id, status: v })} dir="rtl">
-                    <SelectTrigger className="mt-2 h-7 text-xs" aria-label="סטטוס"><SelectValue /></SelectTrigger>
+                  <Select value={t.status} onValueChange={(v) => update.mutate({ id: t.id, status: v })} dir={DIR}>
+                    <SelectTrigger className="mt-2 h-7 text-xs" aria-label={tr("סטטוס")}><SelectValue /></SelectTrigger>
                     <SelectContent>{TASK_STATUS.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}</SelectContent>
                   </Select>
                 </li>
@@ -130,21 +131,21 @@ function InviteDialog({ projectId, open, onOpenChange, existing }) {
   });
   const invite = useMutation({
     mutationFn: async (userId) => unwrap(await supabase.from("collab_members").insert({ project_id: projectId, user_id: userId, status: "invited" })),
-    onSuccess: () => { toast.success("ההזמנה נשלחה"); qc.invalidateQueries({ queryKey: ["project", projectId] }); },
+    onSuccess: () => { toast.success(tr("ההזמנה נשלחה")); qc.invalidateQueries({ queryKey: ["project", projectId] }); },
     onError: (e) => toast.error(errorMessage(e)),
   });
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
-        <DialogHeader><DialogTitle>הזמנת מוזיקאים לפרויקט</DialogTitle></DialogHeader>
-        <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="חיפוש לפי שם או שם משתמש" aria-label="חיפוש משתמשים" />
+        <DialogHeader><DialogTitle>{tr("הזמנת מוזיקאים לפרויקט")}</DialogTitle></DialogHeader>
+        <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder={tr("חיפוש לפי שם או שם משתמש")} aria-label={tr("חיפוש משתמשים")} />
         <ul className="max-h-72 space-y-2 overflow-y-auto">
           {results.map((p) => (
             <li key={p.id} className="flex items-center gap-2">
               <UserAvatar profile={p} />
               <span className="flex-1 truncate">{p.full_name || p.username} <span className="ltr text-xs text-muted-foreground">@{p.username}</span></span>
-              {existing.has(p.id) ? <span className="text-xs text-muted-foreground">כבר בפרויקט</span>
-                : <Button size="sm" variant="outline" onClick={() => invite.mutate(p.id)} disabled={invite.isPending}>הזמנה</Button>}
+              {existing.has(p.id) ? <span className="text-xs text-muted-foreground">{tr("כבר בפרויקט")}</span>
+                : <Button size="sm" variant="outline" onClick={() => invite.mutate(p.id)} disabled={invite.isPending}>{tr("הזמנה")}</Button>}
             </li>
           ))}
         </ul>
@@ -196,18 +197,18 @@ export default function CollabView() {
       const { title, description, type, status, genres, looking_for_roles, location, is_remote, is_public } = edit;
       unwrap(await supabase.from("collab_projects").update({ title: title.trim(), description: description.trim(), type, status, genres, looking_for_roles, location, is_remote, is_public }).eq("id", id));
     },
-    onSuccess: () => { toast.success("נשמר"); setEditOpen(false); refresh(); },
+    onSuccess: () => { toast.success(tr("נשמר")); setEditOpen(false); refresh(); },
     onError: onErr,
   });
   const deleteProject = useMutation({
     mutationFn: async () => unwrap(await supabase.from("collab_projects").delete().eq("id", id)),
-    onSuccess: () => { toast.success("הפרויקט נמחק"); qc.invalidateQueries({ queryKey: ["projects"] }); navigate("/collabs"); },
+    onSuccess: () => { toast.success(tr("הפרויקט נמחק")); qc.invalidateQueries({ queryKey: ["projects"] }); navigate("/collabs"); },
     onError: onErr,
   });
 
   if (isLoading) return <PageLoader />;
   if (isError) return <div className="page"><LoadError onRetry={refetch} /></div>;
-  if (!p) return <div className="page"><EmptyState title="הפרויקט לא נמצא" text="ייתכן שהוא נמחק או שהוא פרטי." /></div>;
+  if (!p) return <div className="page"><EmptyState title={tr("הפרויקט לא נמצא")} text={tr("ייתכן שהוא נמחק או שהוא פרטי.")} /></div>;
 
   const me = p.members.find((m) => m.user_id === user?.id);
   const isOwner = p.owner_id === user?.id;
@@ -240,38 +241,38 @@ export default function CollabView() {
             </Link>
           </div>
           <div className="flex flex-wrap gap-2 sm:max-w-[45%] sm:justify-end">
-            {!user && <Button asChild><Link to={signupHref}>הצטרפו כדי להשתתף</Link></Button>}
-            {user && !me && p.is_public && <Button onClick={() => setJoinOpen(true)}><UserPlus />בקשת הצטרפות</Button>}
+            {!user && <Button asChild><Link to={signupHref}>{tr("הצטרפו כדי להשתתף")}</Link></Button>}
+            {user && !me && p.is_public && <Button onClick={() => setJoinOpen(true)}><UserPlus />{tr("בקשת הצטרפות")}</Button>}
             {me?.status === "requested" && (
-              <Button variant="outline" onClick={() => memberOp.mutate({ op: "delete", userId: user.id })}>ביטול הבקשה</Button>
+              <Button variant="outline" onClick={() => memberOp.mutate({ op: "delete", userId: user.id })}>{tr("ביטול הבקשה")}</Button>
             )}
             {me?.status === "invited" && (
               <>
-                <Button onClick={() => memberOp.mutate({ op: "update", userId: user.id, values: { status: "active" } })}><Check />קבלת ההזמנה</Button>
-                <Button variant="outline" onClick={() => memberOp.mutate({ op: "delete", userId: user.id })}>דחייה</Button>
+                <Button onClick={() => memberOp.mutate({ op: "update", userId: user.id, values: { status: "active" } })}><Check />{tr("קבלת ההזמנה")}</Button>
+                <Button variant="outline" onClick={() => memberOp.mutate({ op: "delete", userId: user.id })}>{tr("דחייה")}</Button>
               </>
             )}
-            {user && !isOwner && <Button variant="outline" onClick={messageOwner}><MessageCircle />הודעה למנהל/ת</Button>}
+            {user && !isOwner && <Button variant="outline" onClick={messageOwner}><MessageCircle />{tr("הודעה למנהל/ת")}</Button>}
             {isMember && !isOwner && (
-              <ConfirmDialog trigger={<Button variant="ghost"><LogOut />עזיבה</Button>} title="לעזוב את הפרויקט?" confirmLabel="עזיבה" destructive
+              <ConfirmDialog trigger={<Button variant="ghost"><LogOut />{tr("עזיבה")}</Button>} title={tr("לעזוב את הפרויקט?")} confirmLabel={tr("עזיבה")} destructive
                 onConfirm={() => memberOp.mutate({ op: "delete", userId: user.id })} />
             )}
             {isOwner && (
               <>
-                <Button variant="outline" onClick={() => { setEdit({ ...p }); setEditOpen(true); }}><Pencil />עריכה</Button>
-                <ConfirmDialog trigger={<Button variant="ghost" className="text-destructive"><Trash2 />מחיקה</Button>}
-                  title="למחוק את הפרויקט?" description="כל המשימות והחברים בפרויקט יימחקו. אי אפשר לבטל." confirmLabel="מחיקה" destructive
+                <Button variant="outline" onClick={() => { setEdit({ ...p }); setEditOpen(true); }}><Pencil />{tr("עריכה")}</Button>
+                <ConfirmDialog trigger={<Button variant="ghost" className="text-destructive"><Trash2 />{tr("מחיקה")}</Button>}
+                  title={tr("למחוק את הפרויקט?")} description={tr("כל המשימות והחברים בפרויקט יימחקו. אי אפשר לבטל.")} confirmLabel={tr("מחיקה")} destructive
                   onConfirm={() => deleteProject.mutate()} />
               </>
             )}
           </div>
         </div>
-        {me?.status === "requested" && <p className="mt-4 rounded-xl bg-[#FFF6D9] px-3 py-2.5 text-sm text-[#6E5200]">הבקשה שלכם נשלחה וממתינה לאישור.</p>}
+        {me?.status === "requested" && <p className="mt-4 rounded-xl bg-[#FFF6D9] px-3 py-2.5 text-sm text-[#6E5200]">{tr("הבקשה שלכם נשלחה וממתינה לאישור.")}</p>}
         {p.description && <p dir={textDir(p.description)} className="mt-4 max-w-[68ch] whitespace-pre-wrap break-words text-start text-[15px] leading-relaxed">{p.description}</p>}
         <div className="mt-4 flex flex-wrap gap-1.5">
-          {p.looking_for_roles.map((r) => <span key={r} className="chip bg-[#FFE3EB] font-semibold text-[#8E1840]">מחפשים {label("roles", r)}</span>)}
+          {p.looking_for_roles.map((r) => <span key={r} className="chip bg-[#FFE3EB] font-semibold text-[#8E1840]">{tr("מחפשים")}{" "}{label("roles", r)}</span>)}
           {p.genres.map((g) => <span key={g} className="chip">{label("genres", g)}</span>)}
-          {p.is_remote ? <span className="chip">אפשר מרחוק</span> : p.location && <span className="chip"><MapPin className="me-1 h-3 w-3" aria-hidden />{p.location}</span>}
+          {p.is_remote ? <span className="chip">{tr("אפשר מרחוק")}</span> : p.location && <span className="chip"><MapPin className="me-1 h-3 w-3" aria-hidden />{p.location}</span>}
         </div>
         </div>
       </Card>
@@ -279,14 +280,14 @@ export default function CollabView() {
       <div className="grid gap-5 lg:grid-cols-[1fr_300px]">
         <div className="min-w-0">
           {isMember ? <Tasks projectId={id} members={p.members} /> : (
-            <Card className="p-5 text-center text-sm text-muted-foreground">המשימות של הפרויקט גלויות רק לחברי הפרויקט.</Card>
+            <Card className="p-5 text-center text-sm text-muted-foreground">{tr("המשימות של הפרויקט גלויות רק לחברי הפרויקט.")}</Card>
           )}
         </div>
         <aside className="space-y-4">
           <Card className="p-4">
             <div className="mb-3 flex items-center">
-              <h2 className="font-semibold">חברי הפרויקט ({active.length})</h2>
-              {isOwner && <Button size="sm" variant="ghost" className="ms-auto" onClick={() => setInviteOpen(true)}><UserPlus />הזמנה</Button>}
+              <h2 className="font-semibold">{tr("חברי הפרויקט (")}{active.length})</h2>
+              {isOwner && <Button size="sm" variant="ghost" className="ms-auto" onClick={() => setInviteOpen(true)}><UserPlus />{tr("הזמנה")}</Button>}
             </div>
             <ul className="space-y-2.5">
               {active.map((m) => (
@@ -294,20 +295,20 @@ export default function CollabView() {
                   <Link to={`/u/${m.profile?.username}`} aria-hidden="true" tabIndex={-1}><UserAvatar profile={m.profile} /></Link>
                   <div className="min-w-0 flex-1 text-sm">
                     <Link to={`/u/${m.profile?.username}`} className="block truncate font-medium hover:underline">{m.profile?.full_name || m.profile?.username}</Link>
-                    <span className="block truncate text-xs text-muted-foreground">{m.role === "owner" ? "מנהל/ת" : cvs[m.user_id]?.headline || m.instrument || "חבר/ה"}</span>
+                    <span className="block truncate text-xs text-muted-foreground">{m.role === "owner" ? tr("מנהל/ת") : cvs[m.user_id]?.headline || m.instrument || tr("חבר/ה")}</span>
                   </div>
                   {isOwner && m.role !== "owner" && (
-                    <ConfirmDialog trigger={<Button size="icon" variant="ghost" className="h-7 w-7" aria-label="הסרה מהפרויקט"><X /></Button>}
-                      title="להסיר מהפרויקט?" confirmLabel="הסרה" destructive onConfirm={() => memberOp.mutate({ op: "delete", userId: m.user_id })} />
+                    <ConfirmDialog trigger={<Button size="icon" variant="ghost" className="h-7 w-7" aria-label={tr("הסרה מהפרויקט")}><X /></Button>}
+                      title={tr("להסיר מהפרויקט?")} confirmLabel={tr("הסרה")} destructive onConfirm={() => memberOp.mutate({ op: "delete", userId: m.user_id })} />
                   )}
                 </li>
               ))}
             </ul>
-            {isOwner && invited.length > 0 && <p className="mt-3 text-xs text-muted-foreground">הוזמנו וממתינים: {invited.map((m) => m.profile?.full_name || m.profile?.username).join(", ")}</p>}
+            {isOwner && invited.length > 0 && <p className="mt-3 text-xs text-muted-foreground">{tr("הוזמנו וממתינים:")}{" "}{invited.map((m) => m.profile?.full_name || m.profile?.username).join(", ")}</p>}
           </Card>
           {isOwner && requests.length > 0 && (
             <Card className="p-4">
-              <h2 className="mb-3 font-semibold">בקשות הצטרפות ({requests.length})</h2>
+              <h2 className="mb-3 font-semibold">{tr("בקשות הצטרפות (")}{requests.length})</h2>
               <ul className="space-y-3">
                 {requests.map((m) => (
                   <li key={m.user_id} className="space-y-3 rounded-xl border border-ink/10 p-3">
@@ -318,14 +319,14 @@ export default function CollabView() {
                         {cvs[m.user_id]?.headline && <span className="block truncate text-xs text-muted-foreground">{cvs[m.user_id].headline}</span>}
                       </span>
                     </Link>
-                    {m.instrument && <p className="text-xs text-muted-foreground">מציע/ה: {m.instrument}</p>}
+                    {m.instrument && <p className="text-xs text-muted-foreground">{tr("מציע/ה:")}{" "}{m.instrument}</p>}
                     {m.note && <p dir={textDir(m.note)} className="whitespace-pre-wrap rounded-lg bg-muted px-3 py-2 text-start text-sm">{m.note}</p>}
                     <LookingForBadges items={wants[m.user_id]} />
                     {cvs[m.user_id] && <CvView cv={cvs[m.user_id]} compact />}
                     <div className="flex flex-wrap gap-2">
-                      <Button size="sm" onClick={() => memberOp.mutate({ op: "update", userId: m.user_id, values: { status: "active" } })}><Check />אישור</Button>
-                      <Button size="sm" variant="outline" onClick={() => memberOp.mutate({ op: "delete", userId: m.user_id })}>דחייה</Button>
-                      <Button asChild size="sm" variant="ghost"><Link to={`/u/${m.profile?.username}`}>לפרופיל המלא</Link></Button>
+                      <Button size="sm" onClick={() => memberOp.mutate({ op: "update", userId: m.user_id, values: { status: "active" } })}><Check />{tr("אישור")}</Button>
+                      <Button size="sm" variant="outline" onClick={() => memberOp.mutate({ op: "delete", userId: m.user_id })}>{tr("דחייה")}</Button>
+                      <Button asChild size="sm" variant="ghost"><Link to={`/u/${m.profile?.username}`}>{tr("לפרופיל המלא")}</Link></Button>
                     </div>
                   </li>
                 ))}
@@ -337,14 +338,14 @@ export default function CollabView() {
 
       <Dialog open={joinOpen} onOpenChange={setJoinOpen}>
         <DialogContent>
-          <DialogHeader><DialogTitle>בקשת הצטרפות ל"{p.title}"</DialogTitle></DialogHeader>
-          <Field id="inst" label="מה תביאו לפרויקט?"><Input id="inst" value={join.instrument} onChange={(e) => setJoin({ ...join, instrument: e.target.value })} maxLength={60} placeholder="לדוגמה: בס, מיקס, כתיבה" /></Field>
-          <Field id="note" label="כמה מילים למנהל/ת הפרויקט"><Textarea id="note" value={join.note} onChange={(e) => setJoin({ ...join, note: e.target.value })} maxLength={500} rows={3} /></Field>
+          <DialogHeader><DialogTitle>{tr("בקשת הצטרפות ל\"")}{p.title}"</DialogTitle></DialogHeader>
+          <Field id="inst" label={tr("מה תביאו לפרויקט?")}><Input id="inst" value={join.instrument} onChange={(e) => setJoin({ ...join, instrument: e.target.value })} maxLength={60} placeholder={tr("לדוגמה: בס, מיקס, כתיבה")} /></Field>
+          <Field id="note" label={tr("כמה מילים למנהל/ת הפרויקט")}><Textarea id="note" value={join.note} onChange={(e) => setJoin({ ...join, note: e.target.value })} maxLength={500} rows={3} /></Field>
           <DialogFooter>
             <Button disabled={memberOp.isPending} onClick={() => memberOp.mutate(
               { op: "insert", userId: user.id, values: { status: "requested", instrument: join.instrument.trim(), note: join.note.trim() } },
-              { onSuccess: () => { setJoinOpen(false); toast.success("הבקשה נשלחה"); } },
-            )}>שליחת בקשה</Button>
+              { onSuccess: () => { setJoinOpen(false); toast.success(tr("הבקשה נשלחה")); } },
+            )}>{tr("שליחת בקשה")}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -352,15 +353,15 @@ export default function CollabView() {
       {isOwner && edit && (
         <Dialog open={editOpen} onOpenChange={setEditOpen}>
           <DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-xl">
-            <DialogHeader><DialogTitle>עריכת פרויקט</DialogTitle></DialogHeader>
-            <Field id="status" label="סטטוס">
-              <Select value={edit.status} onValueChange={(v) => setEdit({ ...edit, status: v })} dir="rtl">
+            <DialogHeader><DialogTitle>{tr("עריכת פרויקט")}</DialogTitle></DialogHeader>
+            <Field id="status" label={tr("סטטוס")}>
+              <Select value={edit.status} onValueChange={(v) => setEdit({ ...edit, status: v })} dir={DIR}>
                 <SelectTrigger id="status"><SelectValue /></SelectTrigger>
                 <SelectContent>{PROJECT_STATUS.map((s) => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)}</SelectContent>
               </Select>
             </Field>
             <ProjectFields value={edit} onChange={setEdit} />
-            <DialogFooter><Button onClick={() => saveProject.mutate()} disabled={edit.title.trim().length < 2 || saveProject.isPending}>שמירה</Button></DialogFooter>
+            <DialogFooter><Button onClick={() => saveProject.mutate()} disabled={edit.title.trim().length < 2 || saveProject.isPending}>{tr("שמירה")}</Button></DialogFooter>
           </DialogContent>
         </Dialog>
       )}

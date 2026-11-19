@@ -12,9 +12,10 @@ import UserAvatar from "@/components/UserAvatar";
 import { ACCEPT, uploadFile } from "@/lib/upload";
 import { GENRES, INSTRUMENTS, LEVELS, LOOKING_FOR, ROLES } from "@/lib/config";
 import { errorMessage, safeUrl } from "@/lib/utils";
+import { DIR, tr } from "@/lib/i18n";
 
 export const LINK_FIELDS = [
-  { key: "website", label: "אתר אישי" },
+  { key: "website", label: tr("אתר אישי") },
   { key: "instagram", label: "Instagram" },
   { key: "youtube", label: "YouTube" },
   { key: "spotify", label: "Spotify" },
@@ -67,10 +68,10 @@ export function formToProfile(f) {
 /** Problems per field, e.g. { username: "..." }; empty when the basics are valid. */
 export function profileErrors(f) {
   const errors = {};
-  if (f.full_name.trim().length < 2) errors.full_name = "נא לכתוב שם מלא (לפחות 2 תווים)";
+  if (f.full_name.trim().length < 2) errors.full_name = tr("נא לכתוב שם מלא (לפחות 2 תווים)");
   const u = f.username.trim().toLowerCase();
-  if (u.length < 3 || u.length > 30) errors.username = "שם המשתמש צריך להיות באורך 3 עד 30 תווים";
-  else if (!/^[a-z0-9_]+$/.test(u)) errors.username = "רק אותיות באנגלית קטנות, ספרות או _ (בלי רווחים ועברית)";
+  if (u.length < 3 || u.length > 30) errors.username = tr("שם המשתמש צריך להיות באורך 3 עד 30 תווים");
+  else if (!/^[a-z0-9_]+$/.test(u)) errors.username = tr("רק אותיות באנגלית קטנות, ספרות או _ (בלי רווחים ועברית)");
   return errors;
 }
 
@@ -122,39 +123,39 @@ export default function ProfileForm({ form, setForm, userId, sections = ["basics
             <UserAvatar profile={{ ...form }} size="xl" />
             <input ref={fileRef} type="file" accept={ACCEPT.image} hidden onChange={onImage("avatar_url")} />
             <Button type="button" variant="outline" onClick={() => fileRef.current?.click()} disabled={!!uploading}>
-              {uploading === "avatar_url" ? <Loader2 className="animate-spin" /> : <Camera />}תמונת פרופיל
+              {uploading === "avatar_url" ? <Loader2 className="animate-spin" /> : <Camera />}{tr("תמונת פרופיל")}
             </Button>
           </div>
           {!compact && <div className="space-y-2">
             <div className="relative h-24 overflow-hidden rounded-xl bg-riso-blue">
               {safeUrl(form.cover_url)
                 ? <img src={safeUrl(form.cover_url)} alt="" className="h-full w-full object-cover" />
-                : <p className="flex h-full items-center justify-center px-4 text-center text-sm text-white/85">בלי תמונת כיסוי, הכיסוי יורכב מהכלים והתפקידים שלכם</p>}
+                : <p className="flex h-full items-center justify-center px-4 text-center text-sm text-white/85">{tr("בלי תמונת כיסוי יופיע כיסוי הגלים של MusicHub")}</p>}
             </div>
             <input ref={coverRef} type="file" accept={ACCEPT.image} hidden onChange={onImage("cover_url")} />
             <div className="flex flex-wrap gap-2">
               <Button type="button" variant="outline" size="sm" onClick={() => coverRef.current?.click()} disabled={!!uploading}>
-                {uploading === "cover_url" ? <Loader2 className="animate-spin" /> : <ImageIcon />}תמונת כיסוי
+                {uploading === "cover_url" ? <Loader2 className="animate-spin" /> : <ImageIcon />}{tr("תמונת כיסוי")}
               </Button>
-              {form.cover_url && <Button type="button" variant="ghost" size="sm" onClick={() => setForm((f) => ({ ...f, cover_url: null }))}>הסרה</Button>}
+              {form.cover_url && <Button type="button" variant="ghost" size="sm" onClick={() => setForm((f) => ({ ...f, cover_url: null }))}>{tr("הסרה")}</Button>}
             </div>
           </div>}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <Field id="full_name" label="שם מלא" error={errors.full_name}>
+            <Field id="full_name" label={tr("שם מלא")} error={errors.full_name}>
               <Input id="full_name" value={form.full_name} onChange={set("full_name")} maxLength={80} required />
             </Field>
-            <Field id="username" label="שם משתמש" error={errors.username} hint="אותיות באנגלית קטנות, ספרות או _. יופיע בכתובת הפרופיל שלכם">
+            <Field id="username" label={tr("שם משתמש")} error={errors.username} hint={tr("אותיות באנגלית קטנות, ספרות או _. יופיע בכתובת הפרופיל שלכם")}>
               <Input id="username" dir="ltr" value={form.username} onChange={(e) => set("username")(e.target.value.toLowerCase())} maxLength={30} required />
             </Field>
-            <Field id="location" label="עיר">
+            <Field id="location" label={tr("עיר")}>
               <CityPicker id="location" value={form.location} onChange={set("location")} />
             </Field>
-            <Field id="user_type" label="אני…">
-              <Select value={form.user_type} onValueChange={set("user_type")} dir="rtl">
+            <Field id="user_type" label={tr("אני…")}>
+              <Select value={form.user_type} onValueChange={set("user_type")} dir={DIR}>
                 <SelectTrigger id="user_type"><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="musician">מוזיקאי/ת</SelectItem>
-                  <SelectItem value="listener">חובב/ת מוזיקה</SelectItem>
+                  <SelectItem value="musician">{tr("מוזיקאי/ת")}</SelectItem>
+                  <SelectItem value="listener">{tr("חובב/ת מוזיקה")}</SelectItem>
                 </SelectContent>
               </Select>
             </Field>
@@ -164,25 +165,25 @@ export default function ProfileForm({ form, setForm, userId, sections = ["basics
 
       {show("music") && (
         <section className="space-y-4">
-          <Field label="כלי נגינה"><TagPicker options={INSTRUMENTS} value={form.instruments} onChange={set("instruments")} max={10} label="כלי נגינה" popular={compact ? POPULAR.instruments : undefined} /></Field>
-          <Field label="תפקידים"><TagPicker options={ROLES} value={form.roles} onChange={set("roles")} max={6} label="תפקידים" popular={compact ? POPULAR.roles : undefined} /></Field>
-          {!compact && <Field id="level" label="רמה מוזיקלית">
-            <Select value={form.level} onValueChange={set("level")} dir="rtl">
+          <Field label={tr("כלי נגינה")}><TagPicker options={INSTRUMENTS} value={form.instruments} onChange={set("instruments")} max={10} label={tr("כלי נגינה")} popular={compact ? POPULAR.instruments : undefined} /></Field>
+          <Field label={tr("תפקידים")}><TagPicker options={ROLES} value={form.roles} onChange={set("roles")} max={6} label={tr("תפקידים")} popular={compact ? POPULAR.roles : undefined} /></Field>
+          {!compact && <Field id="level" label={tr("רמה מוזיקלית")}>
+            <Select value={form.level} onValueChange={set("level")} dir={DIR}>
               <SelectTrigger id="level" className="sm:w-60"><SelectValue /></SelectTrigger>
               <SelectContent>{LEVELS.map((l) => <SelectItem key={l.value} value={l.value}>{l.label}</SelectItem>)}</SelectContent>
             </Select>
           </Field>}
-          <Field label={compact ? "ז'אנרים (עד 3)" : "ז'אנרים"}><TagPicker options={GENRES} value={form.genres} onChange={set("genres")} max={compact ? 3 : 8} label="ז'אנרים" popular={compact ? POPULAR.genres : undefined} /></Field>
+          <Field label={compact ? tr("ז'אנרים (עד 3)") : tr("ז'אנרים")}><TagPicker options={GENRES} value={form.genres} onChange={set("genres")} max={compact ? 3 : 8} label={tr("ז'אנרים")} popular={compact ? POPULAR.genres : undefined} /></Field>
         </section>
       )}
 
       {show("about") && (
         <section className="space-y-4">
-          <Field label="מה אני מחפש/ת" hint="מה שתסמנו יופיע בפרופיל, ויעזור לאנשים שמחפשים בדיוק אתכם למצוא אתכם.">
-            <TagPicker options={LOOKING_FOR} value={form.looking_for} onChange={set("looking_for")} label="מה אני מחפש/ת" />
+          <Field label={tr("מה אני מחפש/ת")} hint={tr("מה שתסמנו יופיע בפרופיל, ויעזור לאנשים שמחפשים בדיוק אתכם למצוא אתכם.")}>
+            <TagPicker options={LOOKING_FOR} value={form.looking_for} onChange={set("looking_for")} label={tr("מה אני מחפש/ת")} />
           </Field>
-          <Field id="bio" label="קצת עליי" hint={`${form.bio.length}/1000`}>
-            <Textarea id="bio" value={form.bio} onChange={set("bio")} maxLength={1000} rows={4} placeholder="השפעות, ניסיון, על מה אתם עובדים עכשיו…" />
+          <Field id="bio" label={tr("קצת עליי")} hint={`${form.bio.length}/1000`}>
+            <Textarea id="bio" value={form.bio} onChange={set("bio")} maxLength={1000} rows={4} placeholder={tr("השפעות, ניסיון, על מה אתם עובדים עכשיו…")} />
           </Field>
         </section>
       )}

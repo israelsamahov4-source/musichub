@@ -1,14 +1,17 @@
 import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { formatDistanceToNow, format } from "date-fns";
-import { he } from "date-fns/locale";
+import { enUS, he } from "date-fns/locale";
+import { LANG, tr } from "@/lib/i18n";
+
+const dateLocale = LANG === "en" ? enUS : he;
 
 export function cn(...inputs) {
   return twMerge(clsx(inputs));
 }
 
-export const timeAgo = (date) => formatDistanceToNow(new Date(date), { addSuffix: true, locale: he });
-export const formatDate = (date, pattern = "d בMMMM yyyy") => format(new Date(date), pattern, { locale: he });
+export const timeAgo = (date) => formatDistanceToNow(new Date(date), { addSuffix: true, locale: dateLocale });
+export const formatDate = (date, pattern = tr("d בMMMM yyyy")) => format(new Date(date), pattern, { locale: dateLocale });
 
 /** Only allow http(s) links in href/src (blocks javascript: and data: URLs). */
 export function safeUrl(url) {
@@ -53,34 +56,34 @@ export function cleanSearch(q) {
 }
 
 const ERROR_MESSAGES = [
-  [/invalid login credentials/i, "האימייל או הסיסמה שגויים"],
-  [/email not confirmed/i, "צריך לאשר את כתובת האימייל. בדקו את תיבת הדואר שלכם"],
-  [/user already registered/i, "כבר קיים חשבון עם האימייל הזה"],
-  [/password should be at least/i, "הסיסמה חייבת להכיל לפחות 8 תווים"],
-  [/weak.?password|password is known to be weak/i, "הסיסמה חלשה מדי. נסו סיסמה ארוכה ומגוונת יותר"],
-  [/rate limit|too many/i, "יותר מדי ניסיונות. נסו שוב בעוד כמה דקות"],
-  [/profiles_username_key|duplicate key.*username/i, "שם המשתמש כבר תפוס"],
-  [/profiles_username_check/i, "שם משתמש: 3–30 תווים, אותיות באנגלית קטנות, ספרות וקו תחתון"],
-  [/payments not configured/i, "התשלומים עוד לא פתוחים. נסו שוב בקרוב"],
-  [/no billing account/i, "עוד אין לכם מנוי בתשלום"],
-  [/billing cancel failed/i, "לא הצלחנו לבטל את המנוי ב-Paddle, ולכן החשבון לא נמחק. נסו שוב בעוד כמה דקות או כתבו לנו"],
-  [/mfa required/i, "צריך להזין את הקוד מאפליקציית האימות. התחברו מחדש"],
-  [/already subscribed/i, "כבר יש לכם מנוי פעיל. אפשר לשנות אותו בהגדרות"],
-  [/account suspended/i, "החשבון מושעה ולא ניתן לפרסם"],
-  [/blocked/i, "לא ניתן לבצע את הפעולה מול המשתמש הזה"],
-  [/row-level security|permission denied/i, "אין הרשאה לבצע את הפעולה"],
-  [/slow down/i, "רגע, אתם מהירים מדי. נסו שוב בעוד דקה"],
-  [/check constraint/i, "חלק מהנתונים אינם תקינים"],
-  [/failed to fetch payment form/i, "טופס התשלום לא נטען. אם יש חוסם פרסומות, כבו אותו לאתר הזה ונסו שוב"],
-  [/failed to fetch|network/i, "בעיית חיבור לאינטרנט. נסו שוב"],
-  [/payload too large|exceeded the maximum allowed size/i, "הקובץ גדול מדי"],
-  [/mime type/i, "סוג הקובץ אינו נתמך"],
+  [/invalid login credentials/i, tr("האימייל או הסיסמה שגויים")],
+  [/email not confirmed/i, tr("צריך לאשר את כתובת האימייל. בדקו את תיבת הדואר שלכם")],
+  [/user already registered/i, tr("כבר קיים חשבון עם האימייל הזה")],
+  [/password should be at least/i, tr("הסיסמה חייבת להכיל לפחות 8 תווים")],
+  [/weak.?password|password is known to be weak/i, tr("הסיסמה חלשה מדי. נסו סיסמה ארוכה ומגוונת יותר")],
+  [/rate limit|too many/i, tr("יותר מדי ניסיונות. נסו שוב בעוד כמה דקות")],
+  [/profiles_username_key|duplicate key.*username/i, tr("שם המשתמש כבר תפוס")],
+  [/profiles_username_check/i, tr("שם משתמש: 3–30 תווים, אותיות באנגלית קטנות, ספרות וקו תחתון")],
+  [/payments not configured/i, tr("התשלומים עוד לא פתוחים. נסו שוב בקרוב")],
+  [/no billing account/i, tr("עוד אין לכם מנוי בתשלום")],
+  [/billing cancel failed/i, tr("לא הצלחנו לבטל את המנוי ב-Paddle, ולכן החשבון לא נמחק. נסו שוב בעוד כמה דקות או כתבו לנו")],
+  [/mfa required/i, tr("צריך להזין את הקוד מאפליקציית האימות. התחברו מחדש")],
+  [/already subscribed/i, tr("כבר יש לכם מנוי פעיל. אפשר לשנות אותו בהגדרות")],
+  [/account suspended/i, tr("החשבון מושעה ולא ניתן לפרסם")],
+  [/blocked/i, tr("לא ניתן לבצע את הפעולה מול המשתמש הזה")],
+  [/row-level security|permission denied/i, tr("אין הרשאה לבצע את הפעולה")],
+  [/slow down/i, tr("רגע, אתם מהירים מדי. נסו שוב בעוד דקה")],
+  [/check constraint/i, tr("חלק מהנתונים אינם תקינים")],
+  [/failed to fetch payment form/i, tr("טופס התשלום לא נטען. אם יש חוסם פרסומות, כבו אותו לאתר הזה ונסו שוב")],
+  [/failed to fetch|network/i, tr("בעיית חיבור לאינטרנט. נסו שוב")],
+  [/payload too large|exceeded the maximum allowed size/i, tr("הקובץ גדול מדי")],
+  [/mime type/i, tr("סוג הקובץ אינו נתמך")],
 ];
 
 export function errorMessage(err) {
   const msg = err?.message || String(err || "");
   for (const [re, text] of ERROR_MESSAGES) if (re.test(msg)) return text;
-  return "משהו השתבש. נסו שוב";
+  return tr("משהו השתבש. נסו שוב");
 }
 
 export const initials = (name) =>

@@ -21,6 +21,7 @@ import { GENRES, INSTRUMENTS, LOOKING_FOR, ROLES, label } from "@/lib/config";
 import { useAuth } from "@/auth/AuthProvider";
 import { cleanSearch, cn } from "@/lib/utils";
 import LoadError from "@/components/LoadError";
+import { tr } from "@/lib/i18n";
 
 const PAGE = 24;
 const EMPTY = { q: "", location: "", instruments: [], genres: [], lookingFor: [], roles: [], openOnly: false };
@@ -33,7 +34,7 @@ function useDebounced(value, ms = 350) {
 
 function MusicianCard({ p }) {
   const roles = (Array.isArray(p.musical_roles) ? p.musical_roles : []).filter((r) => typeof r?.role === "string").map((r) => label("roles", r.role));
-  const subtitle = p.details?.headline || [...roles.slice(0, 1), ...p.instruments.slice(0, 2).map((i) => label("instruments", i))].join(" · ") || (p.user_type === "listener" ? "חובב/ת מוזיקה" : "מוזיקאי/ת");
+  const subtitle = p.details?.headline || [...roles.slice(0, 1), ...p.instruments.slice(0, 2).map((i) => label("instruments", i))].join(" · ") || (p.user_type === "listener" ? tr("חובב/ת מוזיקה") : tr("מוזיקאי/ת"));
   return (
     <Card className="group relative flex min-w-0 flex-col overflow-hidden text-center transition-shadow duration-200 can-hover:hover:shadow-pop">
       <div className="h-14" style={{ backgroundColor: p.plan_tier && p.plan_tier !== "free" ? "#FFD84D" : brandFor(p.id) }} aria-hidden />
@@ -46,7 +47,7 @@ function MusicianCard({ p }) {
         {p.location && <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground"><MapPin className="h-3 w-3" aria-hidden />{p.location}</p>}
         {p.looking_for?.length > 0 && (
           <p className="mt-2 flex max-w-full items-center gap-1 rounded-full bg-[#FFF0F4] px-2.5 py-0.5 text-xs font-semibold text-[#8E1840]" title={p.looking_for.map((v) => label("lookingFor", v)).join(", ")}>
-            <Handshake className="h-3.5 w-3.5 shrink-0" aria-label="מחפש/ת" />
+            <Handshake className="h-3.5 w-3.5 shrink-0" aria-label={tr("מחפש/ת")} />
             <span className="truncate">{label("lookingFor", p.looking_for[0])}</span>{p.looking_for.length > 1 && <span className="shrink-0">+{p.looking_for.length - 1}</span>}
           </p>
         )}
@@ -101,18 +102,18 @@ export default function Discover() {
 
   return (
     <div>
-    <PageHeader title="מוזיקאים" text="מצאו נגנים, זמרים, מפיקים ומורים לפי כלי, תפקיד, ז'אנר ומיקום." />
+    <PageHeader title={tr("מוזיקאים")} text={tr("מצאו נגנים, זמרים, מפיקים ומורים לפי כלי, תפקיד, ז'אנר ומיקום.")} />
     <div className="page">
       <div className="flex gap-2">
         <div className="relative flex-1">
           <Search className="pointer-events-none absolute start-4 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-muted-foreground" aria-hidden />
-          <Input value={f.q} onChange={(e) => set("q")(e.target.value)} placeholder="חיפוש לפי שם או תיאור…" className="h-12 rounded-full ps-11 shadow-card" aria-label="חיפוש מוזיקאים" />
+          <Input value={f.q} onChange={(e) => set("q")(e.target.value)} placeholder={tr("חיפוש לפי שם או תיאור…")} className="h-12 rounded-full ps-11 shadow-card" aria-label={tr("חיפוש מוזיקאים")} />
         </div>
         <Button variant={showFilters || activeCount ? "secondary" : "outline"} className="h-12 shadow-card" onClick={() => setShowFilters((s) => !s)} aria-expanded={showFilters}>
-          <SlidersHorizontal />סינון{activeCount > 0 && ` (${activeCount})`}
+          <SlidersHorizontal />{tr("סינון")}{activeCount > 0 && ` (${activeCount})`}
         </Button>
       </div>
-      <div className="no-scrollbar -mx-4 mt-3 flex gap-2 overflow-x-auto px-4" role="group" aria-label="סינון מהיר לפי כלי">
+      <div className="no-scrollbar -mx-4 mt-3 flex gap-2 overflow-x-auto px-4" role="group" aria-label={tr("סינון מהיר לפי כלי")}>
         {QUICK.filter((v) => INSTRUMENTS.some((o) => o.value === v)).map((v) => {
           const on = f.instruments.includes(v);
           return (
@@ -127,14 +128,14 @@ export default function Discover() {
 
       {showFilters && (
         <Card className="mt-3 space-y-4 p-4">
-          <Field label="כלי נגינה"><TagPicker options={INSTRUMENTS} value={f.instruments} onChange={set("instruments")} label="כלי נגינה" /></Field>
-          <Field label="תפקיד"><TagPicker options={ROLES} value={f.roles} onChange={set("roles")} label="תפקיד" /></Field>
-          <Field label="ז'אנר"><TagPicker options={GENRES} value={f.genres} onChange={set("genres")} label="ז'אנר" /></Field>
-          <Field label="מחפשים"><TagPicker options={LOOKING_FOR} value={f.lookingFor} onChange={set("lookingFor")} label="מחפשים" /></Field>
+          <Field label={tr("כלי נגינה")}><TagPicker options={INSTRUMENTS} value={f.instruments} onChange={set("instruments")} label={tr("כלי נגינה")} /></Field>
+          <Field label={tr("תפקיד")}><TagPicker options={ROLES} value={f.roles} onChange={set("roles")} label={tr("תפקיד")} /></Field>
+          <Field label={tr("ז'אנר")}><TagPicker options={GENRES} value={f.genres} onChange={set("genres")} label={tr("ז'אנר")} /></Field>
+          <Field label={tr("מחפשים")}><TagPicker options={LOOKING_FOR} value={f.lookingFor} onChange={set("lookingFor")} label={tr("מחפשים")} /></Field>
           <div className="flex flex-wrap items-end gap-4">
-            <Field id="loc" label="עיר או אזור"><CityPicker id="loc" regions value={f.location} onChange={set("location")} placeholder="עיר או אזור" className="w-60" /></Field>
-            <label className="flex items-center gap-2 pb-2 text-sm"><Switch aria-label="רק פתוחים לשיתופי פעולה" checked={f.openOnly} onCheckedChange={set("openOnly")} />רק פתוחים לשיתופי פעולה</label>
-            {activeCount > 0 && <Button variant="ghost" onClick={() => setF({ ...EMPTY, q: f.q })}>ניקוי סינון</Button>}
+            <Field id="loc" label={tr("עיר או אזור")}><CityPicker id="loc" regions value={f.location} onChange={set("location")} placeholder={tr("עיר או אזור")} className="w-60" /></Field>
+            <label className="flex items-center gap-2 pb-2 text-sm"><Switch aria-label={tr("רק פתוחים לשיתופי פעולה")} checked={f.openOnly} onCheckedChange={set("openOnly")} />{tr("רק פתוחים לשיתופי פעולה")}</label>
+            {activeCount > 0 && <Button variant="ghost" onClick={() => setF({ ...EMPTY, q: f.q })}>{tr("ניקוי סינון")}</Button>}
           </div>
         </Card>
       )}
@@ -145,13 +146,13 @@ export default function Discover() {
         ) : query.isError ? (
           <LoadError onRetry={query.refetch} />
         ) : people.length === 0 ? (
-          <EmptyState icon={Users} title="לא מצאנו מוזיקאים שמתאימים לחיפוש" text="נסו להרחיב את הסינון." />
+          <EmptyState icon={Users} title={tr("לא מצאנו מוזיקאים שמתאימים לחיפוש")} text={tr("נסו להרחיב את הסינון.")} />
         ) : (
           <>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4">{people.map((p) => <MusicianCard key={p.id} p={p} />)}</div>
             {query.hasNextPage && (
               <div className="mt-6 flex justify-center">
-                <Button variant="outline" onClick={() => query.fetchNextPage()} disabled={query.isFetchingNextPage}>עוד תוצאות</Button>
+                <Button variant="outline" onClick={() => query.fetchNextPage()} disabled={query.isFetchingNextPage}>{tr("עוד תוצאות")}</Button>
               </div>
             )}
           </>

@@ -16,6 +16,7 @@ import { ACCEPT, uploadFile } from "@/lib/upload";
 import { GENRES } from "@/lib/config";
 import { useAuth } from "@/auth/AuthProvider";
 import { cn, errorMessage, normalizeUrl, safeUrl, videoEmbedUrl } from "@/lib/utils";
+import { tr } from "@/lib/i18n";
 
 export default function PostComposer() {
   const { user, profile } = useAuth();
@@ -50,7 +51,7 @@ export default function PostComposer() {
 
   const applyLink = () => {
     const url = safeUrl(normalizeUrl(link));
-    if (!url) return setLinkError("הקישור לא נראה תקין. הדביקו כתובת מלאה, לדוגמה: https://youtube.com/…");
+    if (!url) return setLinkError(tr("הקישור לא נראה תקין. הדביקו כתובת מלאה, לדוגמה: https://youtube.com/…"));
     setLinkError(null);
     setMedia({ url, type: videoEmbedUrl(url) ? "video" : "link" });
     setLinkMode(false);
@@ -69,7 +70,7 @@ export default function PostComposer() {
       })),
     onSuccess: () => {
       setContent(""); setMedia(null); setGenres([]); setCollab(false); setShowGenres(false); setExpanded(false);
-      toast.success("הפוסט פורסם");
+      toast.success(tr("הפוסט פורסם"));
       qc.invalidateQueries({ queryKey: ["posts"] });
     },
     onError: (e) => toast.error(errorMessage(e)),
@@ -90,40 +91,40 @@ export default function PostComposer() {
             onChange={(e) => setContent(e.target.value)}
             maxLength={5000}
             rows={open ? 3 : 1}
-            placeholder={open ? "על מה אתם עובדים? שתפו קטע, שאלה או חיפוש שותפים…" : "על מה אתם עובדים?"}
-            aria-label="תוכן הפוסט"
+            placeholder={open ? tr("על מה אתם עובדים? שתפו קטע, שאלה או חיפוש שותפים…") : tr("על מה אתם עובדים?")}
+            aria-label={tr("תוכן הפוסט")}
             className={cn("resize-none rounded-2xl border-0 bg-muted px-4 py-3 text-[15px] focus-visible:bg-card focus-visible:ring-2", open ? "min-h-[84px]" : "min-h-[48px] overflow-hidden md:min-h-[84px]")}
           />
           {media && (
             <div className="relative">
               <MediaView url={media.url} type={media.type} />
-              <Button size="icon" variant="secondary" className="absolute end-2 top-2 h-7 w-7" onClick={() => setMedia(null)} aria-label="הסרת מדיה"><X /></Button>
+              <Button size="icon" variant="secondary" className="absolute end-2 top-2 h-7 w-7" onClick={() => setMedia(null)} aria-label={tr("הסרת מדיה")}><X /></Button>
             </div>
           )}
           {linkMode && (
             <div className="flex gap-2">
-              <Input dir="ltr" value={link} onChange={(e) => { setLink(e.target.value); setLinkError(null); }} placeholder="https://youtube.com/…" aria-label="קישור"
+              <Input dir="ltr" value={link} onChange={(e) => { setLink(e.target.value); setLinkError(null); }} placeholder="https://youtube.com/…" aria-label={tr("קישור")}
                 aria-invalid={linkError ? true : undefined} aria-describedby={linkError ? "link-error" : undefined} onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), applyLink())} />
-              <Button variant="secondary" onClick={applyLink}>הוספה</Button>
+              <Button variant="secondary" onClick={applyLink}>{tr("הוספה")}</Button>
             </div>
           )}
           {linkMode && linkError && <p id="link-error" role="alert" className="text-xs font-medium text-destructive">{linkError}</p>}
-          {showGenres && <TagPicker options={GENRES} value={genres} onChange={setGenres} max={3} label="ז'אנרים" />}
+          {showGenres && <TagPicker options={GENRES} value={genres} onChange={setGenres} max={3} label={tr("ז'אנרים")} />}
 
           <div className={cn("-ms-2 flex-wrap items-center gap-0.5", open ? "flex" : "hidden md:flex")}>
             <input ref={imageRef} type="file" accept={ACCEPT.image} hidden onChange={(e) => onFile(e, "image")} />
             <input ref={audioRef} type="file" accept={ACCEPT.audio} hidden onChange={(e) => onFile(e, "audio")} />
-            <Button variant="ghost" size="sm" onClick={() => imageRef.current?.click()} disabled={uploading || !!media}><ImageIcon className="text-primary" />תמונה</Button>
-            <Button variant="ghost" size="sm" onClick={() => audioRef.current?.click()} disabled={uploading || !!media}><Music className="text-riso-pink" />שמע</Button>
-            <Button variant="ghost" size="sm" onClick={() => setLinkMode((v) => !v)} disabled={uploading || !!media}><Video className="text-[#C79300]" />וידאו או קישור</Button>
-            <Button variant="ghost" size="sm" onClick={() => setShowGenres((v) => !v)} aria-expanded={showGenres}><Tag className="text-muted-foreground" />ז'אנר</Button>
-            {uploading && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" aria-label="מעלה…" />}
+            <Button variant="ghost" size="sm" onClick={() => imageRef.current?.click()} disabled={uploading || !!media}><ImageIcon className="text-primary" />{tr("תמונה")}</Button>
+            <Button variant="ghost" size="sm" onClick={() => audioRef.current?.click()} disabled={uploading || !!media}><Music className="text-riso-pink" />{tr("שמע")}</Button>
+            <Button variant="ghost" size="sm" onClick={() => setLinkMode((v) => !v)} disabled={uploading || !!media}><Video className="text-[#C79300]" />{tr("וידאו או קישור")}</Button>
+            <Button variant="ghost" size="sm" onClick={() => setShowGenres((v) => !v)} aria-expanded={showGenres}><Tag className="text-muted-foreground" />{tr("ז'אנר")}</Button>
+            {uploading && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" aria-label={tr("מעלה…")} />}
             <div className="ms-auto flex items-center gap-3">
               <div className="flex items-center gap-2">
                 <Switch id="collab" checked={collab} onCheckedChange={setCollab} />
-                <Label htmlFor="collab" className="text-sm font-normal">מחפש/ת שותפים</Label>
+                <Label htmlFor="collab" className="text-sm font-normal">{tr("מחפש/ת שותפים")}</Label>
               </div>
-              <Button onClick={() => publish.mutate()} disabled={!canPost}>פרסום</Button>
+              <Button onClick={() => publish.mutate()} disabled={!canPost}>{tr("פרסום")}</Button>
             </div>
           </div>
         </div>

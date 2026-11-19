@@ -3,6 +3,7 @@ import { MapPin, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { canonicalCity, suggestPlaces } from "@/lib/cities";
 import { cn } from "@/lib/utils";
+import { tr } from "@/lib/i18n";
 
 /**
  * A text box that suggests cities as you type (an accessible combobox).
@@ -10,7 +11,7 @@ import { cn } from "@/lib/utils";
  * Other text is kept as typed. With `regions`, whole regions are offered too (for search filters).
  * Extra props (id, aria-*) reach the input, so <Field> can link its label and errors.
  */
-export default function CityPicker({ value, onChange, regions = false, placeholder = "התחילו להקליד עיר", className, ...inputProps }) {
+export default function CityPicker({ value, onChange, regions = false, placeholder = tr("התחילו להקליד עיר"), className, ...inputProps }) {
   const listId = useId();
   const inputRef = useRef(null);
   const [open, setOpen] = useState(false);
@@ -48,7 +49,7 @@ export default function CityPicker({ value, onChange, regions = false, placehold
         onKeyDown={onKeyDown}
       />
       {value && (
-        <button type="button" aria-label="ניקוי העיר" onClick={() => { onChange(""); inputRef.current?.focus(); }}
+        <button type="button" aria-label={tr("ניקוי העיר")} onClick={() => { onChange(""); inputRef.current?.focus(); }}
           className="absolute end-0 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-lg text-muted-foreground hover:text-foreground">
           <X className="h-4 w-4" aria-hidden />
         </button>
@@ -59,8 +60,8 @@ export default function CityPicker({ value, onChange, regions = false, placehold
           <li key={o.name} id={`${listId}-${i}`} role="option" aria-selected={i === active}
             onMouseDown={(e) => e.preventDefault()} onClick={() => pick(o.name)}
             className={cn("flex min-h-10 cursor-pointer items-center justify-between gap-3 rounded-md px-3 text-sm", i === active ? "bg-accent" : "hover:bg-accent")}>
-            <span className={cn(!o.region && "font-semibold")}>{o.region ? o.name : `כל ${o.name}`}</span>
-            <span className="text-xs text-muted-foreground">{o.region || "אזור"}</span>
+            <span className={cn(!o.region && "font-semibold")}>{o.region ? o.name : tr("כל {0}", o.name)}</span>
+            <span className="text-xs text-muted-foreground">{o.region || tr("אזור")}</span>
           </li>
         ))}
       </ul>

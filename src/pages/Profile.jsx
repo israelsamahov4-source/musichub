@@ -27,6 +27,7 @@ import { errorMessage, formatDate, safeUrl, textDir } from "@/lib/utils";
 import { useAuthHref } from "@/auth/returnTo";
 import { usePageTitle } from "@/lib/usePageTitle";
 import LoadError from "@/components/LoadError";
+import { DIR, tr } from "@/lib/i18n";
 
 function Stat({ value, text }) {
   return (
@@ -114,7 +115,7 @@ export default function Profile() {
 
   if (isLoading) return <PageLoader />;
   if (isError) return <div className="page"><LoadError onRetry={refetch} /></div>;
-  if (!p) return <div className="page"><EmptyState title="המשתמש לא נמצא" text="אולי שם המשתמש השתנה?" /></div>;
+  if (!p) return <div className="page"><EmptyState title={tr("המשתמש לא נמצא")} text={tr("אולי שם המשתמש השתנה?")} /></div>;
 
   const mine = user?.id === p.id;
   const roles = (Array.isArray(p.musical_roles) ? p.musical_roles : []).map((r) => r?.role).filter((r) => typeof r === "string");
@@ -131,7 +132,7 @@ export default function Profile() {
     const { error } = await supabase.from("blocks").insert({ blocker_id: user.id, blocked_id: p.id });
     if (error) return toast.error(errorMessage(error));
     await supabase.from("follows").delete().eq("follower_id", user.id).eq("following_id", p.id);
-    toast.success("המשתמש נחסם. אפשר לבטל בהגדרות.");
+    toast.success(tr("המשתמש נחסם. אפשר לבטל בהגדרות."));
     qc.invalidateQueries();
   };
 
@@ -139,26 +140,26 @@ export default function Profile() {
   const actions = (
     <>
               {mine ? (
-                <Button asChild variant="outline"><Link to="/profile/edit"><Pencil />עריכת פרופיל</Link></Button>
+                <Button asChild variant="outline"><Link to="/profile/edit"><Pencil />{tr("עריכת פרופיל")}</Link></Button>
               ) : user ? (
                 <>
                   <FollowButton profileId={p.id} size="default" />
-                  <Button variant="outline" onClick={message}><MessageCircle />הודעה</Button>
-                  <DropdownMenu dir="rtl">
-                    <DropdownMenuTrigger asChild><Button variant="outline" size="icon" aria-label="אפשרויות נוספות"><MoreHorizontal /></Button></DropdownMenuTrigger>
+                  <Button variant="outline" onClick={message}><MessageCircle />{tr("הודעה")}</Button>
+                  <DropdownMenu dir={DIR}>
+                    <DropdownMenuTrigger asChild><Button variant="outline" size="icon" aria-label={tr("אפשרויות נוספות")}><MoreHorizontal /></Button></DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => setReportOpen(true)}><Flag className="h-4 w-4" />דיווח</DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => setReportOpen(true)}><Flag className="h-4 w-4" />{tr("דיווח")}</DropdownMenuItem>
                       <ConfirmDialog
-                        trigger={<DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-destructive"><Ban className="h-4 w-4" />חסימה</DropdownMenuItem>}
-                        title={`לחסום את ${name}?`}
-                        description="לא תוכלו לשלוח הודעות זה לזה, והפוסטים שלהם לא יופיעו אצלכם."
-                        confirmLabel="חסימה" destructive onConfirm={block}
+                        trigger={<DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-destructive"><Ban className="h-4 w-4" />{tr("חסימה")}</DropdownMenuItem>}
+                        title={tr("לחסום את {0}?", name)}
+                        description={tr("לא תוכלו לשלוח הודעות זה לזה, והפוסטים שלהם לא יופיעו אצלכם.")}
+                        confirmLabel={tr("חסימה")} destructive onConfirm={block}
                       />
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </>
               ) : (
-                <Button asChild><Link to={signupHref}>הצטרפו כדי לעקוב</Link></Button>
+                <Button asChild><Link to={signupHref}>{tr("הצטרפו כדי לעקוב")}</Link></Button>
               )}
     </>
   );
@@ -177,24 +178,24 @@ export default function Profile() {
               <h1 className="text-[1.65rem] font-bold leading-tight tracking-tight sm:text-[2rem]">{name}</h1>
               <PlanBadge tier={p.plan_tier} />
             </div>
-            <p className="mt-0.5 text-[15px] text-foreground/85">{cv?.headline || roleLine || (p.user_type === "listener" ? "חובב/ת מוזיקה" : "מוזיקאי/ת")}</p>
+            <p className="mt-0.5 text-[15px] text-foreground/85">{cv?.headline || roleLine || (p.user_type === "listener" ? tr("חובב/ת מוזיקה") : tr("מוזיקאי/ת"))}</p>
             <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground">
               <span className="ltr">@{p.username}</span>
               {p.location && <span className="flex items-center gap-1"><MapPin className="h-3.5 w-3.5" aria-hidden />{p.location}</span>}
               {level && <span>{label("levels", level)}</span>}
-              <span>הצטרף/ה ב{formatDate(p.created_at, "MMMM yyyy")}</span>
+              <span>{tr("הצטרף/ה ב")}{formatDate(p.created_at, "MMMM yyyy")}</span>
             </div>
             {user && (
               <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1">
-                <Stat value={stats?.followers} text="עוקבים" />
-                <Stat value={stats?.following} text="נעקבים" />
-                <Stat value={stats?.posts} text="פוסטים" />
+                <Stat value={stats?.followers} text={tr("עוקבים")} />
+                <Stat value={stats?.following} text={tr("נעקבים")} />
+                <Stat value={stats?.posts} text={tr("פוסטים")} />
               </div>
             )}
             <div className="mt-4 flex gap-2 sm:hidden [&>*]:flex-1 [&>*:last-child:not(:first-child)]:flex-none">{actions}</div>
             {p.looking_for?.length > 0 && (
               <div className="mt-4 flex flex-wrap items-center gap-2 rounded-xl bg-[#FFF0F4] px-3 py-2.5">
-                <span className="flex items-center gap-1.5 text-sm font-semibold text-[#8E1840]"><Handshake className="h-4 w-4" aria-hidden />מחפש/ת</span>
+                <span className="flex items-center gap-1.5 text-sm font-semibold text-[#8E1840]"><Handshake className="h-4 w-4" aria-hidden />{tr("מחפש/ת")}</span>
                 {p.looking_for.map((v) => <span key={v} className="rounded-full bg-card px-2.5 py-0.5 text-[13px] font-medium text-[#8E1840] shadow-[inset_0_0_0_1px_rgb(255_79_129/0.3)]">{label("lookingFor", v)}</span>)}
               </div>
             )}
@@ -205,10 +206,10 @@ export default function Profile() {
       <div className="grid items-start gap-4 px-4 sm:px-0 lg:grid-cols-[minmax(0,1fr)_300px]">
         <aside className="space-y-4 lg:order-last">
           <Card className="space-y-4 p-5">
-            <h2 className="text-lg font-bold">קצת עליי</h2>
+            <h2 className="text-lg font-bold">{tr("קצת עליי")}</h2>
             {p.bio && <p dir={textDir(p.bio)} className="whitespace-pre-wrap break-words text-start text-[15px] leading-relaxed">{p.bio}</p>}
-            <ChipGroup title="כלי נגינה" items={p.instruments} group="instruments" />
-            <ChipGroup title="ז'אנרים" items={p.genres} group="genres" />
+            <ChipGroup title={tr("כלי נגינה")} items={p.instruments} group="instruments" />
+            <ChipGroup title={tr("ז'אנרים")} items={p.genres} group="genres" />
             {links.length > 0 && (
               <div className="space-y-1 border-t border-border/70 pt-3">
                 {links.map((l) => (
@@ -218,40 +219,40 @@ export default function Profile() {
                 ))}
               </div>
             )}
-            {!user && <p className="text-sm text-muted-foreground"><Link to={signupHref} className="font-semibold text-primary hover:underline">הצטרפו</Link> כדי לראות את הפרופיל המלא.</p>}
-            {user && !p.bio && !p.instruments.length && !links.length && <p className="text-sm text-muted-foreground">עוד אין פרטים בפרופיל.</p>}
+            {!user && <p className="text-sm text-muted-foreground"><Link to={signupHref} className="font-semibold text-primary hover:underline">{tr("הצטרפו")}</Link>{" "}{tr("כדי לראות את הפרופיל המלא.")}</p>}
+            {user && !p.bio && !p.instruments.length && !links.length && <p className="text-sm text-muted-foreground">{tr("עוד אין פרטים בפרופיל.")}</p>}
           </Card>
           {courses.length > 0 && (
             <Card className="p-5">
-              <h2 className="mb-2 text-lg font-bold">קורסים שמלמד/ת</h2>
+              <h2 className="mb-2 text-lg font-bold">{tr("קורסים שמלמד/ת")}</h2>
               <ul className="-mx-2">{courses.map((c) => <li key={c.id}><Link to={`/courses/${c.id}`} className="block rounded-lg px-2 py-1.5 text-sm font-medium hover:bg-muted">{c.title}</Link></li>)}</ul>
             </Card>
           )}
         </aside>
-        <Tabs defaultValue="cv" dir="rtl" className="min-w-0">
+        <Tabs defaultValue="cv" dir={DIR} className="min-w-0">
           <TabsList className="mb-4">
-            <TabsTrigger value="cv">קורות חיים</TabsTrigger>
-            <TabsTrigger value="posts">פוסטים</TabsTrigger>
-            <TabsTrigger value="projects">פרויקטים{projects.length > 0 && ` (${projects.length})`}</TabsTrigger>
+            <TabsTrigger value="cv">{tr("קורות חיים")}</TabsTrigger>
+            <TabsTrigger value="posts">{tr("פוסטים")}</TabsTrigger>
+            <TabsTrigger value="projects">{tr("פרויקטים")}{projects.length > 0 && ` (${projects.length})`}</TabsTrigger>
           </TabsList>
           <TabsContent value="cv">
             {cvLoading ? null : mine && !cv?.headline && !cv?.experience?.length ? (
-              <EmptyState icon={Briefcase} title="עוד לא מילאתם קורות חיים" text="ניסיון, לימודים ותיק עבודות עוזרים למנהלי פרויקטים להחליט לעבוד איתכם."
-                action={<Button asChild><Link to="/profile/edit">מילוי קורות חיים</Link></Button>} />
+              <EmptyState icon={Briefcase} title={tr("עוד לא מילאתם קורות חיים")} text={tr("ניסיון, לימודים ותיק עבודות עוזרים למנהלי פרויקטים להחליט לעבוד איתכם.")}
+                action={<Button asChild><Link to="/profile/edit">{tr("מילוי קורות חיים")}</Link></Button>} />
             ) : (
-              <Section title="קורות חיים מוזיקליים" action={mine && cv && (
-                <span className="text-xs text-muted-foreground">גלוי ל{{ public: "כולם", members: "חברי הקהילה", applications: "מי שאתם פונים אליו" }[cv.visibility]} · <Link to="/profile/edit" className="font-semibold text-primary hover:underline">שינוי</Link></span>
+              <Section title={tr("קורות חיים מוזיקליים")} action={mine && cv && (
+                <span className="text-xs text-muted-foreground">{tr("גלוי ל")}{{ public: tr("כולם"), members: tr("חברי הקהילה"), applications: tr("מי שאתם פונים אליו") }[cv.visibility]} · <Link to="/profile/edit" className="font-semibold text-primary hover:underline">{tr("שינוי")}</Link></span>
               )}>
-                <CvView cv={cv} hiddenText={user ? "קורות החיים של המשתמש/ת גלויים רק לאנשים שהם פונים אליהם, למשל מנהלי פרויקטים שביקשו להצטרף אליהם."
-                  : "התחברו כדי לראות את קורות החיים המוזיקליים."} />
+                <CvView cv={cv} hiddenText={user ? tr("קורות החיים של המשתמש/ת גלויים רק לאנשים שהם פונים אליהם, למשל מנהלי פרויקטים שביקשו להצטרף אליהם.")
+                  : tr("התחברו כדי לראות את קורות החיים המוזיקליים.")} />
               </Section>
             )}
           </TabsContent>
           <TabsContent value="posts" className="space-y-4">
-            <PostList queryKey={["author", p.id]} filters={{ authorId: p.id }} empty={<EmptyState icon={Music} title="עדיין אין פוסטים" />} />
+            <PostList queryKey={["author", p.id]} filters={{ authorId: p.id }} empty={<EmptyState icon={Music} title={tr("עדיין אין פוסטים")} />} />
           </TabsContent>
           <TabsContent value="projects">
-            {projects.length === 0 ? <EmptyState icon={Handshake} title="אין פרויקטים פעילים" /> : (
+            {projects.length === 0 ? <EmptyState icon={Handshake} title={tr("אין פרויקטים פעילים")} /> : (
               <div className="grid gap-3 sm:grid-cols-2">
                 {projects.map(({ project, role }) => (
                   <Link key={project.id} to={`/collabs/${project.id}`}>
@@ -260,7 +261,7 @@ export default function Profile() {
                       <div className="min-w-0">
                         <div className="truncate font-bold">{project.title}</div>
                         <div className="text-sm text-muted-foreground">
-                          {label("projectTypes", project.type)} · {label("projectStatus", project.status)}{role === "owner" && " · מנהל/ת"}
+                          {label("projectTypes", project.type)} · {label("projectStatus", project.status)}{role === "owner" && tr(" · מנהל/ת")}
                         </div>
                       </div>
                     </Card>

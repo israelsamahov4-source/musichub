@@ -1,6 +1,7 @@
 import { ExternalLink } from "lucide-react";
 import AudioPlayer from "@/components/AudioPlayer";
 import { safeUrl, videoEmbedUrl } from "@/lib/utils";
+import { tr } from "@/lib/i18n";
 
 /** Renders an image, audio file, or YouTube/Vimeo video from a URL. */
 export default function MediaView({ url, type, title = "", subtitle }) {
@@ -12,7 +13,7 @@ export default function MediaView({ url, type, title = "", subtitle }) {
       <div className="aspect-video overflow-hidden rounded-xl bg-black">
         <iframe
           src={embed}
-          title={title || "וידאו"}
+          title={title || tr("וידאו")}
           className="h-full w-full"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
@@ -26,7 +27,7 @@ export default function MediaView({ url, type, title = "", subtitle }) {
     return <img src={src} alt={title} loading="lazy" className="max-h-[560px] w-full rounded-xl bg-muted object-cover" />;
   }
   if (type === "audio") {
-    return <AudioPlayer src={src} title={title || "קטע שמע"} subtitle={subtitle} />;
+    return <AudioPlayer src={src} title={title || tr("קטע שמע")} subtitle={subtitle} />;
   }
   return (
     <a href={src} target="_blank" rel="noopener noreferrer nofollow" className="inline-flex items-center gap-1 text-sm text-primary underline-offset-4 hover:underline">

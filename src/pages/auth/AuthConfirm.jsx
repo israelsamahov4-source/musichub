@@ -5,6 +5,7 @@ import PageLoader from "@/components/PageLoader";
 import AuthShell from "./AuthShell";
 import { PENDING_NEXT_KEY } from "@/auth/returnTo";
 import { supabase } from "@/lib/supabase";
+import { tr } from "@/lib/i18n";
 
 const TYPES = ["email", "signup", "recovery", "email_change", "invite", "magiclink"];
 
@@ -36,14 +37,14 @@ export default function AuthConfirm() {
   if (!failed) return <PageLoader />;
   const recovery = params.get("type") === "recovery";
   return (
-    <AuthShell title="הקישור כבר לא תקף">
+    <AuthShell title={tr("הקישור כבר לא תקף")}>
       <p className="mb-4">
         {recovery
-          ? "הקישור לאיפוס הסיסמה כבר שומש או שפג תוקפו. אפשר לבקש קישור חדש."
-          : "הקישור כבר שומש או שפג תוקפו. אם כבר אישרתם את המייל, פשוט התחברו."}
+          ? tr("הקישור לאיפוס הסיסמה כבר שומש או שפג תוקפו. אפשר לבקש קישור חדש.")
+          : tr("הקישור כבר שומש או שפג תוקפו. אם כבר אישרתם את המייל, פשוט התחברו.")}
       </p>
       <Button asChild className="w-full">
-        <Link to={recovery ? "/forgot-password" : "/login"}>{recovery ? "קישור חדש" : "להתחברות"}</Link>
+        <Link to={recovery ? "/forgot-password" : "/login"}>{recovery ? tr("קישור חדש") : tr("להתחברות")}</Link>
       </Button>
     </AuthShell>
   );

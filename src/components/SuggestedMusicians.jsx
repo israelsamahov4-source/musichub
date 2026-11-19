@@ -7,6 +7,7 @@ import { supabase, unwrap } from "@/lib/supabase";
 import { fetchFollowingIds } from "@/api/posts";
 import { useAuth } from "@/auth/AuthProvider";
 import { label } from "@/lib/config";
+import { tr } from "@/lib/i18n";
 
 /** Musicians who share a genre or instrument with me and whom I don't follow yet. */
 export default function SuggestedMusicians() {
@@ -32,7 +33,7 @@ export default function SuggestedMusicians() {
   if (!data.length) return null;
   return (
     <Card className="p-4">
-      <h2 className="mb-3 text-[15px] font-bold">מוזיקאים שכדאי להכיר</h2>
+      <h2 className="mb-3 text-[15px] font-bold">{tr("מוזיקאים שכדאי להכיר")}</h2>
       <ul className="space-y-3.5">
         {data.map((p) => (
           <li key={p.id} className="flex items-center gap-2">
@@ -45,7 +46,7 @@ export default function SuggestedMusicians() {
           </li>
         ))}
       </ul>
-      <Link to="/discover" className="mt-4 flex items-center justify-center gap-1 rounded-full py-2 text-sm font-semibold text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">לכל המוזיקאים</Link>
+      <Link to="/discover" className="mt-4 flex items-center justify-center gap-1 rounded-full py-2 text-sm font-semibold text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">{tr("לכל המוזיקאים")}</Link>
     </Card>
   );
 }

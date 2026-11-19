@@ -4,6 +4,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import PostCard from "@/components/PostCard";
 import { fetchPosts, PAGE_SIZE } from "@/api/posts";
 import { useAuth } from "@/auth/AuthProvider";
+import { tr } from "@/lib/i18n";
 
 /** Infinite list of posts. `filters` is passed to fetchPosts. */
 export default function PostList({ queryKey, filters = {}, enabled = true, empty }) {
@@ -19,7 +20,7 @@ export default function PostList({ queryKey, filters = {}, enabled = true, empty
   if (q.isLoading || !enabled) {
     return <div className="space-y-4">{[0, 1, 2].map((i) => <Skeleton key={i} className="h-40 w-full rounded-xl" />)}</div>;
   }
-  if (q.isError) return <p className="text-center text-destructive">לא הצלחנו לטעון פוסטים. נסו לרענן.</p>;
+  if (q.isError) return <p className="text-center text-destructive">{tr("לא הצלחנו לטעון פוסטים. נסו לרענן.")}</p>;
   const posts = q.data.pages.flat();
   if (!posts.length) return empty ?? null;
   return (
@@ -28,7 +29,7 @@ export default function PostList({ queryKey, filters = {}, enabled = true, empty
       {q.hasNextPage && (
         <div className="flex justify-center">
           <Button variant="outline" onClick={() => q.fetchNextPage()} disabled={q.isFetchingNextPage}>
-            {q.isFetchingNextPage ? "טוען…" : "עוד פוסטים"}
+            {q.isFetchingNextPage ? tr("טוען…") : tr("עוד פוסטים")}
           </Button>
         </div>
       )}

@@ -17,10 +17,11 @@ import SuggestedMusicians from "@/components/SuggestedMusicians";
 import { fetchFollowingIds } from "@/api/posts";
 import { useAuth } from "@/auth/AuthProvider";
 import { usePageTitle } from "@/lib/usePageTitle";
+import { DIR, tr } from "@/lib/i18n";
 
 export default function Feed() {
   const { user, profile } = useAuth();
-  usePageTitle("פיד");
+  usePageTitle(tr("פיד"));
   const firstName = (profile?.full_name || "").split(" ")[0];
   const following = useQuery({ queryKey: ["following-ids", user.id], queryFn: () => fetchFollowingIds(user.id) });
   const authorIds = following.data ? [user.id, ...following.data] : null;
@@ -31,34 +32,34 @@ export default function Feed() {
 
   return (
     <div className="mx-auto grid max-w-6xl items-start gap-6 px-4 py-3 md:py-8 lg:grid-cols-[232px_minmax(0,1fr)_300px]">
-      <aside className="sticky top-24 hidden space-y-4 lg:block" aria-label="הפרופיל שלי">
+      <aside className="sticky top-24 hidden space-y-4 lg:block" aria-label={tr("הפרופיל שלי")}>
         <ProfileSummary />
       </aside>
       <div className="min-w-0 space-y-4">
-        <h1 className="sr-only">{firstName ? `מה מנגנים היום, ${firstName}?` : "מה מנגנים היום?"}</h1>
+        <h1 className="sr-only">{firstName ? tr("מה מנגנים היום, {0}?", firstName) : tr("מה מנגנים היום?")}</h1>
         <PostComposer />
         {isNew && <div className="lg:hidden"><SuggestedMusicians /></div>}
-        <Tabs value={tab} onValueChange={setPicked} dir="rtl">
+        <Tabs value={tab} onValueChange={setPicked} dir={DIR}>
           <TabsList className="-mx-4 mb-4 flex px-4 md:mx-0 md:px-0">
-            <TabsTrigger value="following">עוקב/ת</TabsTrigger>
-            <TabsTrigger value="all">כל הקהילה</TabsTrigger>
-            <TabsTrigger value="collab">מחפשים שותפים</TabsTrigger>
+            <TabsTrigger value="following">{tr("עוקב/ת")}</TabsTrigger>
+            <TabsTrigger value="all">{tr("כל הקהילה")}</TabsTrigger>
+            <TabsTrigger value="collab">{tr("מחפשים שותפים")}</TabsTrigger>
           </TabsList>
           <TabsContent value="following">
             <PostList
               queryKey={["following", user.id, authorIds?.length]}
               filters={{ authorIds }}
               enabled={Boolean(authorIds)}
-              empty={<EmptyState icon={Users} title="עוד לא עוקבים אחרי אף אחד" text="עקבו אחרי כמה מוזיקאים, ומה שהם ישתפו יופיע כאן."
-                action={<Button asChild><Link to="/discover">גילוי מוזיקאים</Link></Button>} />}
+              empty={<EmptyState icon={Users} title={tr("עוד לא עוקבים אחרי אף אחד")} text={tr("עקבו אחרי כמה מוזיקאים, ומה שהם ישתפו יופיע כאן.")}
+                action={<Button asChild><Link to="/discover">{tr("גילוי מוזיקאים")}</Link></Button>} />}
             />
           </TabsContent>
           <TabsContent value="all">
-            <PostList queryKey={["all"]} empty={<EmptyState icon={Music} title="עדיין אין פוסטים" text="שתפו קטע, דמו או שאלה, ותהיו הראשונים בקהילה." />} />
+            <PostList queryKey={["all"]} empty={<EmptyState icon={Music} title={tr("עדיין אין פוסטים")} text={tr("שתפו קטע, דמו או שאלה, ותהיו הראשונים בקהילה.")} />} />
           </TabsContent>
           <TabsContent value="collab">
             <PostList queryKey={["collab"]} filters={{ collabOnly: true }}
-              empty={<EmptyState icon={Handshake} title="אין כרגע בקשות לשותפים" text="סמנו 'מחפש/ת שותפים' בפוסט כדי שיופיע כאן." />} />
+              empty={<EmptyState icon={Handshake} title={tr("אין כרגע בקשות לשותפים")} text={tr("סמנו 'מחפש/ת שותפים' בפוסט כדי שיופיע כאן.")} />} />
           </TabsContent>
         </Tabs>
       </div>
@@ -66,16 +67,16 @@ export default function Feed() {
         <SuggestedMusicians />
         <Card className="overflow-hidden">
           <div className="p-4">
-            <h2 className="text-[15px] font-bold">מחפשים במה?</h2>
-            <p className="mt-1 text-sm text-muted-foreground">פרויקטים שמחפשים נגנים, וקורסים ממוזיקאים שעושים את זה כל יום.</p>
+            <h2 className="text-[15px] font-bold">{tr("מחפשים במה?")}</h2>
+            <p className="mt-1 text-sm text-muted-foreground">{tr("פרויקטים שמחפשים נגנים, וקורסים ממוזיקאים שעושים את זה כל יום.")}</p>
           </div>
           <Link to="/collabs" className="flex items-center gap-3 border-t border-border/70 px-4 py-3 text-sm font-medium transition-colors hover:bg-muted">
             <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#FFE3EB] text-[#B01E4C]"><Handshake className="h-[18px] w-[18px]" aria-hidden /></span>
-            פרויקטים פתוחים<ChevronLeft className="ms-auto h-4 w-4 text-muted-foreground" aria-hidden />
+            {tr("פרויקטים פתוחים")}<ChevronLeft className="ms-auto h-4 w-4 text-muted-foreground ltr:rotate-180" aria-hidden />
           </Link>
           <Link to="/courses" className="flex items-center gap-3 border-t border-border/70 px-4 py-3 text-sm font-medium transition-colors hover:bg-muted">
             <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#E5E9FB] text-primary"><GraduationCap className="h-[18px] w-[18px]" aria-hidden /></span>
-            קורסים<ChevronLeft className="ms-auto h-4 w-4 text-muted-foreground" aria-hidden />
+            {tr("קורסים")}<ChevronLeft className="ms-auto h-4 w-4 text-muted-foreground ltr:rotate-180" aria-hidden />
           </Link>
         </Card>
       </aside>
@@ -99,7 +100,7 @@ function ProfileSummary() {
     },
   });
   if (!profile) return null;
-  const role = profile.instruments?.[0] ? label("instruments", profile.instruments[0]) : profile.user_type === "listener" ? "חובב/ת מוזיקה" : "מוזיקאי/ת";
+  const role = profile.instruments?.[0] ? label("instruments", profile.instruments[0]) : profile.user_type === "listener" ? tr("חובב/ת מוזיקה") : tr("מוזיקאי/ת");
   const cover = safeUrl(profile.cover_url);
   return (
     <Card className="overflow-hidden">
@@ -112,14 +113,14 @@ function ProfileSummary() {
         <p className="truncate text-sm text-muted-foreground">{role}{profile.location && ` · ${profile.location}`}</p>
       </div>
       <dl className="grid grid-cols-3 border-t border-border/70 text-center">
-        {[["עוקבים", stats?.followers], ["נעקבים", stats?.following], ["פוסטים", stats?.posts]].map(([t, v]) => (
+        {[[tr("עוקבים"), stats?.followers], [tr("נעקבים"), stats?.following], [tr("פוסטים"), stats?.posts]].map(([t, v]) => (
           <div key={t} className="py-3"><dd className="tabular text-[15px] font-bold">{v ?? "–"}</dd><dt className="text-xs text-muted-foreground">{t}</dt></div>
         ))}
       </dl>
-      <nav className="border-t border-border/70 p-1.5 text-sm" aria-label="קיצורים">
-        <Link to="/profile/edit" className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 hover:bg-muted"><Pencil className="h-4 w-4 text-muted-foreground" aria-hidden />עריכת הפרופיל</Link>
-        <Link to="/collabs" className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 hover:bg-muted"><Handshake className="h-4 w-4 text-muted-foreground" aria-hidden />הפרויקטים שלי</Link>
-        <Link to="/courses" className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 hover:bg-muted"><GraduationCap className="h-4 w-4 text-muted-foreground" aria-hidden />הלמידה שלי</Link>
+      <nav className="border-t border-border/70 p-1.5 text-sm" aria-label={tr("קיצורים")}>
+        <Link to="/profile/edit" className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 hover:bg-muted"><Pencil className="h-4 w-4 text-muted-foreground" aria-hidden />{tr("עריכת הפרופיל")}</Link>
+        <Link to="/collabs" className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 hover:bg-muted"><Handshake className="h-4 w-4 text-muted-foreground" aria-hidden />{tr("הפרויקטים שלי")}</Link>
+        <Link to="/courses" className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 hover:bg-muted"><GraduationCap className="h-4 w-4 text-muted-foreground" aria-hidden />{tr("הלמידה שלי")}</Link>
       </nav>
     </Card>
   );

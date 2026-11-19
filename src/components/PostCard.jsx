@@ -16,6 +16,7 @@ import { supabase, unwrap } from "@/lib/supabase";
 import { useAuth } from "@/auth/AuthProvider";
 import { label } from "@/lib/config";
 import { cn, errorMessage, timeAgo, textDir } from "@/lib/utils";
+import { DIR, tr } from "@/lib/i18n";
 
 /** Applies a like / unlike to one post inside a cached list (plain array or infinite-query pages). */
 function patchPost(old, id, liked) {
@@ -56,7 +57,7 @@ export default function PostCard({ post, defaultShowComments = false, onDeleted 
 
   const remove = useMutation({
     mutationFn: async () => unwrap(await supabase.from("posts").delete().eq("id", post.id)),
-    onSuccess: () => { toast.success("הפוסט נמחק"); qc.invalidateQueries({ queryKey: ["posts"] }); onDeleted?.(); },
+    onSuccess: () => { toast.success(tr("הפוסט נמחק")); qc.invalidateQueries({ queryKey: ["posts"] }); onDeleted?.(); },
     onError: (e) => toast.error(errorMessage(e)),
   });
 
@@ -70,9 +71,9 @@ export default function PostCard({ post, defaultShowComments = false, onDeleted 
   const copyLink = async () => {
     try {
       await navigator.clipboard.writeText(`${window.location.origin}/posts/${post.id}`);
-      toast.success("הקישור הועתק");
+      toast.success(tr("הקישור הועתק"));
     } catch {
-      toast.error("לא הצלחנו להעתיק. אפשר להעתיק את הכתובת מהדפדפן");
+      toast.error(tr("לא הצלחנו להעתיק. אפשר להעתיק את הכתובת מהדפדפן"));
     }
   };
 
@@ -91,14 +92,14 @@ export default function PostCard({ post, defaultShowComments = false, onDeleted 
             <span className="ltr">@{a.username}</span> · {timeAgo(post.created_at)}
           </Link>
         </div>
-        <DropdownMenu dir="rtl">
+        <DropdownMenu dir={DIR}>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="-me-2 -mt-1 text-muted-foreground" aria-label="אפשרויות"><MoreHorizontal /></Button>
+            <Button variant="ghost" size="icon" className="-me-2 -mt-1 text-muted-foreground" aria-label={tr("אפשרויות")}><MoreHorizontal /></Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={copyLink}><Link2 className="h-4 w-4" />העתקת קישור</DropdownMenuItem>
-            {user && !mine && <DropdownMenuItem onClick={() => setReportOpen(true)}><Flag className="h-4 w-4" />דיווח</DropdownMenuItem>}
-            {mine && <DropdownMenuItem onClick={() => setConfirmDelete(true)} className="text-destructive focus:text-destructive"><Trash2 className="h-4 w-4" />מחיקת הפוסט</DropdownMenuItem>}
+            <DropdownMenuItem onClick={copyLink}><Link2 className="h-4 w-4" />{tr("העתקת קישור")}</DropdownMenuItem>
+            {user && !mine && <DropdownMenuItem onClick={() => setReportOpen(true)}><Flag className="h-4 w-4" />{tr("דיווח")}</DropdownMenuItem>}
+            {mine && <DropdownMenuItem onClick={() => setConfirmDelete(true)} className="text-destructive focus:text-destructive"><Trash2 className="h-4 w-4" />{tr("מחיקת הפוסט")}</DropdownMenuItem>}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
@@ -107,8 +108,8 @@ export default function PostCard({ post, defaultShowComments = false, onDeleted 
         {post.collaboration_wanted && (
           <div className="flex flex-wrap items-center gap-2 rounded-xl bg-[#FFF0F4] px-3 py-2.5 text-sm">
             <Handshake className="h-4 w-4 shrink-0 text-[#B01E4C]" aria-hidden />
-            <span className="font-semibold text-[#8E1840]">{name} מחפש/ת שותפים</span>
-            {user && !mine && <Button size="sm" className="ms-auto h-8" onClick={startChat}>שליחת הודעה</Button>}
+            <span className="font-semibold text-[#8E1840]">{name}{" "}{tr("מחפש/ת שותפים")}</span>
+            {user && !mine && <Button size="sm" className="ms-auto h-8" onClick={startChat}>{tr("שליחת הודעה")}</Button>}
           </div>
         )}
         {post.content && <p dir={textDir(post.content)} className="whitespace-pre-wrap break-words text-start text-[15px] leading-relaxed">{post.content}</p>}
@@ -122,19 +123,19 @@ export default function PostCard({ post, defaultShowComments = false, onDeleted 
         <Button variant="ghost" aria-pressed={liked} disabled={!user || like.isPending} onClick={() => like.mutate(!liked)}
           className={cn("rounded-xl", liked ? "text-[#B01E4C] hover:text-[#B01E4C]" : "text-muted-foreground")}>
           <Heart className={cn("transition-transform duration-200", liked && "scale-110 fill-riso-pink text-riso-pink")} />
-          <span className="tabular">{likeCount > 0 ? likeCount : "לייק"}</span><span className="sr-only">לייקים</span>
+          <span className="tabular">{likeCount > 0 ? likeCount : tr("לייק")}</span><span className="sr-only">{tr("לייקים")}</span>
         </Button>
         <Button variant="ghost" className="rounded-xl text-muted-foreground" onClick={() => setShowComments((s) => !s)} aria-expanded={showComments}>
-          <MessageCircle /><span className="tabular">{post.comment_count > 0 ? post.comment_count : "תגובה"}</span><span className="sr-only">תגובות</span>
+          <MessageCircle /><span className="tabular">{post.comment_count > 0 ? post.comment_count : tr("תגובה")}</span><span className="sr-only">{tr("תגובות")}</span>
         </Button>
         <Button variant="ghost" className="rounded-xl text-muted-foreground" onClick={copyLink}>
-          <Share2 />שיתוף
+          <Share2 />{tr("שיתוף")}
         </Button>
       </div>
       {showComments && <div className="px-4 pb-4"><Comments post={post} /></div>}
       {mine && (
         <ConfirmDialog open={confirmDelete} onOpenChange={setConfirmDelete}
-          title="למחוק את הפוסט?" description="אי אפשר לשחזר פוסט שנמחק." confirmLabel="מחיקה" destructive
+          title={tr("למחוק את הפוסט?")} description={tr("אי אפשר לשחזר פוסט שנמחק.")} confirmLabel={tr("מחיקה")} destructive
           onConfirm={() => remove.mutate()} />
       )}
       {user && !mine && <ReportDialog open={reportOpen} onOpenChange={setReportOpen} targetType="post" targetId={post.id} />}

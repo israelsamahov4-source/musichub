@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import AuthShell from "@/pages/auth/AuthShell";
 import { supabase } from "@/lib/supabase";
 import { errorMessage } from "@/lib/utils";
+import { tr } from "@/lib/i18n";
 
 /** Second sign-in step for users who turned on two-step verification. */
 export default function MfaChallenge({ onDone }) {
@@ -17,23 +18,23 @@ export default function MfaChallenge({ onDone }) {
     setBusy(true);
     const { data: factors } = await supabase.auth.mfa.listFactors();
     const factor = factors?.totp?.find((f) => f.status === "verified");
-    if (!factor) { setBusy(false); return toast.error("לא נמצא אמצעי אימות"); }
+    if (!factor) { setBusy(false); return toast.error(tr("לא נמצא אמצעי אימות")); }
     const { error } = await supabase.auth.mfa.challengeAndVerify({ factorId: factor.id, code: code.trim() });
     setBusy(false);
-    if (error) return toast.error(/invalid|expired/i.test(error.message) ? "הקוד שגוי או שפג תוקפו" : errorMessage(error));
+    if (error) return toast.error(/invalid|expired/i.test(error.message) ? tr("הקוד שגוי או שפג תוקפו") : errorMessage(error));
     onDone?.();
   };
 
   return (
-    <AuthShell title="אימות דו-שלבי" subtitle="הקלידו את הקוד בן 6 הספרות מאפליקציית האימות שלכם."
-      footer={<button type="button" className="font-semibold text-primary hover:underline" onClick={() => supabase.auth.signOut()}>התנתקות</button>}>
+    <AuthShell title={tr("אימות דו-שלבי")} subtitle={tr("הקלידו את הקוד בן 6 הספרות מאפליקציית האימות שלכם.")}
+      footer={<button type="button" className="font-semibold text-primary hover:underline" onClick={() => supabase.auth.signOut()}>{tr("התנתקות")}</button>}>
       <form onSubmit={submit} className="space-y-4">
         <div className="flex items-center gap-3 rounded-xl bg-secondary p-3 text-sm text-secondary-foreground">
-          <ShieldCheck className="h-5 w-5 shrink-0" aria-hidden />החשבון מוגן באימות דו-שלבי.
+          <ShieldCheck className="h-5 w-5 shrink-0" aria-hidden />{tr("החשבון מוגן באימות דו-שלבי.")}
         </div>
         <Input value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))} inputMode="numeric" autoComplete="one-time-code"
-          dir="ltr" className="h-14 text-center font-mono text-2xl tracking-[0.5em]" aria-label="קוד אימות" autoFocus />
-        <Button type="submit" className="w-full" disabled={busy || code.length !== 6}>אימות</Button>
+          dir="ltr" className="h-14 text-center font-mono text-2xl tracking-[0.5em]" aria-label={tr("קוד אימות")} autoFocus />
+        <Button type="submit" className="w-full" disabled={busy || code.length !== 6}>{tr("אימות")}</Button>
       </form>
     </AuthShell>
   );

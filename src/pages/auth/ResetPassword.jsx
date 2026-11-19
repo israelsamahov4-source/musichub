@@ -11,6 +11,7 @@ import { useAuth } from "@/auth/AuthProvider";
 import MfaChallenge from "@/auth/MfaChallenge";
 import { useQueryClient } from "@tanstack/react-query";
 import { errorMessage } from "@/lib/utils";
+import { tr } from "@/lib/i18n";
 
 export default function ResetPassword() {
   const { user, loading, mfaRequired } = useAuth();
@@ -25,35 +26,35 @@ export default function ResetPassword() {
   if (user && mfaRequired) return <MfaChallenge onDone={() => qc.invalidateQueries({ queryKey: ["mfa-level"] })} />;
   if (!user) {
     return (
-      <AuthShell title="הקישור פג תוקף">
-        <p className="mb-4">קישור האיפוס אינו תקף יותר. אפשר לבקש קישור חדש.</p>
-        <Button asChild className="w-full"><Link to="/forgot-password">קישור חדש</Link></Button>
+      <AuthShell title={tr("הקישור פג תוקף")}>
+        <p className="mb-4">{tr("קישור האיפוס אינו תקף יותר. אפשר לבקש קישור חדש.")}</p>
+        <Button asChild className="w-full"><Link to="/forgot-password">{tr("קישור חדש")}</Link></Button>
       </AuthShell>
     );
   }
 
   const submit = async (e) => {
     e.preventDefault();
-    if (password.length < 8) return toast.error("הסיסמה חייבת להכיל לפחות 8 תווים");
-    if (password !== confirm) return toast.error("הסיסמאות אינן תואמות");
+    if (password.length < 8) return toast.error(tr("הסיסמה חייבת להכיל לפחות 8 תווים"));
+    if (password !== confirm) return toast.error(tr("הסיסמאות אינן תואמות"));
     setBusy(true);
     const { error } = await supabase.auth.updateUser({ password });
     setBusy(false);
     if (error) return toast.error(errorMessage(error));
-    toast.success("הסיסמה עודכנה");
+    toast.success(tr("הסיסמה עודכנה"));
     navigate("/feed", { replace: true });
   };
 
   return (
-    <AuthShell title="בחירת סיסמה חדשה">
+    <AuthShell title={tr("בחירת סיסמה חדשה")}>
       <form onSubmit={submit} className="space-y-4">
-        <Field id="password" label="סיסמה חדשה" hint="לפחות 8 תווים">
+        <Field id="password" label={tr("סיסמה חדשה")} hint={tr("לפחות 8 תווים")}>
           <Input id="password" type="password" dir="ltr" autoComplete="new-password" required value={password} onChange={(e) => setPassword(e.target.value)} />
         </Field>
-        <Field id="confirm" label="אימות סיסמה">
+        <Field id="confirm" label={tr("אימות סיסמה")}>
           <Input id="confirm" type="password" dir="ltr" autoComplete="new-password" required value={confirm} onChange={(e) => setConfirm(e.target.value)} />
         </Field>
-        <Button type="submit" className="w-full" disabled={busy}>שמירה</Button>
+        <Button type="submit" className="w-full" disabled={busy}>{tr("שמירה")}</Button>
       </form>
     </AuthShell>
   );

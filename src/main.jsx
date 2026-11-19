@@ -9,6 +9,9 @@ import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { isConfigured } from "@/lib/supabase";
 import "./index.css";
+import { applyLangToDocument, tr } from "@/lib/i18n";
+
+applyLangToDocument();
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1, refetchOnWindowFocus: false, staleTime: 30_000 } },
@@ -17,9 +20,9 @@ const queryClient = new QueryClient({
 function SetupNotice() {
   return (
     <div className="mx-auto max-w-lg p-8 text-center">
-      <h1 className="mb-2 text-xl font-bold">האתר עדיין לא מחובר למסד הנתונים</h1>
+      <h1 className="mb-2 text-xl font-bold">{tr("האתר עדיין לא מחובר למסד הנתונים")}</h1>
       <p className="text-muted-foreground">
-        צרו קובץ <code className="ltr">.env.local</code> לפי <code className="ltr">.env.example</code> עם הכתובת והמפתח של פרויקט ה-Supabase, והפעילו מחדש.
+        {tr("צרו קובץ")}{" "}<code className="ltr">.env.local</code>{" "}{tr("לפי")}{" "}<code className="ltr">.env.example</code>{" "}{tr("עם הכתובת והמפתח של פרויקט ה-Supabase, והפעילו מחדש.")}
       </p>
     </div>
   );

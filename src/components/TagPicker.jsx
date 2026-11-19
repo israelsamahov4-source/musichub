@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Check, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { tr } from "@/lib/i18n";
 
 /**
  * Toggleable chips for picking several options (accessible as checkboxes).
@@ -41,7 +42,7 @@ export default function TagPicker({ options, value = [], onChange, max, label, p
       {hidden > 0 && (
         <button type="button" onClick={() => setExpanded(true)}
           className="inline-flex min-h-9 items-center gap-1 rounded-full border border-dashed border-ink/40 px-3 py-1 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground">
-          <Plus className="h-3.5 w-3.5" aria-hidden />עוד {hidden}
+          <Plus className="h-3.5 w-3.5" aria-hidden />{tr("עוד")}{" "}{hidden}
         </button>
       )}
     </div>

@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import { supabase } from "@/lib/supabase";
 import { errorMessage } from "@/lib/utils";
+import { tr } from "@/lib/i18n";
 
 /** Turn two-step verification (authenticator app) on or off. */
 export default function TwoFactorCard() {
@@ -39,8 +40,8 @@ export default function TwoFactorCard() {
     setBusy(true);
     const { error } = await supabase.auth.mfa.challengeAndVerify({ factorId: enroll.id, code: code.trim() });
     setBusy(false);
-    if (error) return toast.error("הקוד שגוי. נסו את הקוד הבא שמופיע באפליקציה");
-    toast.success("האימות הדו-שלבי הופעל");
+    if (error) return toast.error(tr("הקוד שגוי. נסו את הקוד הבא שמופיע באפליקציה"));
+    toast.success(tr("האימות הדו-שלבי הופעל"));
     setEnroll(null); setCode("");
     qc.invalidateQueries({ queryKey: ["mfa-factors"] });
     qc.invalidateQueries({ queryKey: ["mfa-level"] });
@@ -55,7 +56,7 @@ export default function TwoFactorCard() {
     const { error } = await supabase.auth.mfa.unenroll({ factorId: active.id });
     if (error) return toast.error(errorMessage(error));
     await supabase.auth.refreshSession();
-    toast.success("האימות הדו-שלבי כובה");
+    toast.success(tr("האימות הדו-שלבי כובה"));
     qc.invalidateQueries({ queryKey: ["mfa-factors"] });
     qc.invalidateQueries({ queryKey: ["mfa-level"] });
   };
@@ -64,32 +65,32 @@ export default function TwoFactorCard() {
     <Card className="space-y-3 p-5">
       <div className="flex items-center gap-2">
         {active ? <ShieldCheck className="h-5 w-5 text-emerald-600" aria-hidden /> : <ShieldOff className="h-5 w-5 text-muted-foreground" aria-hidden />}
-        <h2 className="font-semibold">אימות דו-שלבי</h2>
-        {active && <span className="rounded-full bg-[#E2F5E9] px-2.5 py-0.5 text-xs font-semibold text-[#1C6B3A]">פעיל</span>}
+        <h2 className="font-semibold">{tr("אימות דו-שלבי")}</h2>
+        {active && <span className="rounded-full bg-[#E2F5E9] px-2.5 py-0.5 text-xs font-semibold text-[#1C6B3A]">{tr("פעיל")}</span>}
       </div>
       <p className="text-sm text-muted-foreground">
-        בכל התחברות תתבקשו גם לקוד מאפליקציית אימות (Google Authenticator, Microsoft Authenticator, 1Password ועוד). כך גם מי שיודע את הסיסמה שלכם לא יוכל להיכנס.
+        {tr("בכל התחברות תתבקשו גם לקוד מאפליקציית אימות (Google Authenticator, Microsoft Authenticator, 1Password ועוד). כך גם מי שיודע את הסיסמה שלכם לא יוכל להיכנס.")}
       </p>
       {active ? (
-        <ConfirmDialog trigger={<Button variant="outline" className="w-fit">כיבוי</Button>} title="לכבות את האימות הדו-שלבי?"
-          description="החשבון יהיה מוגן רק בסיסמה." confirmLabel="כיבוי" destructive onConfirm={disable} />
+        <ConfirmDialog trigger={<Button variant="outline" className="w-fit">{tr("כיבוי")}</Button>} title={tr("לכבות את האימות הדו-שלבי?")}
+          description={tr("החשבון יהיה מוגן רק בסיסמה.")} confirmLabel={tr("כיבוי")} destructive onConfirm={disable} />
       ) : enroll ? (
         <form onSubmit={confirm} className="space-y-3">
           <ol className="list-decimal space-y-1 ps-5 text-sm">
-            <li>פתחו את אפליקציית האימות וסרקו את הקוד:</li>
+            <li>{tr("פתחו את אפליקציית האימות וסרקו את הקוד:")}</li>
           </ol>
-          <img src={enroll.qr} alt="קוד QR להוספת החשבון לאפליקציית האימות" className="h-44 w-44 rounded-xl border bg-white p-2" />
-          <p className="text-xs text-muted-foreground">אי אפשר לסרוק? הקלידו את המפתח: <span className="ltr select-all font-mono">{enroll.secret}</span></p>
-          <ol start={2} className="list-decimal ps-5 text-sm"><li>הקלידו את הקוד שמופיע באפליקציה:</li></ol>
+          <img src={enroll.qr} alt={tr("קוד QR להוספת החשבון לאפליקציית האימות")} className="h-44 w-44 rounded-xl border bg-white p-2" />
+          <p className="text-xs text-muted-foreground">{tr("אי אפשר לסרוק? הקלידו את המפתח:")}{" "}<span className="ltr select-all font-mono">{enroll.secret}</span></p>
+          <ol start={2} className="list-decimal ps-5 text-sm"><li>{tr("הקלידו את הקוד שמופיע באפליקציה:")}</li></ol>
           <div className="flex gap-2">
             <Input value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))} inputMode="numeric" autoComplete="one-time-code"
-              dir="ltr" className="w-40 text-center font-mono text-lg tracking-[0.3em]" aria-label="קוד אימות" />
-            <Button type="submit" disabled={busy || code.length !== 6}>הפעלה</Button>
-            <Button type="button" variant="ghost" onClick={cancel}>ביטול</Button>
+              dir="ltr" className="w-40 text-center font-mono text-lg tracking-[0.3em]" aria-label={tr("קוד אימות")} />
+            <Button type="submit" disabled={busy || code.length !== 6}>{tr("הפעלה")}</Button>
+            <Button type="button" variant="ghost" onClick={cancel}>{tr("ביטול")}</Button>
           </div>
         </form>
       ) : (
-        <Button className="w-fit" onClick={start} disabled={busy || factors.isLoading}>הפעלת אימות דו-שלבי</Button>
+        <Button className="w-fit" onClick={start} disabled={busy || factors.isLoading}>{tr("הפעלת אימות דו-שלבי")}</Button>
       )}
     </Card>
   );

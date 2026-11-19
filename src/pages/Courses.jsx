@@ -17,6 +17,7 @@ import { useAuth } from "@/auth/AuthProvider";
 import { useAuthHref } from "@/auth/returnTo";
 import { COURSE_CATEGORIES, COURSE_LEVELS, label } from "@/lib/config";
 import { cleanSearch, cn, safeUrl } from "@/lib/utils";
+import { DIR, tr } from "@/lib/i18n";
 
 export function CourseCard({ c, extra }) {
   const color = brandFor(c.id);
@@ -33,7 +34,7 @@ export function CourseCard({ c, extra }) {
               </div>
             )}
           {!c.is_free && <span className="absolute start-3 top-3 inline-flex items-center gap-1 rounded-full bg-ink px-2 py-0.5 text-xs font-bold text-riso-yellow"><Star className="h-3 w-3" aria-hidden />Pro</span>}
-          {!c.is_published && <span className="absolute end-3 top-3 rounded-full bg-card px-2 py-0.5 text-xs font-bold text-[#8A5A00]">טיוטה</span>}
+          {!c.is_published && <span className="absolute end-3 top-3 rounded-full bg-card px-2 py-0.5 text-xs font-bold text-[#8A5A00]">{tr("טיוטה")}</span>}
         </div>
         <div className="flex flex-1 flex-col p-4">
           <h3 className="line-clamp-2 text-base font-bold leading-snug">{c.title}</h3>
@@ -90,57 +91,57 @@ export default function Courses() {
 
   return (
     <div>
-    <PageHeader tone="blue" title="קורסים" text="ללמוד ממוזיקאים אחרים, בקצב שלכם."
-      actions={teacher && <Button asChild size="lg" variant="secondary"><Link to="/courses/new"><Plus />קורס חדש</Link></Button>} />
+    <PageHeader tone="blue" title={tr("קורסים")} text={tr("ללמוד ממוזיקאים אחרים, בקצב שלכם.")}
+      actions={teacher && <Button asChild size="lg" variant="secondary"><Link to="/courses/new"><Plus />{tr("קורס חדש")}</Link></Button>} />
     <div className="page">
-      <Tabs defaultValue="catalog" dir="rtl">
+      <Tabs defaultValue="catalog" dir={DIR}>
         <TabsList>
-          <TabsTrigger value="catalog">כל הקורסים</TabsTrigger>
-          {user && <TabsTrigger value="learning">הלמידה שלי</TabsTrigger>}
-          {showTeaching && <TabsTrigger value="teaching">הקורסים שלי</TabsTrigger>}
+          <TabsTrigger value="catalog">{tr("כל הקורסים")}</TabsTrigger>
+          {user && <TabsTrigger value="learning">{tr("הלמידה שלי")}</TabsTrigger>}
+          {showTeaching && <TabsTrigger value="teaching">{tr("הקורסים שלי")}</TabsTrigger>}
         </TabsList>
         <TabsContent value="catalog" className="space-y-4">
           <div className="flex flex-wrap gap-2">
             <div className="relative min-w-[200px] flex-1">
               <Search className="pointer-events-none absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
-              <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="חיפוש קורס…" className="ps-9" aria-label="חיפוש קורס" />
+              <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder={tr("חיפוש קורס…")} className="ps-9" aria-label={tr("חיפוש קורס")} />
             </div>
-            <Select value={category} onValueChange={setCategory} dir="rtl">
-              <SelectTrigger className="w-40" aria-label="תחום"><SelectValue /></SelectTrigger>
-              <SelectContent><SelectItem value="all">כל התחומים</SelectItem>{COURSE_CATEGORIES.map((c) => <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>)}</SelectContent>
+            <Select value={category} onValueChange={setCategory} dir={DIR}>
+              <SelectTrigger className="w-40" aria-label={tr("תחום")}><SelectValue /></SelectTrigger>
+              <SelectContent><SelectItem value="all">{tr("כל התחומים")}</SelectItem>{COURSE_CATEGORIES.map((c) => <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>)}</SelectContent>
             </Select>
-            <Select value={level} onValueChange={setLevel} dir="rtl">
-              <SelectTrigger className="w-36" aria-label="רמה"><SelectValue /></SelectTrigger>
-              <SelectContent><SelectItem value="all">כל הרמות</SelectItem>{COURSE_LEVELS.map((c) => <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>)}</SelectContent>
+            <Select value={level} onValueChange={setLevel} dir={DIR}>
+              <SelectTrigger className="w-36" aria-label={tr("רמה")}><SelectValue /></SelectTrigger>
+              <SelectContent><SelectItem value="all">{tr("כל הרמות")}</SelectItem>{COURSE_LEVELS.map((c) => <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>)}</SelectContent>
             </Select>
           </div>
           <Grid loading={catalog.isLoading} items={catalog.data ?? []} render={(c) => <CourseCard key={c.id} c={c} />}
             empty={filtered
-              ? <EmptyState icon={GraduationCap} title="לא מצאנו קורס כזה" text="נסו מילה אחרת, תחום אחר או רמה אחרת."
-                  action={<Button variant="outline" onClick={() => { setQ(""); setCategory("all"); setLevel("all"); }}>ניקוי החיפוש</Button>} />
-              : <EmptyState icon={GraduationCap} title="הכיתה עוד ריקה"
-                  text="כאן יופיעו קורסים של מוזיקאים: נגינה, הפקה, כתיבה ועוד, בקצב שלכם."
+              ? <EmptyState icon={GraduationCap} title={tr("לא מצאנו קורס כזה")} text={tr("נסו מילה אחרת, תחום אחר או רמה אחרת.")}
+                  action={<Button variant="outline" onClick={() => { setQ(""); setCategory("all"); setLevel("all"); }}>{tr("ניקוי החיפוש")}</Button>} />
+              : <EmptyState icon={GraduationCap} title={tr("הכיתה עוד ריקה")}
+                  text={tr("כאן יופיעו קורסים של מוזיקאים: נגינה, הפקה, כתיבה ועוד, בקצב שלכם.")}
                   action={teacher
-                    ? <Button asChild><Link to="/courses/new"><Plus />פתיחת הקורס הראשון</Link></Button>
-                    : !user && <Button asChild><Link to={signupHref}>פתיחת פרופיל חינם</Link></Button>} />} />
+                    ? <Button asChild><Link to="/courses/new"><Plus />{tr("פתיחת הקורס הראשון")}</Link></Button>
+                    : !user && <Button asChild><Link to={signupHref}>{tr("פתיחת פרופיל חינם")}</Link></Button>} />} />
           {!teacher && (
             <Card className="flex flex-wrap items-center gap-3 p-4">
               <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#FFF2C2] text-[#6E5200]"><GraduationCap className="h-5 w-5" aria-hidden /></span>
-              <p className="min-w-[12rem] flex-1 text-sm"><span className="font-bold">מלמדים מוזיקה?</span> פתחו קורס משלכם והגיעו לתלמידים חדשים.</p>
-              <Button asChild variant="outline"><Link to="/pricing">איך מתחילים ללמד</Link></Button>
+              <p className="min-w-[12rem] flex-1 text-sm"><span className="font-bold">{tr("מלמדים מוזיקה?")}</span>{" "}{tr("פתחו קורס משלכם והגיעו לתלמידים חדשים.")}</p>
+              <Button asChild variant="outline"><Link to="/pricing">{tr("איך מתחילים ללמד")}</Link></Button>
             </Card>
           )}
         </TabsContent>
         {user && (
           <TabsContent value="learning">
             <Grid loading={learning.isLoading} items={learning.data ?? []} render={(e) => <CourseCard key={e.course.id} c={e.course} />}
-              empty={<EmptyState icon={GraduationCap} title="עוד לא נרשמתם לקורס" text="בחרו קורס מהקטלוג והתחילו ללמוד." />} />
+              empty={<EmptyState icon={GraduationCap} title={tr("עוד לא נרשמתם לקורס")} text={tr("בחרו קורס מהקטלוג והתחילו ללמוד.")} />} />
           </TabsContent>
         )}
         {showTeaching && (
           <TabsContent value="teaching">
             <Grid loading={teaching.isLoading} items={teaching.data ?? []} render={(c) => <CourseCard key={c.id} c={c} />}
-              empty={<EmptyState icon={GraduationCap} title="עוד לא יצרתם קורס" action={<Button asChild><Link to="/courses/new">יצירת קורס</Link></Button>} />} />
+              empty={<EmptyState icon={GraduationCap} title={tr("עוד לא יצרתם קורס")} action={<Button asChild><Link to="/courses/new">{tr("יצירת קורס")}</Link></Button>} />} />
           </TabsContent>
         )}
       </Tabs>

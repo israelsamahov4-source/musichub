@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/auth/AuthProvider";
 import { errorMessage } from "@/lib/utils";
+import { tr } from "@/lib/i18n";
 
 /** Lets users report abusive content; reports land in the `reports` table for review. */
 export default function ReportDialog({ open, onOpenChange, targetType, targetId }) {
@@ -20,7 +21,7 @@ export default function ReportDialog({ open, onOpenChange, targetType, targetId 
     });
     setSending(false);
     if (error) return toast.error(errorMessage(error));
-    toast.success("תודה, הדיווח התקבל ונבדוק אותו");
+    toast.success(tr("תודה, הדיווח התקבל ונבדוק אותו"));
     setReason("");
     onOpenChange(false);
   };
@@ -29,12 +30,12 @@ export default function ReportDialog({ open, onOpenChange, targetType, targetId 
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>דיווח על תוכן</DialogTitle>
-          <DialogDescription>ספרו לנו מה הבעיה. הדיווח אנונימי כלפי המשתמש המדווח.</DialogDescription>
+          <DialogTitle>{tr("דיווח על תוכן")}</DialogTitle>
+          <DialogDescription>{tr("ספרו לנו מה הבעיה. הדיווח אנונימי כלפי המשתמש המדווח.")}</DialogDescription>
         </DialogHeader>
-        <Textarea value={reason} onChange={(e) => setReason(e.target.value)} maxLength={1000} rows={4} placeholder="לדוגמה: ספאם, הטרדה, תוכן פוגעני…" aria-label="סיבת הדיווח" />
+        <Textarea value={reason} onChange={(e) => setReason(e.target.value)} maxLength={1000} rows={4} placeholder={tr("לדוגמה: ספאם, הטרדה, תוכן פוגעני…")} aria-label={tr("סיבת הדיווח")} />
         <DialogFooter>
-          <Button onClick={submit} disabled={sending || reason.trim().length < 3}>שליחת דיווח</Button>
+          <Button onClick={submit} disabled={sending || reason.trim().length < 3}>{tr("שליחת דיווח")}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

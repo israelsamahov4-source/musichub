@@ -11,10 +11,11 @@ import { supabase, unwrap } from "@/lib/supabase";
 import { useAuth } from "@/auth/AuthProvider";
 import { errorMessage } from "@/lib/utils";
 import { usePageTitle } from "@/lib/usePageTitle";
+import { tr } from "@/lib/i18n";
 
 export default function ProfileEdit() {
   const { user, profile, refreshProfile } = useAuth();
-  usePageTitle("עריכת פרופיל");
+  usePageTitle(tr("עריכת פרופיל"));
   const navigate = useNavigate();
   const [form, setForm] = useState(null);
   const [cv, setCv] = useState(null);
@@ -33,16 +34,16 @@ export default function ProfileEdit() {
   if (cvFailed) {
     return (
       <div className="page-narrow py-16 text-center">
-        <h1 className="text-2xl font-bold">לא הצלחנו לטעון את הפרופיל לעריכה</h1>
-        <p className="mt-2 text-muted-foreground">כדי לא למחוק בטעות את קורות החיים, העריכה נעצרה. נסו שוב.</p>
-        <Button className="mt-5" onClick={() => setCvFailed(false)}>לנסות שוב</Button>
+        <h1 className="text-2xl font-bold">{tr("לא הצלחנו לטעון את הפרופיל לעריכה")}</h1>
+        <p className="mt-2 text-muted-foreground">{tr("כדי לא למחוק בטעות את קורות החיים, העריכה נעצרה. נסו שוב.")}</p>
+        <Button className="mt-5" onClick={() => setCvFailed(false)}>{tr("לנסות שוב")}</Button>
       </div>
     );
   }
   if (!form || !cv) return <PageLoader />;
 
   const errors = checked ? profileErrors(form) : {};
-  if (taken && form.username.trim().toLowerCase() === taken) errors.username = "שם המשתמש כבר תפוס. נסו שם אחר";
+  if (taken && form.username.trim().toLowerCase() === taken) errors.username = tr("שם המשתמש כבר תפוס. נסו שם אחר");
 
   const save = async (e) => {
     e.preventDefault();
@@ -54,7 +55,7 @@ export default function ProfileEdit() {
       unwrap(await supabase.from("profiles").update(values).eq("id", user.id));
       unwrap(await supabase.from("profile_details").update(cvToRow(cv)).eq("user_id", user.id));
       await refreshProfile();
-      toast.success("הפרופיל נשמר");
+      toast.success(tr("הפרופיל נשמר"));
       navigate(`/u/${values.username}`);
     } catch (e2) {
       if (/username/i.test(e2.message)) { setTaken(form.username.trim().toLowerCase()); focusFirstError({ username: true }); }
@@ -66,19 +67,19 @@ export default function ProfileEdit() {
 
   return (
     <form className="page-narrow space-y-6" onSubmit={save} noValidate>
-      <h1 className="page-title">עריכת פרופיל</h1>
-      <Card className="p-5"><h2 className="mb-4 font-semibold">פרטים בסיסיים</h2><ProfileForm form={form} setForm={setForm} userId={user.id} sections={["basics"]} errors={errors} /></Card>
-      <Card className="p-5"><h2 className="mb-4 font-semibold">מוזיקה</h2><ProfileForm form={form} setForm={setForm} userId={user.id} sections={["music"]} /></Card>
-      <Card className="p-5"><h2 className="mb-4 font-semibold">עליי</h2><ProfileForm form={form} setForm={setForm} userId={user.id} sections={["about"]} /></Card>
+      <h1 className="page-title">{tr("עריכת פרופיל")}</h1>
+      <Card className="p-5"><h2 className="mb-4 font-semibold">{tr("פרטים בסיסיים")}</h2><ProfileForm form={form} setForm={setForm} userId={user.id} sections={["basics"]} errors={errors} /></Card>
+      <Card className="p-5"><h2 className="mb-4 font-semibold">{tr("מוזיקה")}</h2><ProfileForm form={form} setForm={setForm} userId={user.id} sections={["music"]} /></Card>
+      <Card className="p-5"><h2 className="mb-4 font-semibold">{tr("עליי")}</h2><ProfileForm form={form} setForm={setForm} userId={user.id} sections={["about"]} /></Card>
       <Card className="p-5">
-        <h2 className="text-xl font-bold">קורות חיים מוזיקליים</h2>
-        <p className="mb-5 mt-1 text-sm text-muted-foreground">מה שמנהלי פרויקטים ולהקות יראו כשתפנו אליהם. אתם בוחרים מי רואה.</p>
+        <h2 className="text-xl font-bold">{tr("קורות חיים מוזיקליים")}</h2>
+        <p className="mb-5 mt-1 text-sm text-muted-foreground">{tr("מה שמנהלי פרויקטים ולהקות יראו כשתפנו אליהם. אתם בוחרים מי רואה.")}</p>
         <CvEditor cv={cv} setCv={setCv} />
       </Card>
-      <Card className="p-5"><h2 className="mb-4 font-semibold">קישורים</h2><ProfileForm form={form} setForm={setForm} userId={user.id} sections={["links"]} /></Card>
+      <Card className="p-5"><h2 className="mb-4 font-semibold">{tr("קישורים")}</h2><ProfileForm form={form} setForm={setForm} userId={user.id} sections={["links"]} /></Card>
       <div className="sticky bottom-20 flex justify-end gap-2 md:bottom-4">
-        <Button type="button" variant="outline" onClick={() => navigate(-1)}>ביטול</Button>
-        <Button type="submit" disabled={saving}>{saving ? "שומרים…" : "שמירה"}</Button>
+        <Button type="button" variant="outline" onClick={() => navigate(-1)}>{tr("ביטול")}</Button>
+        <Button type="submit" disabled={saving}>{saving ? tr("שומרים…") : tr("שמירה")}</Button>
       </div>
     </form>
   );

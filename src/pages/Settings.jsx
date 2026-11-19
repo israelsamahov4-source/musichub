@@ -19,26 +19,27 @@ import { supabase, unwrap, callFunction } from "@/lib/supabase";
 import { useAuth } from "@/auth/AuthProvider";
 import { PAYMENTS_ENABLED } from "@/lib/config";
 import { errorMessage, formatDate } from "@/lib/utils";
+import { tr } from "@/lib/i18n";
 
-const STATUS = { active: "פעיל", trialing: "תקופת ניסיון", past_due: "תשלום נכשל", paused: "מושהה", canceled: "בוטל" };
+const STATUS = { active: tr("פעיל"), trialing: tr("תקופת ניסיון"), past_due: tr("תשלום נכשל"), paused: tr("מושהה"), canceled: tr("בוטל") };
 
 function PasswordCard() {
   const [pw, setPw] = useState("");
   const [busy, setBusy] = useState(false);
   const save = async (e) => {
     e.preventDefault();
-    if (pw.length < 8) return toast.error("הסיסמה חייבת להכיל לפחות 8 תווים");
+    if (pw.length < 8) return toast.error(tr("הסיסמה חייבת להכיל לפחות 8 תווים"));
     setBusy(true);
     const { error } = await supabase.auth.updateUser({ password: pw });
     setBusy(false);
     if (error) return toast.error(errorMessage(error));
     setPw("");
-    toast.success("הסיסמה עודכנה");
+    toast.success(tr("הסיסמה עודכנה"));
   };
   return (
     <form onSubmit={save} className="flex flex-wrap items-end gap-2">
-      <Field id="newpw" label="סיסמה חדשה"><Input id="newpw" type="password" dir="ltr" autoComplete="new-password" value={pw} onChange={(e) => setPw(e.target.value)} className="w-64" /></Field>
-      <Button type="submit" variant="outline" disabled={busy || !pw}>עדכון סיסמה</Button>
+      <Field id="newpw" label={tr("סיסמה חדשה")}><Input id="newpw" type="password" dir="ltr" autoComplete="new-password" value={pw} onChange={(e) => setPw(e.target.value)} className="w-64" /></Field>
+      <Button type="submit" variant="outline" disabled={busy || !pw}>{tr("עדכון סיסמה")}</Button>
     </form>
   );
 }
@@ -69,12 +70,12 @@ export default function Settings() {
   });
   const unblock = useMutation({
     mutationFn: async (id) => unwrap(await supabase.from("blocks").delete().eq("blocker_id", user.id).eq("blocked_id", id)),
-    onSuccess: () => { toast.success("החסימה בוטלה"); qc.invalidateQueries({ queryKey: ["blocks"] }); },
+    onSuccess: () => { toast.success(tr("החסימה בוטלה")); qc.invalidateQueries({ queryKey: ["blocks"] }); },
     onError: (e) => toast.error(errorMessage(e)),
   });
 
   useEffect(() => {
-    if (checkoutDone) toast.success("התשלום התקבל! המנוי יופעל תוך כמה שניות");
+    if (checkoutDone) toast.success(tr("התשלום התקבל! המנוי יופעל תוך כמה שניות"));
   }, [checkoutDone]);
   useEffect(() => {
     if (checkoutDone && sub.data && sub.data.tier !== "free") qc.invalidateQueries({ queryKey: ["profile"] });
@@ -98,59 +99,59 @@ export default function Settings() {
       return toast.error(errorMessage(e));
     }
     setDeleting(false);
-    toast.success("החשבון נמחק");
+    toast.success(tr("החשבון נמחק"));
     await signOut();
   };
 
   const s = sub.data;
   return (
     <div>
-    <PageHeader narrow title="הגדרות" />
+    <PageHeader narrow title={tr("הגדרות")} />
     <div className="page-narrow space-y-5">
 
       <Card className="space-y-4 p-5">
-        <h2 className="font-semibold">חשבון</h2>
+        <h2 className="font-semibold">{tr("חשבון")}</h2>
         <div className="flex items-center gap-3">
           <UserAvatar profile={profile} size="md" />
           <div className="flex-1">
             <div className="font-medium">{profile?.full_name}</div>
             <div className="ltr text-sm text-muted-foreground">{user.email}</div>
           </div>
-          <Button asChild variant="outline"><Link to="/profile/edit">עריכת פרופיל</Link></Button>
+          <Button asChild variant="outline"><Link to="/profile/edit">{tr("עריכת פרופיל")}</Link></Button>
         </div>
         {user.app_metadata?.provider === "email" && <PasswordCard />}
       </Card>
 
       <Card className="space-y-3 p-5">
-        <h2 className="font-semibold">מנוי</h2>
+        <h2 className="font-semibold">{tr("מנוי")}</h2>
         <div className="flex flex-wrap items-center gap-2">
-          <span>התוכנית שלכם:</span>
+          <span>{tr("התוכנית שלכם:")}</span>
           <strong>{(s?.tier ?? "free").replace(/^./, (c) => c.toUpperCase())}</strong>
           <PlanBadge tier={s?.tier} />
           {s?.tier !== "free" && s?.status && <span className="chip">{STATUS[s.status] ?? s.status}</span>}
         </div>
         {s?.current_period_end && s.tier !== "free" && (
           <p className="text-sm text-muted-foreground">
-            {s.cancel_at_period_end ? "המנוי יסתיים ב-" : "החיוב הבא ב-"}{formatDate(s.current_period_end)}
+            {s.cancel_at_period_end ? tr("המנוי יסתיים ב-") : tr("החיוב הבא ב-")}{formatDate(s.current_period_end)}
           </p>
         )}
-        {s?.status === "past_due" && <p className="rounded-xl bg-[#FFF6D9] px-3 py-2.5 text-sm text-[#6E5200]">התשלום האחרון נכשל. עדכנו אמצעי תשלום כדי לא לאבד את המנוי.</p>}
+        {s?.status === "past_due" && <p className="rounded-xl bg-[#FFF6D9] px-3 py-2.5 text-sm text-[#6E5200]">{tr("התשלום האחרון נכשל. עדכנו אמצעי תשלום כדי לא לאבד את המנוי.")}</p>}
         <div className="flex gap-2">
-          {s?.tier && s.tier !== "free" && PAYMENTS_ENABLED ? <Button variant="outline" onClick={portal}>ניהול מנוי ואמצעי תשלום</Button>
-            : <Button asChild variant="outline"><Link to="/pricing">לתוכניות</Link></Button>}
-          {s?.tier === "free" && s?.provider_customer_id && PAYMENTS_ENABLED && <Button variant="ghost" onClick={portal}>חשבוניות קודמות</Button>}
+          {s?.tier && s.tier !== "free" && PAYMENTS_ENABLED ? <Button variant="outline" onClick={portal}>{tr("ניהול מנוי ואמצעי תשלום")}</Button>
+            : <Button asChild variant="outline"><Link to="/pricing">{tr("לתוכניות")}</Link></Button>}
+          {s?.tier === "free" && s?.provider_customer_id && PAYMENTS_ENABLED && <Button variant="ghost" onClick={portal}>{tr("חשבוניות קודמות")}</Button>}
         </div>
       </Card>
 
       <Card className="space-y-3 p-5">
-        <h2 className="font-semibold">משתמשים חסומים</h2>
-        {(blocks.data ?? []).length === 0 ? <p className="text-sm text-muted-foreground">לא חסמתם אף אחד.</p> : (
+        <h2 className="font-semibold">{tr("משתמשים חסומים")}</h2>
+        {(blocks.data ?? []).length === 0 ? <p className="text-sm text-muted-foreground">{tr("לא חסמתם אף אחד.")}</p> : (
           <ul className="space-y-2">
             {blocks.data.map((b) => (
               <li key={b.blocked_id} className="flex items-center gap-2">
                 <UserAvatar profile={b.profile} size="xs" />
                 <span className="flex-1 text-sm">{b.profile?.full_name || b.profile?.username}</span>
-                <Button size="sm" variant="ghost" onClick={() => unblock.mutate(b.blocked_id)}>ביטול חסימה</Button>
+                <Button size="sm" variant="ghost" onClick={() => unblock.mutate(b.blocked_id)}>{tr("ביטול חסימה")}</Button>
               </li>
             ))}
           </ul>
@@ -160,29 +161,29 @@ export default function Settings() {
       <TwoFactorCard />
 
       <Card className="space-y-3 p-5">
-        <h2 className="font-semibold">המידע שלכם</h2>
-        <p className="text-sm text-muted-foreground">הורדת קובץ עם כל מה שנשמר עליכם באתר: פרופיל, קורות חיים, פוסטים, הודעות, פרויקטים, קורסים והתראות.</p>
+        <h2 className="font-semibold">{tr("המידע שלכם")}</h2>
+        <p className="text-sm text-muted-foreground">{tr("הורדת קובץ עם כל מה שנשמר עליכם באתר: פרופיל, קורות חיים, פוסטים, הודעות, פרויקטים, קורסים והתראות.")}</p>
         <Button variant="outline" className="w-fit" disabled={exporting} onClick={async () => {
           setExporting(true);
           try { await downloadMyData(user.id, user.email); } catch (e) { toast.error(errorMessage(e)); } finally { setExporting(false); }
-        }}>{exporting ? "מכינים קובץ…" : "הורדת המידע שלי"}</Button>
+        }}>{exporting ? tr("מכינים קובץ…") : tr("הורדת המידע שלי")}</Button>
       </Card>
 
       <Card className="space-y-3 border-destructive/40 p-5">
-        <h2 className="font-semibold text-destructive">מחיקת חשבון</h2>
-        <p className="text-sm text-muted-foreground">מוחק לצמיתות את הפרופיל, הפוסטים, ההודעות, הפרויקטים שבבעלותכם, הקורסים והקבצים שהעליתם. מנוי פעיל יבוטל.</p>
+        <h2 className="font-semibold text-destructive">{tr("מחיקת חשבון")}</h2>
+        <p className="text-sm text-muted-foreground">{tr("מוחק לצמיתות את הפרופיל, הפוסטים, ההודעות, הפרויקטים שבבעלותכם, הקורסים והקבצים שהעליתם. מנוי פעיל יבוטל.")}</p>
         <AlertDialog>
-          <AlertDialogTrigger asChild><Button variant="destructive" className="w-fit">מחיקת החשבון</Button></AlertDialogTrigger>
+          <AlertDialogTrigger asChild><Button variant="destructive" className="w-fit">{tr("מחיקת החשבון")}</Button></AlertDialogTrigger>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>למחוק את החשבון לצמיתות?</AlertDialogTitle>
-              <AlertDialogDescription>אי אפשר לבטל את הפעולה. כדי לאשר, הקלידו את שם המשתמש שלכם: <strong className="ltr">{profile?.username}</strong></AlertDialogDescription>
+              <AlertDialogTitle>{tr("למחוק את החשבון לצמיתות?")}</AlertDialogTitle>
+              <AlertDialogDescription>{tr("אי אפשר לבטל את הפעולה. כדי לאשר, הקלידו את שם המשתמש שלכם:")}{" "}<strong className="ltr">{profile?.username}</strong></AlertDialogDescription>
             </AlertDialogHeader>
-            <Input dir="ltr" value={confirmName} onChange={(e) => setConfirmName(e.target.value)} aria-label="שם משתמש לאישור" />
+            <Input dir="ltr" value={confirmName} onChange={(e) => setConfirmName(e.target.value)} aria-label={tr("שם משתמש לאישור")} />
             <AlertDialogFooter>
-              <AlertDialogCancel>ביטול</AlertDialogCancel>
+              <AlertDialogCancel>{tr("ביטול")}</AlertDialogCancel>
               <AlertDialogAction disabled={confirmName !== profile?.username || deleting} onClick={deleteAccount}
-                className="bg-destructive text-destructive-foreground hover:bg-destructive/90">מחיקה לצמיתות</AlertDialogAction>
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90">{tr("מחיקה לצמיתות")}</AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>

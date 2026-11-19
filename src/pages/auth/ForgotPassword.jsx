@@ -7,6 +7,7 @@ import AuthShell from "./AuthShell";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 import { errorMessage } from "@/lib/utils";
+import { tr } from "@/lib/i18n";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
@@ -25,16 +26,16 @@ export default function ForgotPassword() {
   };
 
   return (
-    <AuthShell title="איפוס סיסמה" footer={<Link to="/login" className="font-semibold text-primary hover:underline">חזרה להתחברות</Link>}>
+    <AuthShell title={tr("איפוס סיסמה")} footer={<Link to="/login" className="font-semibold text-primary hover:underline">{tr("חזרה להתחברות")}</Link>}>
       {sent ? (
-        <p>אם קיים חשבון עם הכתובת הזו, שלחנו אליה קישור לאיפוס הסיסמה.</p>
+        <p>{tr("אם קיים חשבון עם הכתובת הזו, שלחנו אליה קישור לאיפוס הסיסמה.")}</p>
       ) : (
         <form onSubmit={submit} className="space-y-4">
-          <p className="text-sm text-muted-foreground">הזינו את האימייל שלכם ונשלח קישור לבחירת סיסמה חדשה.</p>
-          <Field id="email" label="אימייל">
+          <p className="text-sm text-muted-foreground">{tr("הזינו את האימייל שלכם ונשלח קישור לבחירת סיסמה חדשה.")}</p>
+          <Field id="email" label={tr("אימייל")}>
             <Input id="email" type="email" dir="ltr" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
           </Field>
-          <Button type="submit" className="w-full" disabled={busy}>שליחת קישור</Button>
+          <Button type="submit" className="w-full" disabled={busy}>{tr("שליחת קישור")}</Button>
         </form>
       )}
     </AuthShell>

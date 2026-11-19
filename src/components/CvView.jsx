@@ -2,10 +2,11 @@ import { ExternalLink, GraduationCap, Lock, Mic2 } from "lucide-react";
 import MediaView from "@/components/MediaView";
 import { label } from "@/lib/config";
 import { safeUrl, videoEmbedUrl, textDir } from "@/lib/utils";
+import { tr } from "@/lib/i18n";
 
-const hostOf = (url) => { try { return new URL(url).hostname; } catch { return url || "קישור"; } };
+const hostOf = (url) => { try { return new URL(url).hostname; } catch { return url || tr("קישור"); } };
 
-const years = (a, b) => (a ? `${a}–${b || "היום"}` : b ? `עד ${b}` : "");
+const years = (a, b) => (a ? `${a}–${b || tr("היום")}` : b ? tr("עד {0}", b) : "");
 
 /** What someone is looking for (profiles.looking_for), as yellow stickers. */
 export function LookingForBadges({ items }) {
@@ -25,20 +26,20 @@ export default function CvView({ cv, compact = false, hiddenText }) {
     return (
       <div className="flex items-start gap-3 rounded-xl border border-dashed p-4 text-sm text-muted-foreground">
         <Lock className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
-        <span>{hiddenText ?? "קורות החיים המוזיקליים גלויים רק לאנשים שהמשתמש/ת בחר/ה."}</span>
+        <span>{hiddenText ?? tr("קורות החיים המוזיקליים גלויים רק לאנשים שהמשתמש/ת בחר/ה.")}</span>
       </div>
     );
   }
   const experience = compact ? cv.experience?.slice(0, 3) : cv.experience;
   const empty = !cv.headline && !cv.experience?.length && !cv.education?.length && !cv.skills?.length && !cv.portfolio?.length;
   if (empty && compact) return null;
-  if (empty) return <p className="text-sm text-muted-foreground">עוד לא מילאו כאן קורות חיים.</p>;
+  if (empty) return <p className="text-sm text-muted-foreground">{tr("עוד לא מילאו כאן קורות חיים.")}</p>;
 
   return (
     <div className="space-y-6 [&>section+section]:border-t [&>section+section]:border-border/70 [&>section+section]:pt-6">
       {experience?.length > 0 && (
         <section>
-          {!compact && <h3 className="mb-3 text-base font-bold">ניסיון</h3>}
+          {!compact && <h3 className="mb-3 text-base font-bold">{tr("ניסיון")}</h3>}
           <ol className="space-y-4">
             {experience.map((e, i) => (
               <li key={i} className="flex gap-3">
@@ -52,13 +53,13 @@ export default function CvView({ cv, compact = false, hiddenText }) {
               </li>
             ))}
           </ol>
-          {compact && cv.experience.length > 3 && <p className="mt-2 text-xs text-muted-foreground">ועוד {cv.experience.length - 3} בפרופיל</p>}
+          {compact && cv.experience.length > 3 && <p className="mt-2 text-xs text-muted-foreground">{tr("ועוד")}{" "}{cv.experience.length - 3}{" "}{tr("בפרופיל")}</p>}
         </section>
       )}
 
       {!compact && cv.education?.length > 0 && (
         <section>
-          <h3 className="mb-3 text-base font-bold">לימודים</h3>
+          <h3 className="mb-3 text-base font-bold">{tr("לימודים")}</h3>
           <ul className="space-y-4">
             {cv.education.map((e, i) => (
               <li key={i} className="flex gap-3">
@@ -76,15 +77,15 @@ export default function CvView({ cv, compact = false, hiddenText }) {
 
       {cv.skills?.length > 0 && (
         <section>
-          {!compact && <h3 className="mb-3 text-base font-bold">כישורים</h3>}
+          {!compact && <h3 className="mb-3 text-base font-bold">{tr("כישורים")}</h3>}
           <div className="flex flex-wrap gap-1.5">{cv.skills.map((s) => <span key={s} className="chip">{s}</span>)}</div>
-          {!compact && cv.languages?.length > 0 && <p className="mt-3 text-sm text-muted-foreground">שפות: {cv.languages.join(", ")}</p>}
+          {!compact && cv.languages?.length > 0 && <p className="mt-3 text-sm text-muted-foreground">{tr("שפות:")}{" "}{cv.languages.join(", ")}</p>}
         </section>
       )}
 
       {!compact && cv.portfolio?.length > 0 && (
         <section>
-          <h3 className="mb-3 text-base font-bold">תיק עבודות</h3>
+          <h3 className="mb-3 text-base font-bold">{tr("תיק עבודות")}</h3>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             {cv.portfolio.map((p, i) => (
               <figure key={i} className="space-y-2">

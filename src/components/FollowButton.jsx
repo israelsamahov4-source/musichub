@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { supabase, unwrap } from "@/lib/supabase";
 import { useAuth } from "@/auth/AuthProvider";
 import { cn, errorMessage } from "@/lib/utils";
+import { tr } from "@/lib/i18n";
 
 export default function FollowButton({ profileId, size = "sm", quiet = false }) {
   const { user } = useAuth();
@@ -34,7 +35,7 @@ export default function FollowButton({ profileId, size = "sm", quiet = false }) 
   return (
     <Button size={size} variant={following ? "outline" : quiet ? "outline" : "default"} className={cn(quiet && !following && "border-primary/50 text-primary hover:bg-secondary hover:text-primary")} onClick={() => mutation.mutate()} disabled={mutation.isPending}>
       {following ? <UserCheck className="h-4 w-4" aria-hidden /> : <UserPlus className="h-4 w-4" aria-hidden />}
-      {following ? "עוקב/ת" : "מעקב"}
+      {following ? tr("עוקב/ת") : tr("מעקב")}
     </Button>
   );
 }

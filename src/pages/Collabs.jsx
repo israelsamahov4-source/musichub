@@ -23,6 +23,7 @@ import { useAuth } from "@/auth/AuthProvider";
 import { GENRES, PROJECT_TYPES, ROLES, label } from "@/lib/config";
 import { errorMessage, timeAgo } from "@/lib/utils";
 import { useAuthHref } from "@/auth/returnTo";
+import { DIR, tr } from "@/lib/i18n";
 
 const PROJECT_SELECT = "id, title, description, type, status, genres, looking_for_roles, location, is_remote, is_public, created_at, owner:profiles!collab_projects_owner_id_fkey(id, username, full_name, avatar_url), members:collab_members(count)";
 
@@ -32,23 +33,23 @@ export function ProjectFields({ value, onChange }) {
   const set = (k) => (v) => onChange({ ...value, [k]: v?.target ? v.target.value : v });
   return (
     <div className="space-y-4">
-      <Field id="title" label="שם הפרויקט"><Input id="title" value={value.title} onChange={set("title")} maxLength={120} required /></Field>
-      <Field id="type" label="סוג">
-        <Select value={value.type} onValueChange={set("type")} dir="rtl">
+      <Field id="title" label={tr("שם הפרויקט")}><Input id="title" value={value.title} onChange={set("title")} maxLength={120} required /></Field>
+      <Field id="type" label={tr("סוג")}>
+        <Select value={value.type} onValueChange={set("type")} dir={DIR}>
           <SelectTrigger id="type"><SelectValue /></SelectTrigger>
           <SelectContent>{PROJECT_TYPES.map((t) => <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>)}</SelectContent>
         </Select>
       </Field>
-      <Field id="desc" label="תיאור" hint="מה הרעיון, מה כבר קיים, ומה אתם מחפשים">
+      <Field id="desc" label={tr("תיאור")} hint={tr("מה הרעיון, מה כבר קיים, ומה אתם מחפשים")}>
         <Textarea id="desc" value={value.description} onChange={set("description")} maxLength={5000} rows={4} />
       </Field>
-      <Field label="מחפשים"><TagPicker options={ROLES} value={value.looking_for_roles} onChange={set("looking_for_roles")} label="תפקידים מבוקשים" /></Field>
-      <Field label="ז'אנר"><TagPicker options={GENRES} value={value.genres} onChange={set("genres")} max={4} label="ז'אנר" /></Field>
+      <Field label={tr("מחפשים")}><TagPicker options={ROLES} value={value.looking_for_roles} onChange={set("looking_for_roles")} label={tr("תפקידים מבוקשים")} /></Field>
+      <Field label={tr("ז'אנר")}><TagPicker options={GENRES} value={value.genres} onChange={set("genres")} max={4} label={tr("ז'אנר")} /></Field>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <Field id="loc" label="עיר (לא חובה)"><CityPicker id="loc" value={value.location} onChange={set("location")} /></Field>
+        <Field id="loc" label={tr("עיר (לא חובה)")}><CityPicker id="loc" value={value.location} onChange={set("location")} /></Field>
         <div className="space-y-3 pt-6">
-          <label className="flex items-center gap-2 text-sm"><Switch aria-label="אפשר לעבוד מרחוק" checked={value.is_remote} onCheckedChange={set("is_remote")} />אפשר לעבוד מרחוק</label>
-          <label className="flex items-center gap-2 text-sm"><Switch aria-label="פרויקט ציבורי" checked={value.is_public} onCheckedChange={set("is_public")} />פרויקט ציבורי (כולם יכולים לראות ולבקש להצטרף)</label>
+          <label className="flex items-center gap-2 text-sm"><Switch aria-label={tr("אפשר לעבוד מרחוק")} checked={value.is_remote} onCheckedChange={set("is_remote")} />{tr("אפשר לעבוד מרחוק")}</label>
+          <label className="flex items-center gap-2 text-sm"><Switch aria-label={tr("פרויקט ציבורי")} checked={value.is_public} onCheckedChange={set("is_public")} />{tr("פרויקט ציבורי (כולם יכולים לראות ולבקש להצטרף)")}</label>
         </div>
       </div>
     </div>
@@ -71,7 +72,7 @@ function ProjectCard({ p, badge }) {
             <div className="flex items-start gap-2">
               <h3 className="flex-1 text-base font-bold leading-snug">{p.title}</h3>
               {badge}
-              {!p.is_public && <Lock className="mt-1 h-4 w-4 shrink-0 text-muted-foreground" aria-label="פרויקט פרטי" />}
+              {!p.is_public && <Lock className="mt-1 h-4 w-4 shrink-0 text-muted-foreground" aria-label={tr("פרויקט פרטי")} />}
             </div>
             <p className="mt-0.5 text-[13px] text-muted-foreground">{label("projectTypes", p.type)} · {label("projectStatus", p.status)} · {timeAgo(p.created_at)}</p>
           </div>
@@ -79,7 +80,7 @@ function ProjectCard({ p, badge }) {
         {p.description && <p className="mt-3 line-clamp-2 text-sm leading-relaxed text-foreground/80">{p.description}</p>}
         {p.looking_for_roles?.length > 0 && (
           <div className="mt-3 flex flex-wrap items-center gap-1.5">
-            <span className="text-xs font-semibold text-muted-foreground">מחפשים</span>
+            <span className="text-xs font-semibold text-muted-foreground">{tr("מחפשים")}</span>
             {p.looking_for_roles.slice(0, 4).map((r) => <span key={r} className="chip bg-[#FFE3EB] font-semibold text-[#8E1840]">{label("roles", r)}</span>)}
           </div>
         )}
@@ -87,7 +88,7 @@ function ProjectCard({ p, badge }) {
           <UserAvatar profile={p.owner} size="xs" className="h-6 w-6" />
           <span className="truncate font-medium text-foreground/80">{p.owner?.full_name || p.owner?.username}</span>
           <span className="ms-auto flex items-center gap-1"><Users className="h-3.5 w-3.5" aria-hidden />{p.members?.[0]?.count ?? 1}</span>
-          {p.is_remote ? <span className="flex items-center gap-1"><Globe className="h-3.5 w-3.5" aria-hidden />מרחוק</span>
+          {p.is_remote ? <span className="flex items-center gap-1"><Globe className="h-3.5 w-3.5" aria-hidden />{tr("מרחוק")}</span>
             : p.location && <span className="flex items-center gap-1"><MapPin className="h-3.5 w-3.5" aria-hidden />{p.location}</span>}
         </div>
       </Card>
@@ -134,58 +135,58 @@ export default function Collabs() {
   const create = useMutation({
     mutationFn: async () =>
       unwrap(await supabase.from("collab_projects").insert({ ...draft, title: draft.title.trim(), description: draft.description.trim(), owner_id: user.id }).select("id").single()),
-    onSuccess: ({ id }) => { qc.invalidateQueries({ queryKey: ["projects"] }); toast.success("הפרויקט נוצר"); setOpen(false); setDraft(EMPTY_PROJECT); navigate(`/collabs/${id}`); },
+    onSuccess: ({ id }) => { qc.invalidateQueries({ queryKey: ["projects"] }); toast.success(tr("הפרויקט נוצר")); setOpen(false); setDraft(EMPTY_PROJECT); navigate(`/collabs/${id}`); },
     onError: (e) => toast.error(errorMessage(e)),
   });
 
-  const statusBadge = (s) => s === "requested" ? <span className="chip">ממתין לאישור</span> : s === "invited" ? <span className="chip bg-secondary text-primary">הוזמנתם</span> : null;
+  const statusBadge = (s) => s === "requested" ? <span className="chip">{tr("ממתין לאישור")}</span> : s === "invited" ? <span className="chip bg-secondary text-primary">{tr("הוזמנתם")}</span> : null;
 
   return (
     <div>
-    <PageHeader title="פרויקטים" text="מצאו שותפים לשיר, ללהקה או להפקה, או הצטרפו לפרויקט קיים."
-      actions={user ? <Button onClick={() => setOpen(true)}><Plus />פרויקט חדש</Button>
-        : <Button asChild size="lg"><Link to={signupHref}>הצטרפו כדי ליצור פרויקט</Link></Button>} />
+    <PageHeader title={tr("פרויקטים")} text={tr("מצאו שותפים לשיר, ללהקה או להפקה, או הצטרפו לפרויקט קיים.")}
+      actions={user ? <Button onClick={() => setOpen(true)}><Plus />{tr("פרויקט חדש")}</Button>
+        : <Button asChild size="lg"><Link to={signupHref}>{tr("הצטרפו כדי ליצור פרויקט")}</Link></Button>} />
     <div className="page">
-      <Tabs defaultValue="explore" dir="rtl">
+      <Tabs defaultValue="explore" dir={DIR}>
         <TabsList>
-          <TabsTrigger value="explore">כל הפרויקטים</TabsTrigger>
-          {user && <TabsTrigger value="mine">הפרויקטים שלי</TabsTrigger>}
+          <TabsTrigger value="explore">{tr("כל הפרויקטים")}</TabsTrigger>
+          {user && <TabsTrigger value="mine">{tr("הפרויקטים שלי")}</TabsTrigger>}
         </TabsList>
         <TabsContent value="explore" className="space-y-4">
           <div className="flex flex-wrap gap-2">
-            <Select value={type} onValueChange={setType} dir="rtl">
-              <SelectTrigger className="w-44" aria-label="סוג פרויקט"><SelectValue /></SelectTrigger>
-              <SelectContent><SelectItem value="all">כל הסוגים</SelectItem>{PROJECT_TYPES.map((t) => <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>)}</SelectContent>
+            <Select value={type} onValueChange={setType} dir={DIR}>
+              <SelectTrigger className="w-44" aria-label={tr("סוג פרויקט")}><SelectValue /></SelectTrigger>
+              <SelectContent><SelectItem value="all">{tr("כל הסוגים")}</SelectItem>{PROJECT_TYPES.map((t) => <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>)}</SelectContent>
             </Select>
-            <Select value={role} onValueChange={setRole} dir="rtl">
-              <SelectTrigger className="w-44" aria-label="תפקיד מבוקש"><SelectValue /></SelectTrigger>
-              <SelectContent><SelectItem value="all">כל התפקידים</SelectItem>{ROLES.map((r) => <SelectItem key={r.value} value={r.value}>{r.label}</SelectItem>)}</SelectContent>
+            <Select value={role} onValueChange={setRole} dir={DIR}>
+              <SelectTrigger className="w-44" aria-label={tr("תפקיד מבוקש")}><SelectValue /></SelectTrigger>
+              <SelectContent><SelectItem value="all">{tr("כל התפקידים")}</SelectItem>{ROLES.map((r) => <SelectItem key={r.value} value={r.value}>{r.label}</SelectItem>)}</SelectContent>
             </Select>
           </div>
           <Grid loading={explore.isLoading} items={explore.data ?? []} render={(p) => <ProjectCard key={p.id} p={p} />}
             empty={filtered
-              ? <EmptyState icon={Handshake} title="אין פרויקטים כאלה כרגע" text="נסו סוג אחר או תפקיד אחר."
-                  action={<Button variant="outline" onClick={() => { setType("all"); setRole("all"); }}>ניקוי סינון</Button>} />
-              : <EmptyState icon={Handshake} title="הבמה עדיין ריקה"
-                  text="כאן יופיעו שירים, להקות והפקות שמחפשים שותפים. פתחו את הפרויקט הראשון, ומוזיקאים יוכלו לבקש להצטרף."
+              ? <EmptyState icon={Handshake} title={tr("אין פרויקטים כאלה כרגע")} text={tr("נסו סוג אחר או תפקיד אחר.")}
+                  action={<Button variant="outline" onClick={() => { setType("all"); setRole("all"); }}>{tr("ניקוי סינון")}</Button>} />
+              : <EmptyState icon={Handshake} title={tr("הבמה עדיין ריקה")}
+                  text={tr("כאן יופיעו שירים, להקות והפקות שמחפשים שותפים. פתחו את הפרויקט הראשון, ומוזיקאים יוכלו לבקש להצטרף.")}
                   action={user
-                    ? <Button onClick={() => setOpen(true)}><Plus />פתיחת הפרויקט הראשון</Button>
-                    : <Button asChild><Link to={signupHref}>הצטרפו ופתחו פרויקט</Link></Button>} />} />
+                    ? <Button onClick={() => setOpen(true)}><Plus />{tr("פתיחת הפרויקט הראשון")}</Button>
+                    : <Button asChild><Link to={signupHref}>{tr("הצטרפו ופתחו פרויקט")}</Link></Button>} />} />
         </TabsContent>
         {user && (
           <TabsContent value="mine">
             <Grid loading={mine.isLoading} items={mine.data ?? []} render={(r) => <ProjectCard key={r.project.id} p={r.project} badge={statusBadge(r.status)} />}
-              empty={<EmptyState icon={Handshake} title="עוד לא הצטרפתם לפרויקט" text="פתחו פרויקט חדש או בקשו להצטרף לפרויקט קיים." />} />
+              empty={<EmptyState icon={Handshake} title={tr("עוד לא הצטרפתם לפרויקט")} text={tr("פתחו פרויקט חדש או בקשו להצטרף לפרויקט קיים.")} />} />
           </TabsContent>
         )}
       </Tabs>
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-xl">
-          <DialogHeader><DialogTitle>פרויקט חדש</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle>{tr("פרויקט חדש")}</DialogTitle></DialogHeader>
           <ProjectFields value={draft} onChange={setDraft} />
           <DialogFooter>
-            <Button onClick={() => create.mutate()} disabled={draft.title.trim().length < 2 || create.isPending}>יצירת פרויקט</Button>
+            <Button onClick={() => create.mutate()} disabled={draft.title.trim().length < 2 || create.isPending}>{tr("יצירת פרויקט")}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

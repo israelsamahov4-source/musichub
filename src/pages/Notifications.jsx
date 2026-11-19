@@ -10,8 +10,25 @@ import PageLoader from "@/components/PageLoader";
 import { supabase, unwrap } from "@/lib/supabase";
 import { useAuth } from "@/auth/AuthProvider";
 import { cn, timeAgo } from "@/lib/utils";
+import { LANG, tr } from "@/lib/i18n";
 
 const ICONS = { follow: UserPlus, post_like: Heart, post_comment: MessageCircle, collab_request: Handshake, collab_invite: Handshake, collab_accepted: Handshake, subscription: Sparkles, system: Bell };
+
+// The database writes these sentences in Hebrew; a project title may follow the quote mark.
+const DB_TEXTS = [
+  ["התחיל/ה לעקוב אחריך", "started following you"],
+  ["אהב/ה את הפוסט שלך", "liked your post"],
+  ["הגיב/ה על הפוסט שלך", "commented on your post"],
+  ['ביקש/ה להצטרף לפרויקט "', 'asked to join the project "'],
+  ['הזמין/ה אותך לפרויקט "', 'invited you to the project "'],
+  ['אישר/ה את הצטרפותך לפרויקט "', 'approved you joining the project "'],
+  ['הצטרף/ה לפרויקט "', 'joined the project "'],
+];
+function notificationText(message = "") {
+  if (LANG !== "en") return message;
+  const hit = DB_TEXTS.find(([he]) => message.startsWith(he));
+  return hit ? hit[1] + message.slice(hit[0].length) : message;
+}
 
 export default function Notifications() {
   const { user } = useAuth();
@@ -37,12 +54,12 @@ export default function Notifications() {
   const unread = data.filter((n) => !n.read_at).length;
   return (
     <div>
-    <PageHeader narrow title="התראות" actions={<>
-        {unread > 0 && <Button variant="outline" size="sm" onClick={() => markAll.mutate()}><CheckCheck />סימון הכל כנקרא</Button>}
-        {data.length > unread && <Button variant="ghost" size="sm" onClick={() => clear.mutate()}><Trash2 />ניקוי נקראות</Button>}
+    <PageHeader narrow title={tr("התראות")} actions={<>
+        {unread > 0 && <Button variant="outline" size="sm" onClick={() => markAll.mutate()}><CheckCheck />{tr("סימון הכל כנקרא")}</Button>}
+        {data.length > unread && <Button variant="ghost" size="sm" onClick={() => clear.mutate()}><Trash2 />{tr("ניקוי נקראות")}</Button>}
       </>} />
     <div className="page-narrow">
-      {data.length === 0 ? <EmptyState icon={Bell} title="אין התראות" text="כשמישהו יעקוב אחריכם, יגיב או יבקש להצטרף לפרויקט, תראו את זה כאן." /> : (
+      {data.length === 0 ? <EmptyState icon={Bell} title={tr("אין התראות")} text={tr("כשמישהו יעקוב אחריכם, יגיב או יבקש להצטרף לפרויקט, תראו את זה כאן.")} /> : (
         <Card className="divide-y overflow-hidden">
           {data.map((n) => {
             const Icon = ICONS[n.type] ?? Bell;
@@ -53,10 +70,10 @@ export default function Notifications() {
                   {n.actor && <Icon className="absolute -bottom-0.5 -end-1 h-5 w-5 rounded-full bg-primary p-1 text-white ring-2 ring-card" aria-hidden />}
                 </div>
                 <div className="min-w-0 flex-1 pt-0.5 text-[15px] leading-snug">
-                  <p><strong className="font-bold">{n.actor?.full_name || n.actor?.username}</strong> {n.message}</p>
+                  <p><strong className="font-bold">{n.actor?.full_name || n.actor?.username}</strong> {notificationText(n.message)}</p>
                   <p className={cn("mt-0.5 text-[13px]", n.read_at ? "text-muted-foreground" : "font-medium text-primary")}>{timeAgo(n.created_at)}</p>
                 </div>
-                {!n.read_at && <span className="mt-2 h-2.5 w-2.5 shrink-0 rounded-full bg-primary" aria-label="לא נקרא" />}
+                {!n.read_at && <span className="mt-2 h-2.5 w-2.5 shrink-0 rounded-full bg-primary" aria-label={tr("לא נקרא")} />}
               </div>
             );
             return n.link && n.link.startsWith("/") ? <Link key={n.id} to={n.link} onClick={() => !n.read_at && markOne(n.id)}>{body}</Link> : <div key={n.id}>{body}</div>;

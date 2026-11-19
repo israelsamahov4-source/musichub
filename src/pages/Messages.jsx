@@ -13,10 +13,11 @@ import { supabase, unwrap } from "@/lib/supabase";
 import { useAuth } from "@/auth/AuthProvider";
 import { cn, errorMessage, formatDate, timeAgo, textDir } from "@/lib/utils";
 import { usePageTitle } from "@/lib/usePageTitle";
+import { tr } from "@/lib/i18n";
 
 function ConversationList({ conversations, activeId }) {
   if (!conversations.length) {
-    return <EmptyState plain icon={MessageCircle} title="אין עדיין שיחות" text="פתחו שיחה מתוך פרופיל של מוזיקאי/ת." action={<Button asChild variant="outline"><Link to="/discover">גילוי מוזיקאים</Link></Button>} />;
+    return <EmptyState plain icon={MessageCircle} title={tr("אין עדיין שיחות")} text={tr("פתחו שיחה מתוך פרופיל של מוזיקאי/ת.")} action={<Button asChild variant="outline"><Link to="/discover">{tr("גילוי מוזיקאים")}</Link></Button>} />;
   }
   return (
     <ul className="p-1.5">
@@ -30,7 +31,7 @@ function ConversationList({ conversations, activeId }) {
                 <span className={cn("ms-auto shrink-0 text-xs", Number(c.unread_count) > 0 ? "font-semibold text-primary" : "text-muted-foreground")}>{timeAgo(c.last_message_at)}</span>
               </div>
               <div className="flex items-center gap-2">
-                <p className="truncate text-sm text-muted-foreground">{c.last_message ?? "שיחה חדשה"}</p>
+                <p className="truncate text-sm text-muted-foreground">{c.last_message ?? tr("שיחה חדשה")}</p>
                 {Number(c.unread_count) > 0 && <span className="ms-auto min-w-5 rounded-full bg-riso-pinkdeep px-1.5 text-center text-xs font-bold leading-5 text-white">{c.unread_count}</span>}
               </div>
             </div>
@@ -97,7 +98,7 @@ function Thread({ conversationId, other }) {
   return (
     <div className="flex h-full flex-col">
       <div className="flex h-16 items-center gap-3 border-b px-3">
-        <Button asChild variant="ghost" size="icon" className="md:hidden" aria-label="חזרה לשיחות"><Link to="/messages"><ArrowRight /></Link></Button>
+        <Button asChild variant="ghost" size="icon" className="md:hidden" aria-label={tr("חזרה לשיחות")}><Link to="/messages"><ArrowRight className="ltr:rotate-180" /></Link></Button>
         {other && (
           <Link to={`/u/${other.username}`} className="flex items-center gap-2 hover:underline">
             <UserAvatar profile={other} />
@@ -107,7 +108,7 @@ function Thread({ conversationId, other }) {
       </div>
       <div className="flex-1 space-y-1.5 overflow-y-auto bg-background/60 p-4" aria-live="polite">
         {isLoading && <PageLoader />}
-        {!isLoading && messages.length === 0 && <p className="py-10 text-center text-sm text-muted-foreground">כתבו את ההודעה הראשונה בשיחה.</p>}
+        {!isLoading && messages.length === 0 && <p className="py-10 text-center text-sm text-muted-foreground">{tr("כתבו את ההודעה הראשונה בשיחה.")}</p>}
         {messages.map((m) => {
           const mine = m.sender_id === user.id;
           return (
@@ -122,16 +123,16 @@ function Thread({ conversationId, other }) {
         <div ref={bottomRef} />
       </div>
       <form onSubmit={submit} className="flex items-end gap-2 border-t bg-card p-3">
-        <Textarea value={text} onChange={(e) => setText(e.target.value)} rows={1} maxLength={4000} placeholder="כתבו הודעה…" aria-label="הודעה"
+        <Textarea value={text} onChange={(e) => setText(e.target.value)} rows={1} maxLength={4000} placeholder={tr("כתבו הודעה…")} aria-label={tr("הודעה")}
           className="max-h-32 min-h-11 resize-none rounded-3xl border-0 bg-muted px-4 py-2.5 focus-visible:bg-card" onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); submit(); } }} />
-        <Button type="submit" size="icon" className="h-11 w-11 shrink-0" disabled={!text.trim()} aria-label="שליחה"><Send className="rtl:-scale-x-100" /></Button>
+        <Button type="submit" size="icon" className="h-11 w-11 shrink-0" disabled={!text.trim()} aria-label={tr("שליחה")}><Send className="rtl:-scale-x-100" /></Button>
       </form>
     </div>
   );
 }
 
 export default function Messages() {
-  usePageTitle("הודעות");
+  usePageTitle(tr("הודעות"));
   const { conversationId } = useParams();
   const { data: conversations = [], isLoading } = useQuery({
     queryKey: ["conversations"],
@@ -144,17 +145,17 @@ export default function Messages() {
     <div className="mx-auto max-w-5xl px-0 py-0 md:px-4 md:py-6">
       <Card className="grid h-[calc(100dvh-7rem-1px)] overflow-hidden rounded-none border-x-0 md:h-[calc(100dvh-8rem)] md:grid-cols-[340px_1fr] md:rounded-2xl md:border-x">
         <div className={cn("overflow-y-auto border-e", conversationId && "hidden md:block")}>
-          <h1 className="flex h-16 items-center border-b px-4 text-xl font-bold">הודעות</h1>
+          <h1 className="flex h-16 items-center border-b px-4 text-xl font-bold">{tr("הודעות")}</h1>
           {isLoading ? <PageLoader /> : <ConversationList conversations={conversations} activeId={conversationId} />}
         </div>
         <div className={cn("min-h-0", !conversationId && "hidden md:block")}>
           {conversationId ? (
-            !isLoading && !active ? <EmptyState title="השיחה לא נמצאה" /> : <Thread key={conversationId} conversationId={conversationId} other={other} />
+            !isLoading && !active ? <EmptyState title={tr("השיחה לא נמצאה")} /> : <Thread key={conversationId} conversationId={conversationId} other={other} />
           ) : (
             <div className="flex h-full min-h-[320px] flex-col items-center justify-center gap-2 bg-background/60 p-8 text-center">
               <span className="mb-2 flex h-16 w-16 items-center justify-center rounded-full bg-secondary text-primary"><MessageCircle className="h-7 w-7" aria-hidden /></span>
-              <p className="text-lg font-bold">ההודעות שלכם</p>
-              <p className="max-w-xs text-sm text-muted-foreground">בחרו שיחה מהרשימה, או פתחו חדשה מהפרופיל של מוזיקאי/ת.</p>
+              <p className="text-lg font-bold">{tr("ההודעות שלכם")}</p>
+              <p className="max-w-xs text-sm text-muted-foreground">{tr("בחרו שיחה מהרשימה, או פתחו חדשה מהפרופיל של מוזיקאי/ת.")}</p>
             </div>
           )}
         </div>

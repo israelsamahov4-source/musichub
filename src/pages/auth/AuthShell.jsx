@@ -2,10 +2,12 @@ import { Link } from "react-router-dom";
 import { APP_NAME } from "@/lib/config";
 import { usePageTitle } from "@/lib/usePageTitle";
 import LogoMark from "@/components/LogoMark";
+import LanguageSwitch from "@/components/LanguageSwitch";
+import { tr } from "@/lib/i18n";
 
 function Wordmark() {
   return (
-    <Link to="/" className="flex w-fit items-center gap-2" aria-label={`${APP_NAME} — דף הבית`}>
+    <Link to="/" className="flex w-fit items-center gap-2" aria-label={tr("{0} — דף הבית", APP_NAME)}>
       <LogoMark className="h-8 w-8" />
       <span className="ltr text-[1.2rem] font-extrabold tracking-tight text-foreground">Music<span className="text-primary">Hub</span></span>
     </Link>
@@ -28,7 +30,7 @@ export default function AuthShell({ title, subtitle, children, footer }) {
   return (
     <div className="grid min-h-screen bg-card lg:grid-cols-[1fr_minmax(440px,0.85fr)]">
       <div className="flex flex-col px-5 py-6 sm:px-10 lg:py-8">
-        <Wordmark />
+        <div className="flex items-center justify-between gap-3"><Wordmark /><LanguageSwitch /></div>
         <main id="main" className="mx-auto flex w-full max-w-[400px] flex-1 flex-col justify-center py-10">
           <h1 className="text-[2rem] font-bold leading-tight tracking-tight">{title}</h1>
           {subtitle && <p className="mt-2 text-[15px] text-muted-foreground">{subtitle}</p>}
@@ -38,8 +40,8 @@ export default function AuthShell({ title, subtitle, children, footer }) {
       </div>
       <aside className="relative hidden overflow-hidden bg-riso-blue p-12 text-white lg:flex lg:flex-col lg:justify-end" aria-hidden>
         <Waves />
-        <p className="relative text-[3.25rem] font-extrabold leading-[1.05] tracking-tight">תמצאו עם מי<br />לנגן.</p>
-        <p className="relative mt-4 max-w-xs text-[15px] text-white/80">גיטריסטים, זמרות, מפיקים ומורים, מכל ז'אנר ומכל הארץ.</p>
+        <p className="relative text-[3.25rem] font-extrabold leading-[1.05] tracking-tight">{tr("תמצאו עם מי")}<br />{tr("לנגן.")}</p>
+        <p className="relative mt-4 max-w-xs text-[15px] text-white/80">{tr("גיטריסטים, זמרות, מפיקים ומורים, מכל ז'אנר ומכל הארץ.")}</p>
       </aside>
     </div>
   );

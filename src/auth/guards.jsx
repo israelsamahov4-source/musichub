@@ -4,6 +4,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import PageLoader from "@/components/PageLoader";
 import MfaChallenge from "./MfaChallenge";
 import { Button } from "@/components/ui/button";
+import { tr } from "@/lib/i18n";
 
 /** Pages that need a signed-in user who has finished onboarding. */
 export function RequireAuth({ children, allowIncompleteProfile = false }) {
@@ -15,9 +16,9 @@ export function RequireAuth({ children, allowIncompleteProfile = false }) {
   if (user && profileError) {
     return (
       <div className="page-narrow py-16 text-center">
-        <h1 className="text-2xl font-bold">לא הצלחנו לטעון את החשבון</h1>
-        <p className="mt-2 text-muted-foreground">בדקו את החיבור לאינטרנט ונסו שוב.</p>
-        <Button className="mt-5" onClick={retryProfile}>לנסות שוב</Button>
+        <h1 className="text-2xl font-bold">{tr("לא הצלחנו לטעון את החשבון")}</h1>
+        <p className="mt-2 text-muted-foreground">{tr("בדקו את החיבור לאינטרנט ונסו שוב.")}</p>
+        <Button className="mt-5" onClick={retryProfile}>{tr("לנסות שוב")}</Button>
       </div>
     );
   }

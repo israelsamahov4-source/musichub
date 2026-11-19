@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import Field from "@/components/Field";
 import { VISIBILITY } from "@/lib/config";
 import { cn, normalizeUrl, safeUrl } from "@/lib/utils";
+import { tr } from "@/lib/i18n";
 
 export const EMPTY_CV = {
   visibility: "members", headline: "", years_experience: "",
@@ -48,14 +49,14 @@ function FreeTags({ value, onChange, placeholder, max = 30, label }) {
         {value.map((t) => (
           <span key={t} className="inline-flex items-center gap-1 rounded-full bg-secondary px-3 py-1 text-sm text-secondary-foreground">
             {t}
-            <button type="button" onClick={() => onChange(value.filter((x) => x !== t))} aria-label={`הסרת ${t}`}><X className="h-3.5 w-3.5" /></button>
+            <button type="button" onClick={() => onChange(value.filter((x) => x !== t))} aria-label={tr("הסרת {0}", t)}><X className="h-3.5 w-3.5" /></button>
           </span>
         ))}
       </div>
       <div className="flex gap-2">
         <Input value={text} onChange={(e) => setText(e.target.value)} placeholder={placeholder} aria-label={label}
           onKeyDown={(e) => { if (e.key === "Enter" || e.key === ",") { e.preventDefault(); add(); } }} />
-        <Button type="button" variant="secondary" onClick={add}>הוספה</Button>
+        <Button type="button" variant="secondary" onClick={add}>{tr("הוספה")}</Button>
       </div>
     </div>
   );
@@ -67,7 +68,7 @@ function ListEditor({ items, onChange, empty, fields, addLabel, max }) {
     <div className="space-y-3">
       {items.map((it, i) => (
         <div key={i} className="relative rounded-xl border border-ink/10 bg-muted/40 p-4 pe-12">
-          <Button type="button" size="icon" variant="ghost" className="absolute end-2 top-2 h-8 w-8" aria-label="הסרה"
+          <Button type="button" size="icon" variant="ghost" className="absolute end-2 top-2 h-8 w-8" aria-label={tr("הסרה")}
             onClick={() => onChange(items.filter((_, j) => j !== i))}><Trash2 /></Button>
           <div className="grid gap-3 sm:grid-cols-2">
             {fields.map((f) => (
@@ -99,10 +100,10 @@ export default function CvEditor({ cv, setCv, sections = ["basics", "visibility"
     <div className="space-y-7">
       {show("basics") && (
         <div className="space-y-4">
-          <Field id="headline" label="כותרת מקצועית" hint="שורה אחת שמסבירה מי אתם. לדוגמה: בסיסט ומפיק, מנגן ג'אז ופאנק כבר 10 שנים">
+          <Field id="headline" label={tr("כותרת מקצועית")} hint={tr("שורה אחת שמסבירה מי אתם. לדוגמה: בסיסט ומפיק, מנגן ג'אז ופאנק כבר 10 שנים")}>
             <Input id="headline" value={cv.headline} onChange={set("headline")} maxLength={120} />
           </Field>
-          <Field id="years" label="שנות ניסיון במוזיקה">
+          <Field id="years" label={tr("שנות ניסיון במוזיקה")}>
             <Input id="years" type="number" min={0} max={80} value={cv.years_experience ?? ""} onChange={set("years_experience")} className="w-28" />
           </Field>
         </div>
@@ -110,7 +111,7 @@ export default function CvEditor({ cv, setCv, sections = ["basics", "visibility"
 
       {show("visibility") && (
         <fieldset className="space-y-2">
-          <legend className="mb-2 text-sm font-medium">מי יכול לראות את קורות החיים?</legend>
+          <legend className="mb-2 text-sm font-medium">{tr("מי יכול לראות את קורות החיים?")}</legend>
           {VISIBILITY.map((v) => (
             <label key={v.value} className={cn("flex cursor-pointer items-start gap-3 rounded-xl border p-3 transition-colors",
               cv.visibility === v.value ? "border-primary bg-secondary" : "border-ink/10 hover:bg-muted")}>
@@ -118,51 +119,51 @@ export default function CvEditor({ cv, setCv, sections = ["basics", "visibility"
               <span><span className="block font-medium">{v.label}</span><span className="text-sm text-muted-foreground">{v.text}</span></span>
             </label>
           ))}
-          <p className="text-xs text-muted-foreground">השם, התמונה, הכלים והז'אנרים שלכם תמיד גלויים, כדי שיוכלו למצוא אתכם.</p>
+          <p className="text-xs text-muted-foreground">{tr("השם, התמונה, הכלים והז'אנרים שלכם תמיד גלויים, כדי שיוכלו למצוא אתכם.")}</p>
         </fieldset>
       )}
 
       {show("experience") && (
-        <Field label="ניסיון: להקות, פרויקטים, תפקידים">
-          <ListEditor items={cv.experience} onChange={set("experience")} max={30} addLabel="הוספת ניסיון"
+        <Field label={tr("ניסיון: להקות, פרויקטים, תפקידים")}>
+          <ListEditor items={cv.experience} onChange={set("experience")} max={30} addLabel={tr("הוספת ניסיון")}
             empty={{ title: "", org: "", start_year: "", end_year: "", description: "" }}
             fields={[
-              { key: "title", label: "תפקיד", placeholder: "גיטריסט, מפיקה, מעבד…" },
-              { key: "org", label: "להקה / פרויקט / מקום", placeholder: "שם הלהקה או האולפן" },
-              { key: "start_year", label: "משנה", type: "number" },
-              { key: "end_year", label: "עד שנה (ריק = עד היום)", type: "number" },
-              { key: "description", label: "מה עשיתם", multiline: true, wide: true },
+              { key: "title", label: tr("תפקיד"), placeholder: tr("גיטריסט, מפיקה, מעבד…") },
+              { key: "org", label: tr("להקה / פרויקט / מקום"), placeholder: tr("שם הלהקה או האולפן") },
+              { key: "start_year", label: tr("משנה"), type: "number" },
+              { key: "end_year", label: tr("עד שנה (ריק = עד היום)"), type: "number" },
+              { key: "description", label: tr("מה עשיתם"), multiline: true, wide: true },
             ]} />
         </Field>
       )}
 
       {show("education") && (
-        <Field label="לימודים והכשרה">
-          <ListEditor items={cv.education} onChange={set("education")} max={10} addLabel="הוספת לימודים"
+        <Field label={tr("לימודים והכשרה")}>
+          <ListEditor items={cv.education} onChange={set("education")} max={10} addLabel={tr("הוספת לימודים")}
             empty={{ school: "", program: "", start_year: "", end_year: "" }}
             fields={[
-              { key: "school", label: "מוסד / מורה", placeholder: "רימון, אקדמיה, מורה פרטי…" },
-              { key: "program", label: "מסלול / תחום" },
-              { key: "start_year", label: "משנה", type: "number" },
-              { key: "end_year", label: "עד שנה", type: "number" },
+              { key: "school", label: tr("מוסד / מורה"), placeholder: tr("רימון, אקדמיה, מורה פרטי…") },
+              { key: "program", label: tr("מסלול / תחום") },
+              { key: "start_year", label: tr("משנה"), type: "number" },
+              { key: "end_year", label: tr("עד שנה"), type: "number" },
             ]} />
         </Field>
       )}
 
       {show("skills") && (
         <div className="grid gap-6 sm:grid-cols-2">
-          <Field label="כישורים"><FreeTags value={cv.skills} onChange={set("skills")} placeholder="קריאת תווים, Ableton, הרמוניה…" label="כישור חדש" /></Field>
-          <Field label="שפות"><FreeTags value={cv.languages} onChange={set("languages")} max={10} placeholder="עברית, English…" label="שפה חדשה" /></Field>
+          <Field label={tr("כישורים")}><FreeTags value={cv.skills} onChange={set("skills")} placeholder={tr("קריאת תווים, Ableton, הרמוניה…")} label={tr("כישור חדש")} /></Field>
+          <Field label={tr("שפות")}><FreeTags value={cv.languages} onChange={set("languages")} max={10} placeholder={tr("עברית, English…")} label={tr("שפה חדשה")} /></Field>
         </div>
       )}
 
       {show("portfolio") && (
-        <Field label="תיק עבודות" hint="קישורים ל-YouTube, Vimeo, Spotify, SoundCloud או כל אתר אחר. סרטונים ינוגנו ישירות בפרופיל.">
-          <ListEditor items={cv.portfolio} onChange={set("portfolio")} max={12} addLabel="הוספת עבודה"
+        <Field label={tr("תיק עבודות")} hint={tr("קישורים ל-YouTube, Vimeo, Spotify, SoundCloud או כל אתר אחר. סרטונים ינוגנו ישירות בפרופיל.")}>
+          <ListEditor items={cv.portfolio} onChange={set("portfolio")} max={12} addLabel={tr("הוספת עבודה")}
             empty={{ title: "", url: "" }}
             fields={[
-              { key: "title", label: "שם העבודה", placeholder: "הופעה חיה בבארבי" },
-              { key: "url", label: "קישור", ltr: true, placeholder: "https://" },
+              { key: "title", label: tr("שם העבודה"), placeholder: tr("הופעה חיה בבארבי") },
+              { key: "url", label: tr("קישור"), ltr: true, placeholder: "https://" },
             ]} />
         </Field>
       )}

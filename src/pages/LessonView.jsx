@@ -12,6 +12,7 @@ import { fetchCourse, fetchProgress } from "@/api/courses";
 import { useAuth } from "@/auth/AuthProvider";
 import { cn, errorMessage } from "@/lib/utils";
 import { usePageTitle } from "@/lib/usePageTitle";
+import { tr } from "@/lib/i18n";
 
 export default function LessonView() {
   const { id, lessonId } = useParams();
@@ -38,12 +39,12 @@ export default function LessonView() {
 
   if (course.isLoading || lesson.isLoading || prog.isLoading) return <PageLoader />;
   const c = course.data;
-  if (!c) return <div className="page"><EmptyState title="הקורס לא נמצא" /></div>;
+  if (!c) return <div className="page"><EmptyState title={tr("הקורס לא נמצא")} /></div>;
   if (!lesson.data) {
     return (
       <div className="page-narrow">
-        <EmptyState icon={Lock} title="השיעור נעול" text="כדי לצפות בשיעור צריך להירשם לקורס."
-          action={<Button asChild><Link to={`/courses/${id}`}>לעמוד הקורס</Link></Button>} />
+        <EmptyState icon={Lock} title={tr("השיעור נעול")} text={tr("כדי לצפות בשיעור צריך להירשם לקורס.")}
+          action={<Button asChild><Link to={`/courses/${id}`}>{tr("לעמוד הקורס")}</Link></Button>} />
       </div>
     );
   }
@@ -59,20 +60,20 @@ export default function LessonView() {
       <div className="min-w-0 space-y-4">
         <Link to={`/courses/${id}`} className="text-sm text-muted-foreground hover:underline">{c.title}</Link>
         <h1 className="text-2xl font-bold tracking-tight md:text-[1.75rem]">{l.title}</h1>
-        {l.video_url ? <MediaView url={l.video_url} type="video" title={l.title} /> : <Card className="p-6 text-center text-sm text-muted-foreground">לשיעור הזה אין וידאו.</Card>}
+        {l.video_url ? <MediaView url={l.video_url} type="video" title={l.title} /> : <Card className="p-6 text-center text-sm text-muted-foreground">{tr("לשיעור הזה אין וידאו.")}</Card>}
         {l.description && <Card className="p-5"><p className="whitespace-pre-wrap break-words leading-relaxed">{l.description}</p></Card>}
         <div className="flex flex-wrap items-center gap-2">
-          {prev && <Button asChild variant="outline"><Link to={`/courses/${id}/lessons/${prev.id}`}><ArrowRight />הקודם</Link></Button>}
+          {prev && <Button asChild variant="outline"><Link to={`/courses/${id}/lessons/${prev.id}`}><ArrowRight className="ltr:rotate-180" />{tr("הקודם")}</Link></Button>}
           {enrolled && (
             <Button variant={completed ? "secondary" : "default"} onClick={() => toggle.mutate()} disabled={toggle.isPending} className="mx-auto">
-              <CheckCircle2 />{completed ? "סומן כהושלם" : "סימון כהושלם"}
+              <CheckCircle2 />{completed ? tr("סומן כהושלם") : tr("סימון כהושלם")}
             </Button>
           )}
-          {next && <Button asChild variant="outline" className="ms-auto"><Link to={`/courses/${id}/lessons/${next.id}`}>הבא<ArrowLeft /></Link></Button>}
+          {next && <Button asChild variant="outline" className="ms-auto"><Link to={`/courses/${id}/lessons/${next.id}`}>{tr("הבא")}<ArrowLeft className="ltr:rotate-180" /></Link></Button>}
         </div>
       </div>
       <Card className="h-fit p-4">
-        <h2 className="mb-2 font-semibold">שיעורים</h2>
+        <h2 className="mb-2 font-semibold">{tr("שיעורים")}</h2>
         <ol className="space-y-0.5">
           {c.outline.map((o, i) => {
             const done = prog.data?.completed.has(o.id);
@@ -80,7 +81,7 @@ export default function LessonView() {
               <li key={o.id}>
                 <Link to={`/courses/${id}/lessons/${o.id}`} aria-current={o.id === lessonId ? "page" : undefined}
                   className={cn("flex items-center gap-2 rounded-md p-2 text-sm hover:bg-muted", o.id === lessonId && "bg-secondary font-medium")}>
-                  {done ? <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600" aria-label="הושלם" /> : <Circle className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />}
+                  {done ? <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600" aria-label={tr("הושלם")} /> : <Circle className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />}
                   <span className="flex-1">{i + 1}. {o.title}</span>
                 </Link>
               </li>

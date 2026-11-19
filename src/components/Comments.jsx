@@ -12,6 +12,7 @@ import { useAuth } from "@/auth/AuthProvider";
 import { errorMessage, timeAgo, textDir } from "@/lib/utils";
 import { useAuthHref } from "@/auth/returnTo";
 import ConfirmDialog from "@/components/ConfirmDialog";
+import { tr } from "@/lib/i18n";
 
 export default function Comments({ post }) {
   const loginHref = useAuthHref("/login");
@@ -42,7 +43,7 @@ export default function Comments({ post }) {
 
   return (
     <div className="space-y-3 border-t pt-3">
-      {isLoading && <p className="text-sm text-muted-foreground">טוען תגובות…</p>}
+      {isLoading && <p className="text-sm text-muted-foreground">{tr("טוען תגובות…")}</p>}
       {comments.map((c) => (
         <div key={c.id} className="group flex gap-2">
           <Link to={`/u/${c.author?.username}`} aria-hidden="true" tabIndex={-1}><UserAvatar profile={c.author} size="xs" /></Link>
@@ -51,8 +52,8 @@ export default function Comments({ post }) {
               <Link to={`/u/${c.author?.username}`} className="font-semibold hover:underline">{c.author?.full_name || c.author?.username}</Link>
               <span className="text-muted-foreground">{timeAgo(c.created_at)}</span>
               {user && (c.author_id === user.id || post.author_id === user.id) && (
-                <ConfirmDialog title="למחוק את התגובה?" confirmLabel="מחיקה" destructive onConfirm={() => remove.mutate(c.id)} trigger={
-                  <button type="button" className="ms-auto -m-2 inline-flex h-10 w-10 items-center justify-center rounded-full text-muted-foreground transition-opacity hover:text-destructive [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:focus-visible:opacity-100 [@media(hover:hover)]:group-hover:opacity-100" aria-label="מחיקת תגובה">
+                <ConfirmDialog title={tr("למחוק את התגובה?")} confirmLabel={tr("מחיקה")} destructive onConfirm={() => remove.mutate(c.id)} trigger={
+                  <button type="button" className="ms-auto -m-2 inline-flex h-10 w-10 items-center justify-center rounded-full text-muted-foreground transition-opacity hover:text-destructive [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:focus-visible:opacity-100 [@media(hover:hover)]:group-hover:opacity-100" aria-label={tr("מחיקת תגובה")}>
                     <Trash2 className="h-4 w-4" />
                   </button>} />
               )}
@@ -63,11 +64,11 @@ export default function Comments({ post }) {
       ))}
       {user ? (
         <form className="flex items-end gap-2" onSubmit={(e) => { e.preventDefault(); if (text.trim()) add.mutate(); }}>
-          <Textarea value={text} onChange={(e) => setText(e.target.value)} rows={1} maxLength={2000} placeholder="כתבו תגובה…" aria-label="תגובה" className="min-h-9 resize-none" />
-          <Button type="submit" size="icon" disabled={!text.trim() || add.isPending} aria-label="שליחת תגובה"><Send className="rtl:-scale-x-100" /></Button>
+          <Textarea value={text} onChange={(e) => setText(e.target.value)} rows={1} maxLength={2000} placeholder={tr("כתבו תגובה…")} aria-label={tr("תגובה")} className="min-h-9 resize-none" />
+          <Button type="submit" size="icon" disabled={!text.trim() || add.isPending} aria-label={tr("שליחת תגובה")}><Send className="rtl:-scale-x-100" /></Button>
         </form>
       ) : (
-        <p className="text-sm text-muted-foreground"><Link to={loginHref} className="font-semibold text-primary hover:underline">התחברו</Link> כדי להגיב</p>
+        <p className="text-sm text-muted-foreground"><Link to={loginHref} className="font-semibold text-primary hover:underline">{tr("התחברו")}</Link>{" "}{tr("כדי להגיב")}</p>
       )}
     </div>
   );

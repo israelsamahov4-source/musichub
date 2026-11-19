@@ -10,6 +10,7 @@ import { supabase } from "@/lib/supabase";
 import { errorMessage } from "@/lib/utils";
 import { safeNext } from "@/auth/guards";
 import { useAuthHref } from "@/auth/returnTo";
+import { tr } from "@/lib/i18n";
 
 export default function Login() {
   const signupHref = useAuthHref("/signup");
@@ -28,17 +29,17 @@ export default function Login() {
   };
 
   return (
-    <AuthShell title="ברוכים השבים" subtitle="התחברו כדי להמשיך" footer={<>אין לכם חשבון? <Link to={signupHref} className="font-medium font-semibold text-primary hover:underline">הרשמה</Link></>}>
+    <AuthShell title={tr("ברוכים השבים")} subtitle={tr("התחברו כדי להמשיך")} footer={<>{tr("אין לכם חשבון?")}{" "}<Link to={signupHref} className="font-medium font-semibold text-primary hover:underline">{tr("הרשמה")}</Link></>}>
       <GoogleButton />
       <form onSubmit={submit} className="space-y-4">
-        <Field id="email" label="אימייל">
+        <Field id="email" label={tr("אימייל")}>
           <Input id="email" type="email" dir="ltr" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
         </Field>
-        <Field id="password" label="סיסמה">
+        <Field id="password" label={tr("סיסמה")}>
           <Input id="password" type="password" dir="ltr" autoComplete="current-password" required value={password} onChange={(e) => setPassword(e.target.value)} />
         </Field>
-        <div className="text-end text-sm"><Link to="/forgot-password" className="font-semibold text-primary hover:underline">שכחתי סיסמה</Link></div>
-        <Button type="submit" className="w-full" disabled={busy}>{busy ? "מתחברים…" : "התחברות"}</Button>
+        <div className="text-end text-sm"><Link to="/forgot-password" className="font-semibold text-primary hover:underline">{tr("שכחתי סיסמה")}</Link></div>
+        <Button type="submit" className="w-full" disabled={busy}>{busy ? tr("מתחברים…") : tr("התחברות")}</Button>
       </form>
     </AuthShell>
   );
