@@ -4,7 +4,6 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Field from "@/components/Field";
 import TagPicker from "@/components/TagPicker";
@@ -36,7 +35,6 @@ export function profileToForm(p) {
     level: p.musical_roles?.[0]?.level || "intermediate",
     genres: p.genres || [],
     looking_for: p.looking_for || [],
-    open_for_collaboration: p.open_for_collaboration ?? true,
     links: { ...(p.links || {}) },
   };
 }
@@ -59,7 +57,8 @@ export function formToProfile(f) {
     musical_roles: f.roles.map((role) => ({ role, level: f.level })),
     genres: f.genres,
     looking_for: f.looking_for,
-    open_for_collaboration: f.open_for_collaboration,
+    // Kept in step with the list: whoever picked something is open to working together.
+    open_for_collaboration: f.looking_for.length > 0,
     links,
   };
 }
@@ -178,11 +177,9 @@ export default function ProfileForm({ form, setForm, userId, sections = ["basics
 
       {show("about") && (
         <section className="space-y-4">
-          <Field label="מה אני מחפש/ת"><TagPicker options={LOOKING_FOR} value={form.looking_for} onChange={set("looking_for")} label="מה אני מחפש/ת" /></Field>
-          <div className="flex items-center gap-3 rounded-lg border bg-card p-3">
-            <Switch id="open" checked={form.open_for_collaboration} onCheckedChange={set("open_for_collaboration")} />
-            <label htmlFor="open" className="text-sm">פתוח/ה לשיתופי פעולה (יופיע בחיפוש)</label>
-          </div>
+          <Field label="מה אני מחפש/ת" hint="מה שתסמנו יופיע בפרופיל, ויעזור לאנשים שמחפשים בדיוק אתכם למצוא אתכם.">
+            <TagPicker options={LOOKING_FOR} value={form.looking_for} onChange={set("looking_for")} label="מה אני מחפש/ת" />
+          </Field>
           <Field id="bio" label="קצת עליי" hint={`${form.bio.length}/1000`}>
             <Textarea id="bio" value={form.bio} onChange={set("bio")} maxLength={1000} rows={4} placeholder="השפעות, ניסיון, על מה אתם עובדים עכשיו…" />
           </Field>

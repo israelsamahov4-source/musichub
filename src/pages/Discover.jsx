@@ -48,8 +48,7 @@ function MusicianCard({ p }) {
         {p.genres.slice(0, 2).map((g) => <span key={g} className="chip">{label("genres", g)}</span>)}
       </div>
       <div className="mt-auto flex items-center justify-between pt-4">
-        {p.details?.open_to?.length ? <span className="truncate text-xs font-semibold text-riso-blue">פתוח/ה ל{label("openTo", p.details.open_to[0])}{p.details.open_to.length > 1 && ` ועוד ${p.details.open_to.length - 1}`}</span>
-          : p.open_for_collaboration ? <span className="text-xs font-semibold text-riso-blue">פתוח/ה לשיתופי פעולה</span> : <span />}
+        {p.looking_for?.length ? <span className="truncate text-xs font-semibold text-riso-blue">מחפש/ת: {label("lookingFor", p.looking_for[0])}{p.looking_for.length > 1 && ` ועוד ${p.looking_for.length - 1}`}</span> : <span />}
         <FollowButton profileId={p.id} />
       </div>
     </Card>
@@ -70,7 +69,7 @@ export default function Discover() {
     initialPageParam: 0,
     queryFn: async ({ pageParam }) => {
       let s = supabase.from("profiles")
-        .select("id, username, full_name, avatar_url, bio, location, user_type, instruments, genres, musical_roles, open_for_collaboration, plan_tier, details:profile_details(headline, open_to)")
+        .select("id, username, full_name, avatar_url, bio, location, user_type, instruments, genres, musical_roles, looking_for, plan_tier, details:profile_details(headline)")
         .eq("onboarding_completed", true).neq("id", user.id)
         .order("created_at", { ascending: false }).range(pageParam * PAGE, pageParam * PAGE + PAGE - 1);
       if (q) s = s.or(`full_name.ilike.%${q}%,username.ilike.%${q}%,bio.ilike.%${q}%`);
@@ -79,7 +78,7 @@ export default function Discover() {
       if (f.genres.length) s = s.overlaps("genres", f.genres);
       if (f.lookingFor.length) s = s.overlaps("looking_for", f.lookingFor);
       if (f.roles.length) s = s.overlaps("role_list", f.roles);
-      if (f.openOnly) s = s.eq("open_for_collaboration", true);
+      if (f.openOnly) s = s.neq("looking_for", "{}"); // picked at least one thing they are looking for
       return unwrap(await s);
     },
     getNextPageParam: (last, pages) => (last.length === PAGE ? pages.length : undefined),

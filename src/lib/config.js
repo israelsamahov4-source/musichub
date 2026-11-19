@@ -94,6 +94,8 @@ export const LOOKING_FOR = [
   { value: "teaching", label: "ללמד" },
   { value: "learning", label: "ללמוד" },
   { value: "networking", label: "נטוורקינג" },
+  { value: "sessions", label: "הקלטות סשן" },
+  { value: "paid_work", label: "עבודה בתשלום" },
 ];
 
 export const PROJECT_TYPES = [
@@ -141,15 +143,6 @@ export const COURSE_LEVELS = [
   { value: "advanced", label: "מתקדמים" },
 ];
 
-export const OPEN_TO = [
-  { value: "projects", label: "פרויקטים משותפים" },
-  { value: "band", label: "להצטרף ללהקה" },
-  { value: "gigs", label: "הופעות" },
-  { value: "sessions", label: "הקלטות סשן" },
-  { value: "teaching", label: "ללמד" },
-  { value: "paid_work", label: "עבודה בתשלום" },
-];
-
 export const VISIBILITY = [
   { value: "public", label: "כולם", text: "כל מי שנכנס לאתר, גם בלי חשבון" },
   { value: "members", label: "חברי הקהילה", text: "רק משתמשים רשומים ומחוברים" },
@@ -166,7 +159,6 @@ export const LABELS = {
   projectStatus: toMap(PROJECT_STATUS),
   courseCategories: toMap(COURSE_CATEGORIES),
   courseLevels: toMap(COURSE_LEVELS),
-  openTo: toMap(OPEN_TO),
 };
 
 export const label = (group, value) => LABELS[group]?.[value] ?? value;

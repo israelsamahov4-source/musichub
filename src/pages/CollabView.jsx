@@ -15,7 +15,7 @@ import PageLoader from "@/components/PageLoader";
 import EmptyState from "@/components/EmptyState";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import { ProjectFields } from "@/pages/Collabs";
-import CvView, { OpenToBadges } from "@/components/CvView";
+import CvView, { LookingForBadges } from "@/components/CvView";
 import { fetchDetailsMap } from "@/api/details";
 import { supabase, unwrap } from "@/lib/supabase";
 import { useAuth } from "@/auth/AuthProvider";
@@ -173,6 +173,13 @@ export default function CollabView() {
     enabled: Boolean(p && user && applicantIds.length),
     queryFn: () => fetchDetailsMap(applicantIds),
   });
+  // What each applicant is looking for lives on their profile, not in the CV.
+  const { data: wants = {} } = useQuery({
+    queryKey: ["project-wants", id, applicantIds.join(",")],
+    enabled: Boolean(p && user && applicantIds.length),
+    queryFn: async () => Object.fromEntries(unwrap(await supabase.from("profiles").select("id, looking_for").in("id", applicantIds))
+      .map((r) => [r.id, r.looking_for])),
+  });
   const refresh = () => { qc.invalidateQueries({ queryKey: ["project", id] }); qc.invalidateQueries({ queryKey: ["projects"] }); };
   const onErr = (e) => toast.error(errorMessage(e));
   const memberOp = useMutation({
@@ -310,7 +317,8 @@ export default function CollabView() {
                     </Link>
                     {m.instrument && <p className="text-xs text-muted-foreground">מציע/ה: {m.instrument}</p>}
                     {m.note && <p dir={textDir(m.note)} className="whitespace-pre-wrap rounded-lg bg-muted px-3 py-2 text-start text-sm">{m.note}</p>}
-                    {cvs[m.user_id] && <><OpenToBadges openTo={cvs[m.user_id].open_to} /><CvView cv={cvs[m.user_id]} compact /></>}
+                    <LookingForBadges items={wants[m.user_id]} />
+                    {cvs[m.user_id] && <CvView cv={cvs[m.user_id]} compact />}
                     <div className="flex flex-wrap gap-2">
                       <Button size="sm" onClick={() => memberOp.mutate({ op: "update", userId: m.user_id, values: { status: "active" } })}><Check />אישור</Button>
                       <Button size="sm" variant="outline" onClick={() => memberOp.mutate({ op: "delete", userId: m.user_id })}>דחייה</Button>

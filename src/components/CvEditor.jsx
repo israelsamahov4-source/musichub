@@ -4,12 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import Field from "@/components/Field";
-import TagPicker from "@/components/TagPicker";
-import { OPEN_TO, VISIBILITY } from "@/lib/config";
+import { VISIBILITY } from "@/lib/config";
 import { cn, normalizeUrl, safeUrl } from "@/lib/utils";
 
 export const EMPTY_CV = {
-  visibility: "members", headline: "", open_to: [], years_experience: "",
+  visibility: "members", headline: "", years_experience: "",
   skills: [], languages: [], experience: [], education: [], portfolio: [],
 };
 
@@ -20,7 +19,6 @@ export function cvToRow(cv) {
   return {
     visibility: cv.visibility,
     headline: cv.headline.trim(),
-    open_to: cv.open_to,
     years_experience: cv.years_experience === "" || cv.years_experience == null ? null : Math.max(0, Math.min(80, Number(cv.years_experience))),
     skills: cv.skills,
     languages: cv.languages,
@@ -104,7 +102,6 @@ export default function CvEditor({ cv, setCv, sections = ["basics", "visibility"
           <Field id="headline" label="כותרת מקצועית" hint="שורה אחת שמסבירה מי אתם. לדוגמה: בסיסט ומפיק, מנגן ג'אז ופאנק כבר 10 שנים">
             <Input id="headline" value={cv.headline} onChange={set("headline")} maxLength={120} />
           </Field>
-          <Field label="פתוח/ה ל…"><TagPicker options={OPEN_TO} value={cv.open_to} onChange={set("open_to")} label="פתוח/ה ל" /></Field>
           <Field id="years" label="שנות ניסיון במוזיקה">
             <Input id="years" type="number" min={0} max={80} value={cv.years_experience ?? ""} onChange={set("years_experience")} className="w-28" />
           </Field>

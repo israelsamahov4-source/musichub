@@ -16,7 +16,7 @@ import PageLoader from "@/components/PageLoader";
 import ReportDialog from "@/components/ReportDialog";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import { LINK_FIELDS } from "@/components/ProfileForm";
-import CvView, { OpenToBadges } from "@/components/CvView";
+import CvView, { LookingForBadges } from "@/components/CvView";
 import { fetchDetails } from "@/api/details";
 import { MEMBER_PROFILE_COLS, PUBLIC_PROFILE_COLS } from "@/api/profiles";
 import { supabase, unwrap } from "@/lib/supabase";
@@ -178,7 +178,7 @@ export default function Profile() {
             </div>
             {cv?.headline && <p className="mt-1 text-lg font-medium text-ink/85">{cv.headline}</p>}
             <p className="ltr w-fit text-sm text-muted-foreground">@{p.username}</p>
-            {cv?.open_to?.length > 0 && <div className="mt-3 flex flex-wrap items-center gap-2"><span className="text-sm font-medium">פתוח/ה ל:</span><OpenToBadges openTo={cv.open_to} /></div>}
+            {p.looking_for?.length > 0 && <div className="mt-3 flex flex-wrap items-center gap-2"><span className="text-sm font-medium">מחפש/ת:</span><LookingForBadges items={p.looking_for} /></div>}
             <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
               {roles.length > 0 && <span>{roles.map((r) => label("roles", r)).join(", ")}{level && `, ${label("levels", level)}`}</span>}
               {p.location && <span className="flex items-center gap-1"><MapPin className="h-3.5 w-3.5" aria-hidden />{p.location}</span>}
@@ -196,11 +196,10 @@ export default function Profile() {
       <div className="grid gap-6 lg:grid-cols-[300px_1fr]">
         <aside className="space-y-4">
           <Card className="space-y-4 p-4">
-            {p.open_for_collaboration && <p className="w-fit rotate-[-2deg] rounded-lg border-2 border-ink bg-riso-yellow px-3 py-1.5 text-sm font-bold text-ink shadow-[3px_3px_0_0_#FF4F81]">פתוח/ה לשיתופי פעולה</p>}
+            {p.looking_for?.length > 0 && <p className="w-fit rotate-[-2deg] rounded-lg border-2 border-ink bg-riso-yellow px-3 py-1.5 text-sm font-bold text-ink shadow-[3px_3px_0_0_#FF4F81]">פתוח/ה לשיתופי פעולה</p>}
             {p.bio && <p dir={textDir(p.bio)} className="whitespace-pre-wrap break-words text-start text-sm">{p.bio}</p>}
             <ChipGroup title="כלי נגינה" items={p.instruments} group="instruments" />
             <ChipGroup title="ז'אנרים" items={p.genres} group="genres" />
-            <ChipGroup title="מחפש/ת" items={p.looking_for} group="lookingFor" />
             {links.length > 0 && (
               <div className="space-y-1.5">
                 {links.map((l) => (

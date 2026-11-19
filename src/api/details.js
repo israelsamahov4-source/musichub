@@ -9,6 +9,6 @@ export async function fetchDetails(userId) {
 export async function fetchDetailsMap(userIds) {
   if (!userIds.length) return {};
   const rows = unwrap(await supabase.from("profile_details")
-    .select("user_id, headline, open_to, years_experience, experience, skills").in("user_id", userIds));
+    .select("user_id, headline, years_experience, experience, skills").in("user_id", userIds));
   return Object.fromEntries(rows.map((r) => [r.user_id, r]));
 }

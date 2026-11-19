@@ -7,12 +7,13 @@ const hostOf = (url) => { try { return new URL(url).hostname; } catch { return u
 
 const years = (a, b) => (a ? `${a}–${b || "היום"}` : b ? `עד ${b}` : "");
 
-export function OpenToBadges({ openTo }) {
-  if (!openTo?.length) return null;
+/** What someone is looking for (profiles.looking_for), as yellow stickers. */
+export function LookingForBadges({ items }) {
+  if (!items?.length) return null;
   return (
     <div className="flex flex-wrap gap-1.5">
-      {openTo.map((o) => (
-        <span key={o} className="inline-flex items-center rounded-md border-2 border-ink bg-riso-yellow px-2 py-0.5 text-xs font-bold text-ink">{label("openTo", o)}</span>
+      {items.map((o) => (
+        <span key={o} className="inline-flex items-center rounded-md border-2 border-ink bg-riso-yellow px-2 py-0.5 text-xs font-bold text-ink">{label("lookingFor", o)}</span>
       ))}
     </div>
   );
