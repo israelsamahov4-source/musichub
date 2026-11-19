@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Field from "@/components/Field";
 import TagPicker from "@/components/TagPicker";
+import CityPicker from "@/components/CityPicker";
 import UserAvatar from "@/components/UserAvatar";
 import { ACCEPT, uploadFile } from "@/lib/upload";
 import { GENRES, INSTRUMENTS, LEVELS, LOOKING_FOR, ROLES } from "@/lib/config";
@@ -145,8 +146,8 @@ export default function ProfileForm({ form, setForm, userId, sections = ["basics
             <Field id="username" label="שם משתמש" error={errors.username} hint="אותיות באנגלית קטנות, ספרות או _. יופיע בכתובת הפרופיל שלכם">
               <Input id="username" dir="ltr" value={form.username} onChange={(e) => set("username")(e.target.value.toLowerCase())} maxLength={30} required />
             </Field>
-            <Field id="location" label="עיר / אזור">
-              <Input id="location" value={form.location} onChange={set("location")} maxLength={100} placeholder="לדוגמה: תל אביב" />
+            <Field id="location" label="עיר">
+              <CityPicker id="location" value={form.location} onChange={set("location")} />
             </Field>
             <Field id="user_type" label="אני…">
               <Select value={form.user_type} onValueChange={set("user_type")} dir="rtl">

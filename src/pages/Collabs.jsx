@@ -14,6 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import Field from "@/components/Field";
 import TagPicker from "@/components/TagPicker";
+import CityPicker from "@/components/CityPicker";
 import EmptyState from "@/components/EmptyState";
 import PageHeader from "@/components/PageHeader";
 import UserAvatar from "@/components/UserAvatar";
@@ -44,7 +45,7 @@ export function ProjectFields({ value, onChange }) {
       <Field label="מחפשים"><TagPicker options={ROLES} value={value.looking_for_roles} onChange={set("looking_for_roles")} label="תפקידים מבוקשים" /></Field>
       <Field label="ז'אנר"><TagPicker options={GENRES} value={value.genres} onChange={set("genres")} max={4} label="ז'אנר" /></Field>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <Field id="loc" label="מיקום (לא חובה)"><Input id="loc" value={value.location} onChange={set("location")} maxLength={100} /></Field>
+        <Field id="loc" label="עיר (לא חובה)"><CityPicker id="loc" value={value.location} onChange={set("location")} /></Field>
         <div className="space-y-3 pt-6">
           <label className="flex items-center gap-2 text-sm"><Switch aria-label="אפשר לעבוד מרחוק" checked={value.is_remote} onCheckedChange={set("is_remote")} />אפשר לעבוד מרחוק</label>
           <label className="flex items-center gap-2 text-sm"><Switch aria-label="פרויקט ציבורי" checked={value.is_public} onCheckedChange={set("is_public")} />פרויקט ציבורי (כולם יכולים לראות ולבקש להצטרף)</label>

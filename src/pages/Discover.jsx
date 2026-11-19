@@ -11,6 +11,8 @@ import UserAvatar from "@/components/UserAvatar";
 import PlanBadge from "@/components/PlanBadge";
 import FollowButton from "@/components/FollowButton";
 import TagPicker from "@/components/TagPicker";
+import CityPicker from "@/components/CityPicker";
+import { REGION_NAMES, canonicalCity, citiesIn } from "@/lib/cities";
 import EmptyState from "@/components/EmptyState";
 import PageHeader from "@/components/PageHeader";
 import Field from "@/components/Field";
@@ -73,7 +75,13 @@ export default function Discover() {
         .eq("onboarding_completed", true).neq("id", user.id)
         .order("created_at", { ascending: false }).range(pageParam * PAGE, pageParam * PAGE + PAGE - 1);
       if (q) s = s.or(`full_name.ilike.%${q}%,username.ilike.%${q}%,bio.ilike.%${q}%`);
-      if (location) s = s.ilike("location", `%${location}%`);
+      if (location) {
+        // A region finds everyone in its cities; a listed city matches its one spelling; other text is searched as is.
+        const city = canonicalCity(location);
+        if (REGION_NAMES.includes(location)) s = s.in("location", citiesIn(location));
+        else if (city) s = s.eq("location", city);
+        else s = s.ilike("location", `%${location}%`);
+      }
       if (f.instruments.length) s = s.overlaps("instruments", f.instruments);
       if (f.genres.length) s = s.overlaps("genres", f.genres);
       if (f.lookingFor.length) s = s.overlaps("looking_for", f.lookingFor);
@@ -106,7 +114,7 @@ export default function Discover() {
           <Field label="ז'אנר"><TagPicker options={GENRES} value={f.genres} onChange={set("genres")} label="ז'אנר" /></Field>
           <Field label="מחפשים"><TagPicker options={LOOKING_FOR} value={f.lookingFor} onChange={set("lookingFor")} label="מחפשים" /></Field>
           <div className="flex flex-wrap items-end gap-4">
-            <Field id="loc" label="מיקום"><Input id="loc" value={f.location} onChange={(e) => set("location")(e.target.value)} placeholder="עיר" className="w-48" /></Field>
+            <Field id="loc" label="עיר או אזור"><CityPicker id="loc" regions value={f.location} onChange={set("location")} placeholder="עיר או אזור" className="w-60" /></Field>
             <label className="flex items-center gap-2 pb-2 text-sm"><Switch aria-label="רק פתוחים לשיתופי פעולה" checked={f.openOnly} onCheckedChange={set("openOnly")} />רק פתוחים לשיתופי פעולה</label>
             {activeCount > 0 && <Button variant="ghost" onClick={() => setF({ ...EMPTY, q: f.q })}>ניקוי סינון</Button>}
           </div>
