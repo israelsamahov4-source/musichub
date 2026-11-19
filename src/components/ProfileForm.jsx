@@ -126,7 +126,7 @@ export default function ProfileForm({ form, setForm, userId, sections = ["basics
             </Button>
           </div>
           {!compact && <div className="space-y-2">
-            <div className="relative h-24 overflow-hidden rounded-xl border-2 border-ink/15 bg-riso-blue">
+            <div className="relative h-24 overflow-hidden rounded-xl bg-riso-blue">
               {safeUrl(form.cover_url)
                 ? <img src={safeUrl(form.cover_url)} alt="" className="h-full w-full object-cover" />
                 : <p className="flex h-full items-center justify-center px-4 text-center text-sm text-white/85">בלי תמונת כיסוי, הכיסוי יורכב מהכלים והתפקידים שלכם</p>}

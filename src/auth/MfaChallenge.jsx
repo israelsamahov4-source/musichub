@@ -26,7 +26,7 @@ export default function MfaChallenge({ onDone }) {
 
   return (
     <AuthShell title="אימות דו-שלבי" subtitle="הקלידו את הקוד בן 6 הספרות מאפליקציית האימות שלכם."
-      footer={<button type="button" className="text-primary underline decoration-riso-pink decoration-2 underline-offset-4" onClick={() => supabase.auth.signOut()}>התנתקות</button>}>
+      footer={<button type="button" className="font-semibold text-primary hover:underline" onClick={() => supabase.auth.signOut()}>התנתקות</button>}>
       <form onSubmit={submit} className="space-y-4">
         <div className="flex items-center gap-3 rounded-xl bg-secondary p-3 text-sm text-secondary-foreground">
           <ShieldCheck className="h-5 w-5 shrink-0" aria-hidden />החשבון מוגן באימות דו-שלבי.

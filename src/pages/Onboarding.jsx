@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import PageLoader from "@/components/PageLoader";
+import LogoMark from "@/components/LogoMark";
 import ProfileForm, { focusFirstError, formToProfile, profileErrors, profileToForm } from "@/components/ProfileForm";
 import { supabase, unwrap } from "@/lib/supabase";
 import { useAuth } from "@/auth/AuthProvider";
@@ -87,12 +88,13 @@ export default function Onboarding() {
   const s = STEPS[step];
   const last = step === STEPS.length - 1;
   return (
-    <div className="grain min-h-screen px-4 py-10">
+    <div className="min-h-screen px-4 py-8 sm:py-12">
       <div className="mx-auto max-w-2xl">
+        <div className="mb-6 flex items-center gap-2"><LogoMark className="h-8 w-8" /><span className="ltr text-[1.2rem] font-extrabold tracking-tight">Music<span className="text-primary">Hub</span></span></div>
         <Progress value={((step + 1) / STEPS.length) * 100} className="mb-6 h-1.5" aria-label={`שלב ${step + 1} מתוך ${STEPS.length}`} />
         <Card className="p-6 sm:p-8">
-          <p className="text-sm text-muted-foreground">שלב {step + 1} מתוך {STEPS.length}</p>
-          <h1 className="mt-1 text-balance font-display text-5xl font-bold leading-[0.95]">{s.title}</h1>
+          <p className="text-sm font-medium text-primary">שלב {step + 1} מתוך {STEPS.length}</p>
+          <h1 className="mt-1 text-balance text-[1.75rem] font-bold leading-tight tracking-tight">{s.title}</h1>
           <p className="mb-6 mt-2 text-pretty text-muted-foreground">{s.text}</p>
           <ProfileForm form={form} setForm={setForm} userId={user.id} sections={s.sections} compact errors={errors} />
           <div className="mt-8 flex flex-wrap items-center gap-2">

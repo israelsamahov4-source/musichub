@@ -4,9 +4,9 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { supabase, unwrap } from "@/lib/supabase";
 import { useAuth } from "@/auth/AuthProvider";
-import { errorMessage } from "@/lib/utils";
+import { cn, errorMessage } from "@/lib/utils";
 
-export default function FollowButton({ profileId, size = "sm" }) {
+export default function FollowButton({ profileId, size = "sm", quiet = false }) {
   const { user } = useAuth();
   const qc = useQueryClient();
   const key = ["follows", user?.id, profileId];
@@ -32,7 +32,7 @@ export default function FollowButton({ profileId, size = "sm" }) {
   });
   if (!user || user.id === profileId) return null;
   return (
-    <Button size={size} variant={following ? "outline" : "default"} onClick={() => mutation.mutate()} disabled={mutation.isPending}>
+    <Button size={size} variant={following ? "outline" : quiet ? "outline" : "default"} className={cn(quiet && !following && "border-primary/50 text-primary hover:bg-secondary hover:text-primary")} onClick={() => mutation.mutate()} disabled={mutation.isPending}>
       {following ? <UserCheck className="h-4 w-4" aria-hidden /> : <UserPlus className="h-4 w-4" aria-hidden />}
       {following ? "עוקב/ת" : "מעקב"}
     </Button>

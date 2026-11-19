@@ -32,8 +32,8 @@ export default function SuggestedMusicians() {
   if (!data.length) return null;
   return (
     <Card className="p-4">
-      <h2 className="mb-3 font-semibold">מוזיקאים שכדאי להכיר</h2>
-      <ul className="space-y-3">
+      <h2 className="mb-3 text-[15px] font-bold">מוזיקאים שכדאי להכיר</h2>
+      <ul className="space-y-3.5">
         {data.map((p) => (
           <li key={p.id} className="flex items-center gap-2">
             <Link to={`/u/${p.username}`} aria-hidden="true" tabIndex={-1}><UserAvatar profile={p} /></Link>
@@ -41,11 +41,11 @@ export default function SuggestedMusicians() {
               <Link to={`/u/${p.username}`} className="block truncate text-sm font-semibold hover:underline">{p.full_name || p.username}</Link>
               <p className="truncate text-xs text-muted-foreground">{p.instruments.slice(0, 2).map((i) => label("instruments", i)).join(", ") || p.location}</p>
             </div>
-            <FollowButton profileId={p.id} />
+            <FollowButton profileId={p.id} quiet />
           </li>
         ))}
       </ul>
-      <Link to="/discover" className="mt-3 block text-sm text-primary underline decoration-riso-pink decoration-2 underline-offset-4">לכל המוזיקאים</Link>
+      <Link to="/discover" className="mt-4 flex items-center justify-center gap-1 rounded-full py-2 text-sm font-semibold text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">לכל המוזיקאים</Link>
     </Card>
   );
 }

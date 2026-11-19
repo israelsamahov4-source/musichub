@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import UserAvatar from "@/components/UserAvatar";
+import UserAvatar, { brandFor } from "@/components/UserAvatar";
 import EmptyState from "@/components/EmptyState";
 import PageHeader from "@/components/PageHeader";
 import { supabase, unwrap } from "@/lib/supabase";
@@ -16,29 +16,31 @@ import { COURSE_CARD, canTeach } from "@/api/courses";
 import { useAuth } from "@/auth/AuthProvider";
 import { useAuthHref } from "@/auth/returnTo";
 import { COURSE_CATEGORIES, COURSE_LEVELS, label } from "@/lib/config";
-import { cleanSearch, safeUrl } from "@/lib/utils";
+import { cleanSearch, cn, safeUrl } from "@/lib/utils";
 
 export function CourseCard({ c, extra }) {
+  const color = brandFor(c.id);
+  const onColor = color === "#2F45C2" ? "text-white" : "text-ink";
   return (
     <Link to={`/courses/${c.id}`} className="block">
-      <Card className="flex h-full flex-col overflow-hidden transition-[transform,box-shadow] can-hover:hover:-translate-y-0.5 can-hover:hover:shadow-[4px_4px_0_0_#1E1B3A]">
-        <div className="grain relative aspect-[16/9] overflow-hidden bg-riso-blue">
+      <Card className="flex h-full flex-col overflow-hidden transition-shadow duration-200 can-hover:hover:shadow-pop">
+        <div className="relative aspect-[16/9] overflow-hidden" style={{ backgroundColor: color }}>
           {safeUrl(c.cover_url) ? <img src={safeUrl(c.cover_url)} alt="" loading="lazy" className="h-full w-full object-cover" />
             : (
-              <div className="absolute inset-0 flex flex-col justify-end p-4" aria-hidden>
-                <span className="text-xs font-semibold text-riso-yellow">{label("courseCategories", c.category)}</span>
-                <span className="riso-on-blue line-clamp-2 font-display text-4xl font-bold leading-[0.9]">{c.title}</span>
+              <div className={cn("absolute inset-0 flex items-end justify-between p-4", onColor)} aria-hidden>
+                <span className="rounded-full bg-black/15 px-2.5 py-1 text-xs font-semibold backdrop-blur-sm">{label("courseCategories", c.category)}</span>
+                <GraduationCap className="h-16 w-16 opacity-25" strokeWidth={1.4} />
               </div>
             )}
-          {!c.is_free && <span className="absolute start-2 top-2 inline-flex items-center gap-1 rounded-full bg-card px-2 py-0.5 text-xs font-bold text-primary"><Star className="h-3 w-3" aria-hidden />Pro</span>}
-          {!c.is_published && <span className="absolute end-2 top-2 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-bold text-amber-800">טיוטה</span>}
+          {!c.is_free && <span className="absolute start-3 top-3 inline-flex items-center gap-1 rounded-full bg-ink px-2 py-0.5 text-xs font-bold text-riso-yellow"><Star className="h-3 w-3" aria-hidden />Pro</span>}
+          {!c.is_published && <span className="absolute end-3 top-3 rounded-full bg-card px-2 py-0.5 text-xs font-bold text-[#8A5A00]">טיוטה</span>}
         </div>
         <div className="flex flex-1 flex-col p-4">
-          <p className="text-xs text-muted-foreground">{label("courseCategories", c.category)}, {label("courseLevels", c.level)}</p>
-          <h3 className={safeUrl(c.cover_url) ? "mt-1 text-[1.05rem] font-semibold leading-snug" : "sr-only"}>{c.title}</h3>
-          <div className="mt-auto flex items-center gap-2 pt-3 text-sm text-muted-foreground">
-            <UserAvatar profile={c.instructor} size="xs" />
-            <span className="truncate">{c.instructor?.full_name || c.instructor?.username}</span>
+          <h3 className="line-clamp-2 text-base font-bold leading-snug">{c.title}</h3>
+          <p className="mt-1 text-[13px] text-muted-foreground">{label("courseCategories", c.category)} · {label("courseLevels", c.level)}</p>
+          <div className="mt-auto flex items-center gap-2 pt-3 text-[13px] text-muted-foreground">
+            <UserAvatar profile={c.instructor} size="xs" className="h-6 w-6" />
+            <span className="truncate font-medium text-foreground/80">{c.instructor?.full_name || c.instructor?.username}</span>
           </div>
           {extra}
         </div>
@@ -48,7 +50,7 @@ export function CourseCard({ c, extra }) {
 }
 
 const Grid = ({ loading, items, render, empty }) =>
-  loading ? <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">{[0, 1, 2].map((i) => <Skeleton key={i} className="h-64 rounded-xl" />)}</div>
+  loading ? <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">{[0, 1, 2].map((i) => <Skeleton key={i} className="h-64 rounded-2xl" />)}</div>
     : items.length ? <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">{items.map(render)}</div> : empty;
 
 export default function Courses() {
@@ -89,7 +91,7 @@ export default function Courses() {
   return (
     <div>
     <PageHeader tone="blue" title="קורסים" text="ללמוד ממוזיקאים אחרים, בקצב שלכם."
-      actions={teacher && <Button asChild size="lg" variant="secondary" className="shadow-[3px_3px_0_#FF4F81]"><Link to="/courses/new"><Plus />קורס חדש</Link></Button>} />
+      actions={teacher && <Button asChild size="lg" variant="secondary"><Link to="/courses/new"><Plus />קורס חדש</Link></Button>} />
     <div className="page">
       <Tabs defaultValue="catalog" dir="rtl">
         <TabsList>
@@ -122,8 +124,9 @@ export default function Courses() {
                     ? <Button asChild><Link to="/courses/new"><Plus />פתיחת הקורס הראשון</Link></Button>
                     : !user && <Button asChild><Link to={signupHref}>פתיחת פרופיל חינם</Link></Button>} />} />
           {!teacher && (
-            <Card className="flex flex-wrap items-center gap-3 bg-secondary p-4">
-              <p className="flex-1 text-sm">מלמדים מוזיקה? פתחו קורס משלכם והגיעו לתלמידים חדשים.</p>
+            <Card className="flex flex-wrap items-center gap-3 p-4">
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#FFF2C2] text-[#6E5200]"><GraduationCap className="h-5 w-5" aria-hidden /></span>
+              <p className="min-w-[12rem] flex-1 text-sm"><span className="font-bold">מלמדים מוזיקה?</span> פתחו קורס משלכם והגיעו לתלמידים חדשים.</p>
               <Button asChild variant="outline"><Link to="/pricing">איך מתחילים ללמד</Link></Button>
             </Card>
           )}

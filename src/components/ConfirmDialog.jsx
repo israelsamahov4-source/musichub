@@ -4,10 +4,11 @@ import {
 } from "@/components/ui/alert-dialog";
 import { buttonVariants } from "@/components/ui/button";
 
-export default function ConfirmDialog({ trigger, title, description, confirmLabel = "אישור", destructive, onConfirm }) {
+/** Asks before an action. Pass `trigger`, or control it with `open` / `onOpenChange` (e.g. from a menu item). */
+export default function ConfirmDialog({ trigger, title, description, confirmLabel = "אישור", destructive, onConfirm, open, onOpenChange }) {
   return (
-    <AlertDialog>
-      <AlertDialogTrigger asChild>{trigger}</AlertDialogTrigger>
+    <AlertDialog open={open} onOpenChange={onOpenChange}>
+      {trigger && <AlertDialogTrigger asChild>{trigger}</AlertDialogTrigger>}
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>{title}</AlertDialogTitle>

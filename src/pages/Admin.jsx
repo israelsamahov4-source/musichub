@@ -74,7 +74,7 @@ function Reports() {
           </div>
           <p><span className="font-semibold">סיבה: </span>{r.reason}</p>
           {r.target_text != null ? (
-            <blockquote className="whitespace-pre-wrap break-words rounded-xl border-s-4 border-riso-pink bg-muted px-4 py-3 text-sm">
+            <blockquote className="whitespace-pre-wrap break-words rounded-xl bg-muted px-4 py-3 text-sm">
               {r.target_text}
               {r.target_owner_username && <footer className="mt-2 text-xs text-muted-foreground">מאת <Link className="ltr underline" to={`/u/${r.target_owner_username}`}>@{r.target_owner_username}</Link></footer>}
             </blockquote>

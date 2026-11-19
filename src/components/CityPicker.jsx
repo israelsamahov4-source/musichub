@@ -54,7 +54,7 @@ export default function CityPicker({ value, onChange, regions = false, placehold
         </button>
       )}
       <ul id={listId} role="listbox" hidden={!shown}
-        className="absolute inset-x-0 top-full z-30 mt-1 max-h-64 overflow-auto rounded-lg border-2 border-ink bg-card p-1 shadow-[3px_3px_0_0_#1E1B3A]">
+        className="absolute inset-x-0 top-full z-30 mt-1.5 max-h-64 overflow-auto rounded-xl border bg-popover p-1.5 shadow-pop">
         {shown && options.map((o, i) => (
           <li key={o.name} id={`${listId}-${i}`} role="option" aria-selected={i === active}
             onMouseDown={(e) => e.preventDefault()} onClick={() => pick(o.name)}

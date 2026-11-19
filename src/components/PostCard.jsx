@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Flag, Handshake, Heart, Link2, MessageCircle, MoreHorizontal, Trash2 } from "lucide-react";
+import { Flag, Handshake, Heart, Link2, MessageCircle, MoreHorizontal, Share2, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -34,6 +34,7 @@ export default function PostCard({ post, defaultShowComments = false, onDeleted 
   const navigate = useNavigate();
   const [showComments, setShowComments] = useState(defaultShowComments);
   const [reportOpen, setReportOpen] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const [liked, setLiked] = useState(post.liked_by_me);
   const [likeCount, setLikeCount] = useState(post.like_count);
   // A list re-created from the cache brings fresh values: follow them.
@@ -76,63 +77,66 @@ export default function PostCard({ post, defaultShowComments = false, onDeleted 
   };
 
   const a = post.author || {};
+  const name = a.full_name || a.username;
   return (
-    <Card className={cn("p-4", post.collaboration_wanted && "border-2 border-ink shadow-[4px_4px_0_0_#FFD84D]")}>
-      <div className="flex items-start gap-3">
-        <Link to={`/u/${a.username}`} aria-hidden="true" tabIndex={-1}><UserAvatar profile={a} /></Link>
-        <div className="min-w-0 flex-1">
+    <Card className="rise">
+      <div className="flex items-start gap-3 px-4 pt-4">
+        <Link to={`/u/${a.username}`} aria-hidden="true" tabIndex={-1}><UserAvatar profile={a} size="md" /></Link>
+        <div className="min-w-0 flex-1 pt-0.5">
           <div className="flex flex-wrap items-center gap-x-2">
-            <Link to={`/u/${a.username}`} className="font-semibold hover:underline">{a.full_name || a.username}</Link>
+            <Link to={`/u/${a.username}`} className="text-[15px] font-bold hover:underline">{name}</Link>
             <PlanBadge tier={a.plan_tier} />
           </div>
-          <Link to={`/posts/${post.id}`} className="text-xs text-muted-foreground hover:underline">
-            <span className="ltr">@{a.username}</span> {timeAgo(post.created_at)}
+          <Link to={`/posts/${post.id}`} className="text-[13px] text-muted-foreground hover:underline">
+            <span className="ltr">@{a.username}</span> · {timeAgo(post.created_at)}
           </Link>
         </div>
         <DropdownMenu dir="rtl">
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="h-8 w-8" aria-label="אפשרויות"><MoreHorizontal /></Button>
+            <Button variant="ghost" size="icon" className="-me-2 -mt-1 text-muted-foreground" aria-label="אפשרויות"><MoreHorizontal /></Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem onClick={copyLink}><Link2 className="h-4 w-4" />העתקת קישור</DropdownMenuItem>
             {user && !mine && <DropdownMenuItem onClick={() => setReportOpen(true)}><Flag className="h-4 w-4" />דיווח</DropdownMenuItem>}
+            {mine && <DropdownMenuItem onClick={() => setConfirmDelete(true)} className="text-destructive focus:text-destructive"><Trash2 className="h-4 w-4" />מחיקת הפוסט</DropdownMenuItem>}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
 
-      {post.collaboration_wanted && (
-        <div className="mt-3 inline-flex rotate-[-1.5deg] items-center gap-1.5 rounded-md border-2 border-ink bg-riso-yellow px-2.5 py-0.5 text-xs font-bold text-ink">
-          <Handshake className="h-3.5 w-3.5" aria-hidden />מחפש/ת שותפים
-        </div>
-      )}
-      {post.content && <p dir={textDir(post.content)} className="mt-3 whitespace-pre-wrap break-words text-start leading-relaxed">{post.content}</p>}
-      {post.media_url && <div className="mt-3"><MediaView url={post.media_url} type={post.media_type} /></div>}
-      {post.genres?.length > 0 && (
-        <div className="mt-3 flex flex-wrap gap-1.5">{post.genres.map((g) => <span key={g} className="chip">{label("genres", g)}</span>)}</div>
-      )}
-
-      <div className="mt-3 flex items-center gap-1 border-t pt-2">
-        <Button variant="ghost" size="sm" aria-pressed={liked} disabled={!user || like.isPending} onClick={() => like.mutate(!liked)}
-          className={cn(liked && "text-ink")}>
-          <Heart className={cn(liked && "fill-riso-pink text-riso-pink")} />{likeCount > 0 && likeCount}<span className="sr-only">לייקים</span>
-        </Button>
-        <Button variant="ghost" size="sm" onClick={() => setShowComments((s) => !s)} aria-expanded={showComments}>
-          <MessageCircle />{post.comment_count > 0 && post.comment_count}<span className="sr-only">תגובות</span>
-        </Button>
-        {user && !mine && post.collaboration_wanted && (
-          <Button variant="ghost" size="sm" className="ms-auto text-primary" onClick={startChat}>
-            <Handshake />שליחת הודעה
-          </Button>
+      <div className="space-y-3 px-4 pt-3">
+        {post.collaboration_wanted && (
+          <div className="flex flex-wrap items-center gap-2 rounded-xl bg-[#FFF0F4] px-3 py-2.5 text-sm">
+            <Handshake className="h-4 w-4 shrink-0 text-[#B01E4C]" aria-hidden />
+            <span className="font-semibold text-[#8E1840]">{name} מחפש/ת שותפים</span>
+            {user && !mine && <Button size="sm" className="ms-auto h-8 bg-riso-pink text-white hover:bg-riso-pink/90" onClick={startChat}>שליחת הודעה</Button>}
+          </div>
         )}
-        {mine && (
-          <ConfirmDialog
-            trigger={<Button variant="ghost" size="sm" className="ms-auto text-muted-foreground"><Trash2 />מחיקה</Button>}
-            title="למחוק את הפוסט?" description="אי אפשר לשחזר פוסט שנמחק." confirmLabel="מחיקה" destructive
-            onConfirm={() => remove.mutate()}
-          />
+        {post.content && <p dir={textDir(post.content)} className="whitespace-pre-wrap break-words text-start text-[15px] leading-relaxed">{post.content}</p>}
+        {post.media_url && <MediaView url={post.media_url} type={post.media_type} subtitle={name} />}
+        {post.genres?.length > 0 && (
+          <div className="flex flex-wrap gap-1.5">{post.genres.map((g) => <span key={g} className="chip">{label("genres", g)}</span>)}</div>
         )}
       </div>
-      {showComments && <Comments post={post} />}
+
+      <div className="mt-3 grid grid-cols-3 border-t border-border/70 px-2 py-1">
+        <Button variant="ghost" aria-pressed={liked} disabled={!user || like.isPending} onClick={() => like.mutate(!liked)}
+          className={cn("rounded-xl", liked ? "text-[#B01E4C] hover:text-[#B01E4C]" : "text-muted-foreground")}>
+          <Heart className={cn("transition-transform duration-200", liked && "scale-110 fill-riso-pink text-riso-pink")} />
+          <span className="tabular">{likeCount > 0 ? likeCount : "לייק"}</span><span className="sr-only">לייקים</span>
+        </Button>
+        <Button variant="ghost" className="rounded-xl text-muted-foreground" onClick={() => setShowComments((s) => !s)} aria-expanded={showComments}>
+          <MessageCircle /><span className="tabular">{post.comment_count > 0 ? post.comment_count : "תגובה"}</span><span className="sr-only">תגובות</span>
+        </Button>
+        <Button variant="ghost" className="rounded-xl text-muted-foreground" onClick={copyLink}>
+          <Share2 />שיתוף
+        </Button>
+      </div>
+      {showComments && <div className="px-4 pb-4"><Comments post={post} /></div>}
+      {mine && (
+        <ConfirmDialog open={confirmDelete} onOpenChange={setConfirmDelete}
+          title="למחוק את הפוסט?" description="אי אפשר לשחזר פוסט שנמחק." confirmLabel="מחיקה" destructive
+          onConfirm={() => remove.mutate()} />
+      )}
       {user && !mine && <ReportDialog open={reportOpen} onOpenChange={setReportOpen} targetType="post" targetId={post.id} />}
     </Card>
   );

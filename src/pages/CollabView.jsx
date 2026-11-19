@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import Field from "@/components/Field";
-import UserAvatar from "@/components/UserAvatar";
+import UserAvatar, { brandFor } from "@/components/UserAvatar";
 import PageLoader from "@/components/PageLoader";
 import EmptyState from "@/components/EmptyState";
 import ConfirmDialog from "@/components/ConfirmDialog";
@@ -225,16 +225,18 @@ export default function CollabView() {
 
   return (
     <div className="page space-y-5">
-      <Card className="border-2 border-ink p-5 shadow-[6px_6px_0_0_#2F45C2]">
+      <Card className="overflow-hidden">
+        <div className="h-2" style={{ backgroundColor: brandFor(p.id) }} aria-hidden />
+        <div className="p-5 sm:p-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               {p.is_public ? <Globe className="h-4 w-4" aria-hidden /> : <Lock className="h-4 w-4" aria-hidden />}
-              {label("projectTypes", p.type)}, {label("projectStatus", p.status)}
+              {label("projectTypes", p.type)} · {label("projectStatus", p.status)}
             </div>
-            <h1 className="riso mt-2 break-words font-display text-4xl font-bold leading-[0.95] sm:text-5xl md:text-6xl">{p.title}</h1>
-            <Link to={`/u/${p.owner?.username}`} className="mt-2 inline-flex items-center gap-2 text-sm hover:underline">
-              <UserAvatar profile={p.owner} size="xs" />{p.owner?.full_name || p.owner?.username}
+            <h1 className="mt-1.5 break-words text-[1.65rem] font-bold leading-tight tracking-tight sm:text-[2rem]">{p.title}</h1>
+            <Link to={`/u/${p.owner?.username}`} className="mt-3 inline-flex items-center gap-2 text-sm font-medium hover:underline">
+              <UserAvatar profile={p.owner} size="xs" className="h-6 w-6" />{p.owner?.full_name || p.owner?.username}
             </Link>
           </div>
           <div className="flex flex-wrap gap-2 sm:max-w-[45%] sm:justify-end">
@@ -264,12 +266,13 @@ export default function CollabView() {
             )}
           </div>
         </div>
-        {me?.status === "requested" && <p className="mt-4 rounded-md bg-amber-50 px-3 py-2 text-sm text-amber-900">הבקשה שלכם נשלחה וממתינה לאישור.</p>}
-        {p.description && <p dir={textDir(p.description)} className="mt-4 whitespace-pre-wrap break-words text-start">{p.description}</p>}
+        {me?.status === "requested" && <p className="mt-4 rounded-xl bg-[#FFF6D9] px-3 py-2.5 text-sm text-[#6E5200]">הבקשה שלכם נשלחה וממתינה לאישור.</p>}
+        {p.description && <p dir={textDir(p.description)} className="mt-4 max-w-[68ch] whitespace-pre-wrap break-words text-start text-[15px] leading-relaxed">{p.description}</p>}
         <div className="mt-4 flex flex-wrap gap-1.5">
-          {p.looking_for_roles.map((r) => <span key={r} className="chip border-primary/30 text-primary">מחפשים: {label("roles", r)}</span>)}
+          {p.looking_for_roles.map((r) => <span key={r} className="chip bg-[#FFE3EB] font-semibold text-[#8E1840]">מחפשים {label("roles", r)}</span>)}
           {p.genres.map((g) => <span key={g} className="chip">{label("genres", g)}</span>)}
           {p.is_remote ? <span className="chip">אפשר מרחוק</span> : p.location && <span className="chip"><MapPin className="me-1 h-3 w-3" aria-hidden />{p.location}</span>}
+        </div>
         </div>
       </Card>
 

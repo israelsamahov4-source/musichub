@@ -38,7 +38,7 @@ export default function Terms() {
       <h2>6. אחריות</h2>
       <p>השירות ניתן כפי שהוא (AS IS). ככל שהחוק מתיר, לא נהיה אחראים לנזק עקיף או תוצאתי, ולא לקשרים או עסקאות בין משתמשים. היו זהירים במפגשים עם אנשים שהכרתם דרך השירות.</p>
       <h2>7. פרטיות</h2>
-      <p>השימוש במידע האישי שלכם מתואר ב<Link to="/privacy" className="text-primary underline decoration-riso-pink decoration-2 underline-offset-4">מדיניות הפרטיות</Link>.</p>
+      <p>השימוש במידע האישי שלכם מתואר ב<Link to="/privacy" className="font-semibold text-primary hover:underline">מדיניות הפרטיות</Link>.</p>
       <h2>8. שונות</h2>
       <p>נוכל לעדכן את התנאים מעת לעת ונודיע על שינוי מהותי. על התנאים יחול הדין הישראלי{isFilled(LEGAL.courtCity) && `, וסמכות השיפוט הבלעדית נתונה לבתי המשפט ב${LEGAL.courtCity}`}.{isFilled(SUPPORT_EMAIL) && ` ליצירת קשר: ${SUPPORT_EMAIL}.`}</p>
     </LegalPage>

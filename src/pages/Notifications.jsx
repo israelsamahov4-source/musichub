@@ -43,20 +43,20 @@ export default function Notifications() {
       </>} />
     <div className="page-narrow">
       {data.length === 0 ? <EmptyState icon={Bell} title="אין התראות" text="כשמישהו יעקוב אחריכם, יגיב או יבקש להצטרף לפרויקט, תראו את זה כאן." /> : (
-        <Card className="divide-y">
+        <Card className="divide-y overflow-hidden">
           {data.map((n) => {
             const Icon = ICONS[n.type] ?? Bell;
             const body = (
               <div className={cn("flex items-start gap-3 p-4 transition-colors hover:bg-muted", !n.read_at && "bg-secondary/60")}>
                 <div className="relative">
-                  {n.actor ? <UserAvatar profile={n.actor} /> : <div className="flex h-9 w-9 items-center justify-center rounded-full bg-secondary"><Icon className="h-4 w-4 text-primary" aria-hidden /></div>}
-                  {n.actor && <Icon className="absolute -bottom-1 -end-1 h-4 w-4 rounded-full bg-card p-0.5 text-primary" aria-hidden />}
+                  {n.actor ? <UserAvatar profile={n.actor} size="md" /> : <div className="flex h-12 w-12 items-center justify-center rounded-full bg-secondary"><Icon className="h-5 w-5 text-primary" aria-hidden /></div>}
+                  {n.actor && <Icon className="absolute -bottom-0.5 -end-1 h-5 w-5 rounded-full bg-primary p-1 text-white ring-2 ring-card" aria-hidden />}
                 </div>
-                <div className="min-w-0 flex-1 text-sm">
-                  <p><strong>{n.actor?.full_name || n.actor?.username}</strong> {n.message}</p>
-                  <p className="text-xs text-muted-foreground">{timeAgo(n.created_at)}</p>
+                <div className="min-w-0 flex-1 pt-0.5 text-[15px] leading-snug">
+                  <p><strong className="font-bold">{n.actor?.full_name || n.actor?.username}</strong> {n.message}</p>
+                  <p className={cn("mt-0.5 text-[13px]", n.read_at ? "text-muted-foreground" : "font-medium text-primary")}>{timeAgo(n.created_at)}</p>
                 </div>
-                {!n.read_at && <span className="mt-2 h-2 w-2 rounded-full bg-primary" aria-label="לא נקרא" />}
+                {!n.read_at && <span className="mt-2 h-2.5 w-2.5 shrink-0 rounded-full bg-primary" aria-label="לא נקרא" />}
               </div>
             );
             return n.link && n.link.startsWith("/") ? <Link key={n.id} to={n.link} onClick={() => !n.read_at && markOne(n.id)}>{body}</Link> : <div key={n.id}>{body}</div>;

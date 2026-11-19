@@ -15,7 +15,7 @@ export function RequireAuth({ children, allowIncompleteProfile = false }) {
   if (user && profileError) {
     return (
       <div className="page-narrow py-16 text-center">
-        <h1 className="font-display text-4xl font-bold text-ink">לא הצלחנו לטעון את החשבון</h1>
+        <h1 className="text-2xl font-bold">לא הצלחנו לטעון את החשבון</h1>
         <p className="mt-2 text-muted-foreground">בדקו את החיבור לאינטרנט ונסו שוב.</p>
         <Button className="mt-5" onClick={retryProfile}>לנסות שוב</Button>
       </div>

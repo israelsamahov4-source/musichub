@@ -33,7 +33,7 @@ export default function ProfileEdit() {
   if (cvFailed) {
     return (
       <div className="page-narrow py-16 text-center">
-        <h1 className="font-display text-4xl font-bold text-ink">לא הצלחנו לטעון את הפרופיל לעריכה</h1>
+        <h1 className="text-2xl font-bold">לא הצלחנו לטעון את הפרופיל לעריכה</h1>
         <p className="mt-2 text-muted-foreground">כדי לא למחוק בטעות את קורות החיים, העריכה נעצרה. נסו שוב.</p>
         <Button className="mt-5" onClick={() => setCvFailed(false)}>לנסות שוב</Button>
       </div>
@@ -66,12 +66,12 @@ export default function ProfileEdit() {
 
   return (
     <form className="page-narrow space-y-6" onSubmit={save} noValidate>
-      <h1 className="page-title riso">עריכת פרופיל</h1>
+      <h1 className="page-title">עריכת פרופיל</h1>
       <Card className="p-5"><h2 className="mb-4 font-semibold">פרטים בסיסיים</h2><ProfileForm form={form} setForm={setForm} userId={user.id} sections={["basics"]} errors={errors} /></Card>
       <Card className="p-5"><h2 className="mb-4 font-semibold">מוזיקה</h2><ProfileForm form={form} setForm={setForm} userId={user.id} sections={["music"]} /></Card>
       <Card className="p-5"><h2 className="mb-4 font-semibold">עליי</h2><ProfileForm form={form} setForm={setForm} userId={user.id} sections={["about"]} /></Card>
       <Card className="p-5">
-        <h2 className="font-display text-4xl font-bold">קורות חיים מוזיקליים</h2>
+        <h2 className="text-xl font-bold">קורות חיים מוזיקליים</h2>
         <p className="mb-5 mt-1 text-sm text-muted-foreground">מה שמנהלי פרויקטים ולהקות יראו כשתפנו אליהם. אתם בוחרים מי רואה.</p>
         <CvEditor cv={cv} setCv={setCv} />
       </Card>

@@ -1,4 +1,4 @@
-import { ExternalLink, Lock } from "lucide-react";
+import { ExternalLink, GraduationCap, Lock, Mic2 } from "lucide-react";
 import MediaView from "@/components/MediaView";
 import { label } from "@/lib/config";
 import { safeUrl, videoEmbedUrl, textDir } from "@/lib/utils";
@@ -13,7 +13,7 @@ export function LookingForBadges({ items }) {
   return (
     <div className="flex flex-wrap gap-1.5">
       {items.map((o) => (
-        <span key={o} className="inline-flex items-center rounded-md border-2 border-ink bg-riso-yellow px-2 py-0.5 text-xs font-bold text-ink">{label("lookingFor", o)}</span>
+        <span key={o} className="inline-flex items-center rounded-full bg-[#FFE3EB] px-2.5 py-0.5 text-xs font-semibold text-[#8E1840]">{label("lookingFor", o)}</span>
       ))}
     </div>
   );
@@ -35,17 +35,20 @@ export default function CvView({ cv, compact = false, hiddenText }) {
   if (empty) return <p className="text-sm text-muted-foreground">עוד לא מילאו כאן קורות חיים.</p>;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 [&>section+section]:border-t [&>section+section]:border-border/70 [&>section+section]:pt-6">
       {experience?.length > 0 && (
         <section>
-          {!compact && <h3 className="mb-3 font-display text-3xl font-bold">ניסיון</h3>}
-          <ol className="relative space-y-4 border-s-2 border-riso-blue/25 ps-5">
+          {!compact && <h3 className="mb-3 text-base font-bold">ניסיון</h3>}
+          <ol className="space-y-4">
             {experience.map((e, i) => (
-              <li key={i} className="relative">
-                <span className="absolute -start-[1.6rem] top-1.5 h-3 w-3 rounded-full border-2 border-white bg-riso-pink" aria-hidden />
-                <p className="font-semibold">{e.title}{e.org && <span className="font-normal text-muted-foreground"> ב{e.org}</span>}</p>
-                {years(e.start_year, e.end_year) && <p className="ltr w-fit text-xs text-muted-foreground">{years(e.start_year, e.end_year)}</p>}
-                {!compact && e.description && <p dir={textDir(e.description)} className="mt-1 whitespace-pre-wrap text-start text-sm leading-relaxed">{e.description}</p>}
+              <li key={i} className="flex gap-3">
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#E5E9FB] text-primary" aria-hidden><Mic2 className="h-5 w-5" /></span>
+                <div className="min-w-0 flex-1 border-b border-border/70 pb-4 [li:last-child_&]:border-0 [li:last-child_&]:pb-0">
+                  <p className="font-bold">{e.title}</p>
+                  {e.org && <p className="text-sm">{e.org}</p>}
+                  {years(e.start_year, e.end_year) && <p className="ltr w-fit text-[13px] text-muted-foreground">{years(e.start_year, e.end_year)}</p>}
+                  {!compact && e.description && <p dir={textDir(e.description)} className="mt-1.5 whitespace-pre-wrap text-start text-sm leading-relaxed">{e.description}</p>}
+                </div>
               </li>
             ))}
           </ol>
@@ -55,12 +58,16 @@ export default function CvView({ cv, compact = false, hiddenText }) {
 
       {!compact && cv.education?.length > 0 && (
         <section>
-          <h3 className="mb-3 font-display text-3xl font-bold">לימודים</h3>
-          <ul className="space-y-2">
+          <h3 className="mb-3 text-base font-bold">לימודים</h3>
+          <ul className="space-y-4">
             {cv.education.map((e, i) => (
-              <li key={i}>
-                <p className="font-semibold">{e.school}{e.program && <span className="font-normal text-muted-foreground">, {e.program}</span>}</p>
-                {years(e.start_year, e.end_year) && <p className="ltr w-fit text-xs text-muted-foreground">{years(e.start_year, e.end_year)}</p>}
+              <li key={i} className="flex gap-3">
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#FFF2C2] text-[#6E5200]" aria-hidden><GraduationCap className="h-5 w-5" /></span>
+                <div>
+                  <p className="font-bold">{e.school}</p>
+                  {e.program && <p className="text-sm">{e.program}</p>}
+                  {years(e.start_year, e.end_year) && <p className="ltr w-fit text-[13px] text-muted-foreground">{years(e.start_year, e.end_year)}</p>}
+                </div>
               </li>
             ))}
           </ul>
@@ -69,7 +76,7 @@ export default function CvView({ cv, compact = false, hiddenText }) {
 
       {cv.skills?.length > 0 && (
         <section>
-          {!compact && <h3 className="mb-3 font-display text-3xl font-bold">כישורים</h3>}
+          {!compact && <h3 className="mb-3 text-base font-bold">כישורים</h3>}
           <div className="flex flex-wrap gap-1.5">{cv.skills.map((s) => <span key={s} className="chip">{s}</span>)}</div>
           {!compact && cv.languages?.length > 0 && <p className="mt-3 text-sm text-muted-foreground">שפות: {cv.languages.join(", ")}</p>}
         </section>
@@ -77,13 +84,13 @@ export default function CvView({ cv, compact = false, hiddenText }) {
 
       {!compact && cv.portfolio?.length > 0 && (
         <section>
-          <h3 className="mb-3 font-display text-3xl font-bold">תיק עבודות</h3>
+          <h3 className="mb-3 text-base font-bold">תיק עבודות</h3>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             {cv.portfolio.map((p, i) => (
               <figure key={i} className="space-y-2">
                 {videoEmbedUrl(p.url) ? <MediaView url={p.url} type="video" title={p.title} /> : (
                   <a href={safeUrl(p.url)} target="_blank" rel="noopener noreferrer nofollow"
-                    className="flex items-center gap-2 rounded-xl border border-ink/10 bg-muted/40 p-4 font-medium hover:bg-muted">
+                    className="flex items-center gap-2 rounded-xl border border-border bg-card p-4 font-medium transition-colors hover:bg-muted">
                     <ExternalLink className="h-4 w-4 text-primary" aria-hidden />{p.title || hostOf(p.url)}
                   </a>
                 )}

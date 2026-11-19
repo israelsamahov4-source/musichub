@@ -67,7 +67,7 @@ export default function Comments({ post }) {
           <Button type="submit" size="icon" disabled={!text.trim() || add.isPending} aria-label="שליחת תגובה"><Send className="rtl:-scale-x-100" /></Button>
         </form>
       ) : (
-        <p className="text-sm text-muted-foreground"><Link to={loginHref} className="text-primary underline decoration-riso-pink decoration-2 underline-offset-4">התחברו</Link> כדי להגיב</p>
+        <p className="text-sm text-muted-foreground"><Link to={loginHref} className="font-semibold text-primary hover:underline">התחברו</Link> כדי להגיב</p>
       )}
     </div>
   );

@@ -69,7 +69,7 @@ export default function Signup() {
   }
 
   return (
-    <AuthShell title="הצטרפות" subtitle="יוצרים פרופיל ומתחילים להתחבר למוזיקאים" footer={<>כבר יש לכם חשבון? <Link to={loginHref} className="font-medium text-primary underline decoration-riso-pink decoration-2 underline-offset-4">התחברות</Link></>}>
+    <AuthShell title="הצטרפות" subtitle="יוצרים פרופיל ומתחילים להתחבר למוזיקאים" footer={<>כבר יש לכם חשבון? <Link to={loginHref} className="font-medium font-semibold text-primary hover:underline">התחברות</Link></>}>
       <GoogleButton />
       <form onSubmit={submit} className="space-y-4" noValidate>
         <Field id="fullName" label="שם מלא" error={errors.fullName}>
@@ -85,7 +85,7 @@ export default function Signup() {
           <Checkbox id="agree" checked={agree} onCheckedChange={(v) => setAgree(v === true)} className="mt-0.5"
             aria-invalid={errors.agree ? true : undefined} aria-describedby={errors.agree ? "agree-error" : undefined} />
           <label htmlFor="agree" className="text-sm leading-snug">
-            קראתי ואני מסכים/ה ל<Link to="/terms" target="_blank" className="text-primary underline decoration-riso-pink decoration-2 underline-offset-4">תנאי השימוש</Link> ול<Link to="/privacy" target="_blank" className="text-primary underline decoration-riso-pink decoration-2 underline-offset-4">מדיניות הפרטיות</Link>
+            קראתי ואני מסכים/ה ל<Link to="/terms" target="_blank" className="font-semibold text-primary hover:underline">תנאי השימוש</Link> ול<Link to="/privacy" target="_blank" className="font-semibold text-primary hover:underline">מדיניות הפרטיות</Link>
           </label>
         </div>
         {errors.agree && <p id="agree-error" role="alert" className="-mt-2 text-xs font-medium text-destructive">{errors.agree}</p>}

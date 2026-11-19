@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Globe, Handshake, Lock, MapPin, Plus, Users } from "lucide-react";
+import { Disc3, Globe, Handshake, Lock, MapPin, Mic2, Music, PenLine, Plus, Shuffle, SlidersHorizontal, Sparkles, Users } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -17,7 +17,7 @@ import TagPicker from "@/components/TagPicker";
 import CityPicker from "@/components/CityPicker";
 import EmptyState from "@/components/EmptyState";
 import PageHeader from "@/components/PageHeader";
-import UserAvatar from "@/components/UserAvatar";
+import UserAvatar, { brandFor } from "@/components/UserAvatar";
 import { supabase, unwrap } from "@/lib/supabase";
 import { useAuth } from "@/auth/AuthProvider";
 import { GENRES, PROJECT_TYPES, ROLES, label } from "@/lib/config";
@@ -55,26 +55,37 @@ export function ProjectFields({ value, onChange }) {
   );
 }
 
+const TYPE_ICON = { single: Music, album: Disc3, songwriting: PenLine, production: SlidersHorizontal, remix: Shuffle, band: Users, jam: Mic2, other: Sparkles };
+
 function ProjectCard({ p, badge }) {
+  const Icon = TYPE_ICON[p.type] || Music;
+  const color = brandFor(p.id);
   return (
     <Link to={`/collabs/${p.id}`} className="block">
-      <Card className="flex h-full flex-col p-4 transition-[transform,box-shadow] can-hover:hover:-translate-y-0.5 can-hover:hover:shadow-[4px_4px_0_0_#1E1B3A]">
-        <div className="flex items-start gap-2">
-          <h3 className="flex-1 font-display text-3xl font-bold leading-[0.95] text-ink">{p.title}</h3>
-          {badge}
-          {!p.is_public && <Lock className="h-4 w-4 text-muted-foreground" aria-label="פרויקט פרטי" />}
+      <Card className="flex h-full flex-col justify-between p-4 transition-shadow duration-200 can-hover:hover:shadow-pop">
+        <div className="flex items-start gap-3">
+          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl" style={{ backgroundColor: color, color: color === "#2F45C2" ? "#fff" : "#1E1B3A" }}>
+            <Icon className="h-6 w-6" aria-hidden />
+          </span>
+          <div className="min-w-0 flex-1">
+            <div className="flex items-start gap-2">
+              <h3 className="flex-1 text-base font-bold leading-snug">{p.title}</h3>
+              {badge}
+              {!p.is_public && <Lock className="mt-1 h-4 w-4 shrink-0 text-muted-foreground" aria-label="פרויקט פרטי" />}
+            </div>
+            <p className="mt-0.5 text-[13px] text-muted-foreground">{label("projectTypes", p.type)} · {label("projectStatus", p.status)} · {timeAgo(p.created_at)}</p>
+          </div>
         </div>
-        <p className="mt-1 text-xs text-muted-foreground">{label("projectTypes", p.type)}, {label("projectStatus", p.status)}, {timeAgo(p.created_at)}</p>
-        {p.description && <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">{p.description}</p>}
+        {p.description && <p className="mt-3 line-clamp-2 text-sm leading-relaxed text-foreground/80">{p.description}</p>}
         {p.looking_for_roles?.length > 0 && (
-          <div className="mt-3 flex flex-wrap gap-1.5">
-            <span className="text-xs font-medium">מחפשים:</span>
-            {p.looking_for_roles.slice(0, 4).map((r) => <span key={r} className="chip border-riso-pink bg-riso-pink/10 font-semibold text-ink">{label("roles", r)}</span>)}
+          <div className="mt-3 flex flex-wrap items-center gap-1.5">
+            <span className="text-xs font-semibold text-muted-foreground">מחפשים</span>
+            {p.looking_for_roles.slice(0, 4).map((r) => <span key={r} className="chip bg-[#FFE3EB] font-semibold text-[#8E1840]">{label("roles", r)}</span>)}
           </div>
         )}
-        <div className="mt-auto flex items-center gap-2 pt-4 text-xs text-muted-foreground">
-          <UserAvatar profile={p.owner} size="xs" />
-          <span className="truncate">{p.owner?.full_name || p.owner?.username}</span>
+        <div className="mt-4 flex items-center gap-2 border-t border-border/70 pt-3 text-xs text-muted-foreground">
+          <UserAvatar profile={p.owner} size="xs" className="h-6 w-6" />
+          <span className="truncate font-medium text-foreground/80">{p.owner?.full_name || p.owner?.username}</span>
           <span className="ms-auto flex items-center gap-1"><Users className="h-3.5 w-3.5" aria-hidden />{p.members?.[0]?.count ?? 1}</span>
           {p.is_remote ? <span className="flex items-center gap-1"><Globe className="h-3.5 w-3.5" aria-hidden />מרחוק</span>
             : p.location && <span className="flex items-center gap-1"><MapPin className="h-3.5 w-3.5" aria-hidden />{p.location}</span>}
@@ -85,7 +96,7 @@ function ProjectCard({ p, badge }) {
 }
 
 const Grid = ({ loading, items, render, empty }) =>
-  loading ? <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">{[0, 1, 2].map((i) => <Skeleton key={i} className="h-44 rounded-xl" />)}</div>
+  loading ? <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">{[0, 1, 2].map((i) => <Skeleton key={i} className="h-48 rounded-2xl" />)}</div>
     : items.length ? <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">{items.map(render)}</div> : empty;
 
 export default function Collabs() {
@@ -127,12 +138,12 @@ export default function Collabs() {
     onError: (e) => toast.error(errorMessage(e)),
   });
 
-  const statusBadge = (s) => s === "requested" ? <span className="chip">ממתין לאישור</span> : s === "invited" ? <span className="chip border-primary text-primary">הוזמנתם</span> : null;
+  const statusBadge = (s) => s === "requested" ? <span className="chip">ממתין לאישור</span> : s === "invited" ? <span className="chip bg-secondary text-primary">הוזמנתם</span> : null;
 
   return (
     <div>
     <PageHeader title="פרויקטים" text="מצאו שותפים לשיר, ללהקה או להפקה, או הצטרפו לפרויקט קיים."
-      actions={user ? <Button size="lg" className="shadow-[3px_3px_0_#FF4F81]" onClick={() => setOpen(true)}><Plus />פרויקט חדש</Button>
+      actions={user ? <Button onClick={() => setOpen(true)}><Plus />פרויקט חדש</Button>
         : <Button asChild size="lg"><Link to={signupHref}>הצטרפו כדי ליצור פרויקט</Link></Button>} />
     <div className="page">
       <Tabs defaultValue="explore" dir="rtl">

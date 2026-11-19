@@ -134,7 +134,7 @@ export default function Settings() {
             {s.cancel_at_period_end ? "המנוי יסתיים ב-" : "החיוב הבא ב-"}{formatDate(s.current_period_end)}
           </p>
         )}
-        {s?.status === "past_due" && <p className="rounded-md bg-amber-50 px-3 py-2 text-sm text-amber-900">התשלום האחרון נכשל. עדכנו אמצעי תשלום כדי לא לאבד את המנוי.</p>}
+        {s?.status === "past_due" && <p className="rounded-xl bg-[#FFF6D9] px-3 py-2.5 text-sm text-[#6E5200]">התשלום האחרון נכשל. עדכנו אמצעי תשלום כדי לא לאבד את המנוי.</p>}
         <div className="flex gap-2">
           {s?.tier && s.tier !== "free" && PAYMENTS_ENABLED ? <Button variant="outline" onClick={portal}>ניהול מנוי ואמצעי תשלום</Button>
             : <Button asChild variant="outline"><Link to="/pricing">לתוכניות</Link></Button>}

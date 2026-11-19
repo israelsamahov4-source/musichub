@@ -16,22 +16,22 @@ import { usePageTitle } from "@/lib/usePageTitle";
 
 function ConversationList({ conversations, activeId }) {
   if (!conversations.length) {
-    return <EmptyState icon={MessageCircle} title="אין עדיין שיחות" text="פתחו שיחה מתוך פרופיל של מוזיקאי/ת." action={<Button asChild variant="outline"><Link to="/discover">גילוי מוזיקאים</Link></Button>} />;
+    return <EmptyState plain icon={MessageCircle} title="אין עדיין שיחות" text="פתחו שיחה מתוך פרופיל של מוזיקאי/ת." action={<Button asChild variant="outline"><Link to="/discover">גילוי מוזיקאים</Link></Button>} />;
   }
   return (
-    <ul className="divide-y">
+    <ul className="p-1.5">
       {conversations.map((c) => (
         <li key={c.conversation_id}>
-          <Link to={`/messages/${c.conversation_id}`} className={cn("flex items-center gap-3 p-3 transition-colors hover:bg-muted", c.conversation_id === activeId && "bg-secondary")}>
+          <Link to={`/messages/${c.conversation_id}`} className={cn("flex items-center gap-3 rounded-xl p-2.5 transition-colors hover:bg-muted", c.conversation_id === activeId && "bg-secondary hover:bg-secondary")}>
             <UserAvatar profile={{ full_name: c.other_full_name, username: c.other_username, avatar_url: c.other_avatar_url }} size="md" />
             <div className="min-w-0 flex-1">
               <div className="flex items-baseline gap-2">
                 <span className={cn("truncate", Number(c.unread_count) > 0 ? "font-bold" : "font-medium")}>{c.other_full_name || c.other_username}</span>
-                <span className="ms-auto shrink-0 text-xs text-muted-foreground">{timeAgo(c.last_message_at)}</span>
+                <span className={cn("ms-auto shrink-0 text-xs", Number(c.unread_count) > 0 ? "font-semibold text-primary" : "text-muted-foreground")}>{timeAgo(c.last_message_at)}</span>
               </div>
               <div className="flex items-center gap-2">
                 <p className="truncate text-sm text-muted-foreground">{c.last_message ?? "שיחה חדשה"}</p>
-                {Number(c.unread_count) > 0 && <span className="ms-auto rounded-full bg-primary px-1.5 text-xs font-bold text-primary-foreground">{c.unread_count}</span>}
+                {Number(c.unread_count) > 0 && <span className="ms-auto min-w-5 rounded-full bg-riso-pink px-1.5 text-center text-xs font-bold leading-5 text-white">{c.unread_count}</span>}
               </div>
             </div>
           </Link>
@@ -96,24 +96,24 @@ function Thread({ conversationId, other }) {
 
   return (
     <div className="flex h-full flex-col">
-      <div className="flex items-center gap-3 border-b p-3">
+      <div className="flex h-16 items-center gap-3 border-b px-3">
         <Button asChild variant="ghost" size="icon" className="md:hidden" aria-label="חזרה לשיחות"><Link to="/messages"><ArrowRight /></Link></Button>
         {other && (
           <Link to={`/u/${other.username}`} className="flex items-center gap-2 hover:underline">
             <UserAvatar profile={other} />
-            <span className="font-semibold">{other.full_name || other.username}</span>
+            <span className="font-bold">{other.full_name || other.username}</span>
           </Link>
         )}
       </div>
-      <div className="flex-1 space-y-2 overflow-y-auto p-4" aria-live="polite">
+      <div className="flex-1 space-y-1.5 overflow-y-auto bg-background/60 p-4" aria-live="polite">
         {isLoading && <PageLoader />}
-        {!isLoading && messages.length === 0 && <p className="py-10 text-center text-sm text-muted-foreground">כתבו את ההודעה הראשונה 👋</p>}
+        {!isLoading && messages.length === 0 && <p className="py-10 text-center text-sm text-muted-foreground">כתבו את ההודעה הראשונה בשיחה.</p>}
         {messages.map((m) => {
           const mine = m.sender_id === user.id;
           return (
             <div key={m.id} className={cn("flex", mine ? "justify-start" : "justify-end")}>
-              <div className={cn("max-w-[80%] rounded-2xl px-3.5 py-2", mine ? "rounded-ss-sm bg-primary text-primary-foreground" : "rounded-se-sm bg-muted")}>
-                <p dir={textDir(m.content)} className="whitespace-pre-wrap break-words text-start text-sm">{m.content}</p>
+              <div className={cn("max-w-[80%] rounded-2xl px-3.5 py-2", mine ? "rounded-ss-md bg-primary text-primary-foreground" : "rounded-se-md bg-card shadow-card")}>
+                <p dir={textDir(m.content)} className="whitespace-pre-wrap break-words text-start text-[15px] leading-snug">{m.content}</p>
                 <p className={cn("mt-0.5 text-[11px]", mine ? "text-primary-foreground/70" : "text-muted-foreground")}>{formatDate(m.created_at, "d.M HH:mm")}</p>
               </div>
             </div>
@@ -121,10 +121,10 @@ function Thread({ conversationId, other }) {
         })}
         <div ref={bottomRef} />
       </div>
-      <form onSubmit={submit} className="flex items-end gap-2 border-t p-3">
+      <form onSubmit={submit} className="flex items-end gap-2 border-t bg-card p-3">
         <Textarea value={text} onChange={(e) => setText(e.target.value)} rows={1} maxLength={4000} placeholder="כתבו הודעה…" aria-label="הודעה"
-          className="max-h-32 min-h-10 resize-none" onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); submit(); } }} />
-        <Button type="submit" size="icon" disabled={!text.trim()} aria-label="שליחה"><Send className="rtl:-scale-x-100" /></Button>
+          className="max-h-32 min-h-11 resize-none rounded-3xl border-0 bg-muted px-4 py-2.5 focus-visible:bg-card" onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); submit(); } }} />
+        <Button type="submit" size="icon" className="h-11 w-11 shrink-0" disabled={!text.trim()} aria-label="שליחה"><Send className="rtl:-scale-x-100" /></Button>
       </form>
     </div>
   );
@@ -135,25 +135,26 @@ export default function Messages() {
   const { conversationId } = useParams();
   const { data: conversations = [], isLoading } = useQuery({
     queryKey: ["conversations"],
-    queryFn: async () => unwrap(await supabase.rpc("my_conversations")),
+    queryFn: async () => unwrap(await supabase.rpc("my_conversations")) ?? [],
   });
   const active = conversations.find((c) => c.conversation_id === conversationId);
   const other = active && { id: active.other_id, username: active.other_username, full_name: active.other_full_name, avatar_url: active.other_avatar_url };
 
   return (
     <div className="mx-auto max-w-5xl px-0 py-0 md:px-4 md:py-6">
-      <Card className="grid h-[calc(100dvh-8.5rem)] overflow-hidden rounded-none md:h-[calc(100dvh-8rem)] md:grid-cols-[320px_1fr] md:rounded-xl">
+      <Card className="grid h-[calc(100dvh-8.5rem)] overflow-hidden rounded-none border-x-0 md:h-[calc(100dvh-8rem)] md:grid-cols-[340px_1fr] md:rounded-2xl md:border-x">
         <div className={cn("overflow-y-auto border-e", conversationId && "hidden md:block")}>
-          <h1 className="riso border-b-2 border-ink/10 px-4 pb-2 pt-4 font-display text-5xl font-bold leading-none">הודעות</h1>
+          <h1 className="flex h-16 items-center border-b px-4 text-xl font-bold">הודעות</h1>
           {isLoading ? <PageLoader /> : <ConversationList conversations={conversations} activeId={conversationId} />}
         </div>
         <div className={cn("min-h-0", !conversationId && "hidden md:block")}>
           {conversationId ? (
             !isLoading && !active ? <EmptyState title="השיחה לא נמצאה" /> : <Thread key={conversationId} conversationId={conversationId} other={other} />
           ) : (
-            <div className="grain flex h-full min-h-[320px] flex-col items-center justify-center gap-2 bg-riso-blue/[0.04] p-8 text-center">
-              <p className="riso font-display text-6xl font-bold leading-none">על מה מדברים?</p>
-              <p className="text-sm text-muted-foreground">בחרו שיחה מהרשימה, או פתחו חדשה מהפרופיל של מוזיקאי/ת.</p>
+            <div className="flex h-full min-h-[320px] flex-col items-center justify-center gap-2 bg-background/60 p-8 text-center">
+              <span className="mb-2 flex h-16 w-16 items-center justify-center rounded-full bg-secondary text-primary"><MessageCircle className="h-7 w-7" aria-hidden /></span>
+              <p className="text-lg font-bold">ההודעות שלכם</p>
+              <p className="max-w-xs text-sm text-muted-foreground">בחרו שיחה מהרשימה, או פתחו חדשה מהפרופיל של מוזיקאי/ת.</p>
             </div>
           )}
         </div>

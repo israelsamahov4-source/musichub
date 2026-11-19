@@ -42,18 +42,18 @@ export default function Pricing() {
   };
 
   const toggle = (
-    <div className="inline-flex rounded-full border-2 border-white/80 p-1" role="group" aria-label="מחזור חיוב">
+    <div className="inline-flex rounded-full bg-card p-1 shadow-[inset_0_0_0_1px_hsl(var(--border))]" role="group" aria-label="מחזור חיוב">
       {[["monthly", "חודשי"], ["yearly", "שנתי, חודשיים מתנה"]].map(([v, t]) => (
         <button key={v} type="button" aria-pressed={cycle === v} onClick={() => setCycle(v)}
           className={cn("rounded-full px-4 py-1.5 text-sm font-semibold transition-colors",
-            cycle === v ? "bg-riso-yellow text-ink" : "text-white/85 hover:text-white", "min-h-10")}>{t}</button>
+            cycle === v ? "bg-foreground text-white" : "text-foreground/70 hover:text-foreground", "min-h-9")}>{t}</button>
       ))}
     </div>
   );
 
   return (
     <>
-      <PageHeader tone="blue" title="תוכניות ומחירים"
+      <PageHeader title="תוכניות ומחירים"
         text="הרשת, ההודעות והפרויקטים חינמיים לגמרי. מנוי פותח קורסים מתקדמים ואת האפשרות ללמד."
         actions={toggle} />
       <div className="page">
@@ -62,25 +62,25 @@ export default function Pricing() {
             const hot = plan.highlight;
             return (
               <section key={plan.tier} aria-labelledby={`plan-${plan.tier}`}
-                className={cn("relative flex h-full flex-col rounded-2xl border-2 border-ink p-6",
-                  hot ? "grain bg-ink text-white shadow-[6px_6px_0_0_#FF4F81] md:-translate-y-3" : "bg-card")}>
+                className={cn("relative flex h-full flex-col rounded-2xl p-6 shadow-card",
+                  hot ? "bg-ink text-white ring-2 ring-primary" : "border border-border/80 bg-card")}>
                 {plan.tier !== "free" && !PAYMENTS_ENABLED
-                  ? <span className="absolute -top-3 end-6 rotate-[-4deg] rounded-sm border-2 border-ink bg-riso-pink px-3 py-1 text-xs font-bold text-ink">בקרוב</span>
-                  : hot && <span className="absolute -top-3 end-6 rotate-[-4deg] rounded-sm border-2 border-ink bg-riso-yellow px-3 py-1 text-xs font-bold text-ink">מומלץ</span>}
-                <h2 id={`plan-${plan.tier}`} className={cn("font-display text-4xl font-bold leading-none", hot ? "text-riso-yellow" : "text-riso-blue")}>{plan.name}</h2>
+                  ? <span className="absolute -top-3 end-6 rounded-full bg-riso-pink px-3 py-1 text-xs font-bold text-white">בקרוב</span>
+                  : hot && <span className="absolute -top-3 end-6 rounded-full bg-primary px-3 py-1 text-xs font-bold text-white">מומלץ</span>}
+                <h2 id={`plan-${plan.tier}`} className={cn("text-xl font-bold", hot ? "text-riso-yellow" : "text-foreground")}>{plan.name}</h2>
                 <p className={cn("mt-2 text-sm", hot ? "text-white/75" : "text-muted-foreground")}>{plan.tagline}</p>
                 <p className="mt-5 flex items-baseline gap-1">
-                  <span className="text-5xl font-black leading-none tracking-tight">₪{plan.price[cycle]}</span>
+                  <span className="tabular text-[2.75rem] font-extrabold leading-none tracking-tight">₪{plan.price[cycle]}</span>
                   <span className={hot ? "text-white/70" : "text-muted-foreground"}>/ {cycle === "monthly" ? "חודש" : "שנה"}</span>
                 </p>
                 <ul className="my-6 flex-1 space-y-2.5">
                   {plan.features.map((f) => (
                     <li key={f} className="flex gap-2 text-sm">
-                      <Check className={cn("mt-0.5 h-4 w-4 shrink-0", hot ? "text-riso-yellow" : "text-riso-pink")} aria-hidden />{f}
+                      <Check className={cn("mt-0.5 h-4 w-4 shrink-0", hot ? "text-riso-yellow" : "text-primary")} aria-hidden />{f}
                     </li>
                   ))}
                 </ul>
-                <div className={hot ? "[&_button]:bg-riso-yellow [&_button]:text-ink [&_a]:bg-riso-yellow [&_a]:text-ink" : ""}>{action(plan)}</div>
+                <div className={hot ? "[&_a]:border-0 [&_a]:bg-white [&_a]:text-ink [&_button]:bg-white [&_button]:text-ink" : ""}>{action(plan)}</div>
               </section>
             );
           })}

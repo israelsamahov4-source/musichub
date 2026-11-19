@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import UserAvatar from "@/components/UserAvatar";
+import UserAvatar, { brandFor } from "@/components/UserAvatar";
 import PageLoader from "@/components/PageLoader";
 import EmptyState from "@/components/EmptyState";
 import { supabase, unwrap } from "@/lib/supabase";
@@ -60,11 +60,11 @@ export default function CourseView() {
 
   return (
     <div className="page space-y-6">
-      {!c.is_published && <p className="rounded-md bg-amber-50 px-3 py-2 text-sm text-amber-900">הקורס הוא טיוטה ורק אתם רואים אותו. פרסמו אותו מעמוד העריכה.</p>}
-      <Card className="grid overflow-hidden border-2 border-ink md:grid-cols-[1fr_340px]">
-        <div className="p-6">
-          <p className="text-sm text-muted-foreground">{label("courseCategories", c.category)}, {label("courseLevels", c.level)}</p>
-          <h1 className="riso mt-2 font-display text-5xl font-bold leading-[0.9] md:text-6xl">{c.title}</h1>
+      {!c.is_published && <p className="rounded-xl bg-[#FFF6D9] px-3 py-2.5 text-sm text-[#6E5200]">הקורס הוא טיוטה ורק אתם רואים אותו. פרסמו אותו מעמוד העריכה.</p>}
+      <Card className="grid overflow-hidden md:grid-cols-[1fr_360px]">
+        <div className="p-5 sm:p-7">
+          <p className="text-sm font-medium text-muted-foreground">{label("courseCategories", c.category)} · {label("courseLevels", c.level)}</p>
+          <h1 className="mt-1.5 text-[1.75rem] font-bold leading-tight tracking-tight md:text-[2.25rem]">{c.title}</h1>
           <Link to={`/u/${c.instructor?.username}`} className="mt-3 inline-flex items-center gap-2 hover:underline">
             <UserAvatar profile={c.instructor} /><span className="font-medium">{c.instructor?.full_name || c.instructor?.username}</span>
           </Link>
@@ -82,11 +82,10 @@ export default function CourseView() {
             </div>
           )}
         </div>
-        <div className="grain relative aspect-video overflow-hidden bg-riso-blue md:aspect-auto">
+        <div className="relative order-first aspect-video overflow-hidden md:order-none md:aspect-auto" style={{ backgroundColor: brandFor(c.id) }}>
           {!safeUrl(c.cover_url) && (
-            <div className="absolute inset-0 flex items-end p-6" aria-hidden>
-              <span className="font-display text-[7rem] font-bold leading-[0.8] text-white/[0.18]">{label("courseCategories", c.category)}</span>
-              <span className="tape end-8 top-6 rotate-[6deg]" />
+            <div className="absolute inset-0 flex items-center justify-center" aria-hidden>
+              <GraduationCap className={brandFor(c.id) === "#2F45C2" ? "h-24 w-24 text-white/30" : "h-24 w-24 text-ink/20"} strokeWidth={1.2} />
             </div>
           )}
           {safeUrl(c.cover_url) && <img src={safeUrl(c.cover_url)} alt="" className="h-full w-full object-cover" />}

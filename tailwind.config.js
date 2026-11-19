@@ -8,7 +8,11 @@ export default {
   	extend: {
   		fontFamily: {
   			sans: ['Rubik', 'system-ui', 'sans-serif'],
-  			display: ['Karantina', 'Rubik', 'sans-serif'],
+  			display: ['Rubik', 'system-ui', 'sans-serif'],
+  		},
+  		boxShadow: {
+  			card: '0 1px 2px rgb(30 27 58 / 0.04), 0 6px 20px -12px rgb(30 27 58 / 0.14)',
+  			pop: '0 2px 6px rgb(30 27 58 / 0.06), 0 18px 44px -16px rgb(30 27 58 / 0.28)',
   		},
   		borderRadius: {
   			lg: 'var(--radius)',
