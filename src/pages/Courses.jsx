@@ -14,6 +14,7 @@ import PageHeader from "@/components/PageHeader";
 import { supabase, unwrap } from "@/lib/supabase";
 import { COURSE_CARD, canTeach } from "@/api/courses";
 import { useAuth } from "@/auth/AuthProvider";
+import { useAuthHref } from "@/auth/returnTo";
 import { COURSE_CATEGORIES, COURSE_LEVELS, label } from "@/lib/config";
 import { cleanSearch, safeUrl } from "@/lib/utils";
 
@@ -56,7 +57,9 @@ export default function Courses() {
   const [level, setLevel] = useState("all");
   const [q, setQ] = useState("");
   const term = cleanSearch(q);
+  const filtered = Boolean(term) || category !== "all" || level !== "all";
   const teacher = canTeach(profile);
+  const signupHref = useAuthHref("/signup");
 
   const catalog = useQuery({
     queryKey: ["courses", "catalog", category, level, term],
@@ -110,7 +113,14 @@ export default function Courses() {
             </Select>
           </div>
           <Grid loading={catalog.isLoading} items={catalog.data ?? []} render={(c) => <CourseCard key={c.id} c={c} />}
-            empty={<EmptyState icon={GraduationCap} title="עדיין אין כאן קורסים" text="קורסים חדשים יעלו בקרוב." />} />
+            empty={filtered
+              ? <EmptyState icon={GraduationCap} title="לא מצאנו קורס כזה" text="נסו מילה אחרת, תחום אחר או רמה אחרת."
+                  action={<Button variant="outline" onClick={() => { setQ(""); setCategory("all"); setLevel("all"); }}>ניקוי החיפוש</Button>} />
+              : <EmptyState icon={GraduationCap} title="הכיתה עוד ריקה"
+                  text="כאן יופיעו קורסים של מוזיקאים: נגינה, הפקה, כתיבה ועוד, בקצב שלכם."
+                  action={teacher
+                    ? <Button asChild><Link to="/courses/new"><Plus />פתיחת הקורס הראשון</Link></Button>
+                    : !user && <Button asChild><Link to={signupHref}>פתיחת פרופיל חינם</Link></Button>} />} />
           {!teacher && (
             <Card className="flex flex-wrap items-center gap-3 bg-secondary p-4">
               <p className="flex-1 text-sm">מלמדים מוזיקה? פתחו קורס משלכם והגיעו לתלמידים חדשים.</p>

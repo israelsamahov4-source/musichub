@@ -93,6 +93,7 @@ export default function Collabs() {
   const navigate = useNavigate();
   const [type, setType] = useState("all");
   const [role, setRole] = useState("all");
+  const filtered = type !== "all" || role !== "all";
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState(EMPTY_PROJECT);
 
@@ -150,7 +151,14 @@ export default function Collabs() {
             </Select>
           </div>
           <Grid loading={explore.isLoading} items={explore.data ?? []} render={(p) => <ProjectCard key={p.id} p={p} />}
-            empty={<EmptyState icon={Handshake} title="אין פרויקטים שמתאימים" text="אולי זה הזמן לפתוח אחד?" />} />
+            empty={filtered
+              ? <EmptyState icon={Handshake} title="אין פרויקטים כאלה כרגע" text="נסו סוג אחר או תפקיד אחר."
+                  action={<Button variant="outline" onClick={() => { setType("all"); setRole("all"); }}>ניקוי סינון</Button>} />
+              : <EmptyState icon={Handshake} title="הבמה עדיין ריקה"
+                  text="כאן יופיעו שירים, להקות והפקות שמחפשים שותפים. פתחו את הפרויקט הראשון, ומוזיקאים יוכלו לבקש להצטרף."
+                  action={user
+                    ? <Button onClick={() => setOpen(true)}><Plus />פתיחת הפרויקט הראשון</Button>
+                    : <Button asChild><Link to={signupHref}>הצטרפו ופתחו פרויקט</Link></Button>} />} />
         </TabsContent>
         {user && (
           <TabsContent value="mine">
