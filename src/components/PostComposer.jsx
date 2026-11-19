@@ -24,6 +24,7 @@ export default function PostComposer() {
   const [media, setMedia] = useState(null); // { url, type }
   const [linkMode, setLinkMode] = useState(false);
   const [link, setLink] = useState("");
+  const [linkError, setLinkError] = useState(null);
   const [genres, setGenres] = useState([]);
   const [showGenres, setShowGenres] = useState(false);
   const [collab, setCollab] = useState(false);
@@ -48,7 +49,8 @@ export default function PostComposer() {
 
   const applyLink = () => {
     const url = safeUrl(normalizeUrl(link));
-    if (!url) return toast.error("הקישור אינו תקין");
+    if (!url) return setLinkError("הקישור לא נראה תקין. הדביקו כתובת מלאה, לדוגמה: https://youtube.com/…");
+    setLinkError(null);
     setMedia({ url, type: videoEmbedUrl(url) ? "video" : "link" });
     setLinkMode(false);
     setLink("");
@@ -96,10 +98,12 @@ export default function PostComposer() {
           )}
           {linkMode && (
             <div className="flex gap-2">
-              <Input dir="ltr" value={link} onChange={(e) => setLink(e.target.value)} placeholder="https://youtube.com/…" aria-label="קישור" onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), applyLink())} />
+              <Input dir="ltr" value={link} onChange={(e) => { setLink(e.target.value); setLinkError(null); }} placeholder="https://youtube.com/…" aria-label="קישור"
+                aria-invalid={linkError ? true : undefined} aria-describedby={linkError ? "link-error" : undefined} onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), applyLink())} />
               <Button variant="secondary" onClick={applyLink}>הוספה</Button>
             </div>
           )}
+          {linkMode && linkError && <p id="link-error" role="alert" className="text-xs font-medium text-destructive">{linkError}</p>}
           {showGenres && <TagPicker options={GENRES} value={genres} onChange={setGenres} max={3} label="ז'אנרים" />}
 
           <div className="flex flex-wrap items-center gap-1">

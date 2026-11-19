@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import PageLoader from "@/components/PageLoader";
-import ProfileForm, { formToProfile, profileToForm, validateProfile } from "@/components/ProfileForm";
+import ProfileForm, { focusFirstError, formToProfile, profileErrors, profileToForm } from "@/components/ProfileForm";
 import CvEditor, { EMPTY_CV, cvToRow } from "@/components/CvEditor";
 import { fetchDetails } from "@/api/details";
 import { supabase, unwrap } from "@/lib/supabase";
@@ -20,6 +20,8 @@ export default function ProfileEdit() {
   const [cv, setCv] = useState(null);
   const [saving, setSaving] = useState(false);
   const [cvFailed, setCvFailed] = useState(false);
+  const [checked, setChecked] = useState(false); // show field errors only after the first save attempt
+  const [taken, setTaken] = useState(null); // a username the server said is already in use
   useEffect(() => { if (profile && !form) setForm(profileToForm(profile)); }, [profile, form]);
   useEffect(() => {
     if (!user || cv || cvFailed) return;
@@ -39,10 +41,13 @@ export default function ProfileEdit() {
   }
   if (!form || !cv) return <PageLoader />;
 
+  const errors = checked ? profileErrors(form) : {};
+  if (taken && form.username.trim().toLowerCase() === taken) errors.username = "שם המשתמש כבר תפוס. נסו שם אחר";
+
   const save = async (e) => {
     e.preventDefault();
-    const err = validateProfile(form);
-    if (err) return toast.error(err);
+    const errs = profileErrors(form);
+    if (Object.keys(errs).length) { setChecked(true); return focusFirstError(errs); }
     setSaving(true);
     try {
       const values = formToProfile(form);
@@ -52,16 +57,17 @@ export default function ProfileEdit() {
       toast.success("הפרופיל נשמר");
       navigate(`/u/${values.username}`);
     } catch (e2) {
-      toast.error(errorMessage(e2));
+      if (/username/i.test(e2.message)) { setTaken(form.username.trim().toLowerCase()); focusFirstError({ username: true }); }
+      else toast.error(errorMessage(e2));
     } finally {
       setSaving(false);
     }
   };
 
   return (
-    <form className="page-narrow space-y-6" onSubmit={save}>
+    <form className="page-narrow space-y-6" onSubmit={save} noValidate>
       <h1 className="page-title riso">עריכת פרופיל</h1>
-      <Card className="p-5"><h2 className="mb-4 font-semibold">פרטים בסיסיים</h2><ProfileForm form={form} setForm={setForm} userId={user.id} sections={["basics"]} /></Card>
+      <Card className="p-5"><h2 className="mb-4 font-semibold">פרטים בסיסיים</h2><ProfileForm form={form} setForm={setForm} userId={user.id} sections={["basics"]} errors={errors} /></Card>
       <Card className="p-5"><h2 className="mb-4 font-semibold">מוזיקה</h2><ProfileForm form={form} setForm={setForm} userId={user.id} sections={["music"]} /></Card>
       <Card className="p-5"><h2 className="mb-4 font-semibold">עליי</h2><ProfileForm form={form} setForm={setForm} userId={user.id} sections={["about"]} /></Card>
       <Card className="p-5">

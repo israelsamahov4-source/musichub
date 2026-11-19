@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import PageLoader from "@/components/PageLoader";
-import ProfileForm, { formToProfile, profileToForm, validateProfile } from "@/components/ProfileForm";
+import ProfileForm, { focusFirstError, formToProfile, profileErrors, profileToForm } from "@/components/ProfileForm";
 import { supabase, unwrap } from "@/lib/supabase";
 import { useAuth } from "@/auth/AuthProvider";
 import { APP_NAME } from "@/lib/config";
@@ -32,6 +32,8 @@ export default function Onboarding() {
   const [form, setForm] = useState(null);
   const [step, setStep] = useState(0);
   const [saving, setSaving] = useState(false);
+  const [checked, setChecked] = useState(false); // show field errors only after the first try
+  const [taken, setTaken] = useState(null); // a username the server said is already in use
 
   useEffect(() => {
     if (!profile || form) return;
@@ -45,9 +47,19 @@ export default function Onboarding() {
   useEffect(() => { if (profile?.onboarding_completed) navigate(safeNext("/feed"), { replace: true }); }, [profile, navigate]);
   if (!form) return <PageLoader />;
 
+  const errors = checked ? profileErrors(form) : {};
+  if (taken && form.username.trim().toLowerCase() === taken) errors.username = "שם המשתמש כבר תפוס. נסו שם אחר";
+  const basicsInvalid = () => {
+    const errs = profileErrors(form);
+    if (!Object.keys(errs).length) return false;
+    setChecked(true);
+    setStep(0);
+    focusFirstError(errs);
+    return true;
+  };
+
   const finish = async () => {
-    const err = validateProfile(form);
-    if (err) { setStep(0); return toast.error(err); }
+    if (basicsInvalid()) return;
     setSaving(true);
     try {
       unwrap(await supabase.from("profiles").update({ ...formToProfile(form), onboarding_completed: true }).eq("id", user.id));
@@ -56,18 +68,18 @@ export default function Onboarding() {
       toast.success("הפרופיל מוכן!");
       navigate(safeNext("/feed"), { replace: true });
     } catch (e) {
-      toast.error(errorMessage(e));
-      if (/username/i.test(e.message)) setStep(0);
+      if (/username/i.test(e.message)) {
+        setTaken(form.username.trim().toLowerCase());
+        setStep(0);
+        focusFirstError({ username: true });
+      } else toast.error(errorMessage(e));
     } finally {
       setSaving(false);
     }
   };
 
   const next = () => {
-    if (step === 0) {
-      const err = validateProfile(form);
-      if (err) return toast.error(err);
-    }
+    if (step === 0 && basicsInvalid()) return;
     if (step < STEPS.length - 1) return setStep(step + 1);
     return finish();
   };
@@ -82,7 +94,7 @@ export default function Onboarding() {
           <p className="text-sm text-muted-foreground">שלב {step + 1} מתוך {STEPS.length}</p>
           <h1 className="mt-1 text-balance font-display text-5xl font-bold leading-[0.95]">{s.title}</h1>
           <p className="mb-6 mt-2 text-pretty text-muted-foreground">{s.text}</p>
-          <ProfileForm form={form} setForm={setForm} userId={user.id} sections={s.sections} compact />
+          <ProfileForm form={form} setForm={setForm} userId={user.id} sections={s.sections} compact errors={errors} />
           <div className="mt-8 flex flex-wrap items-center gap-2">
             {step > 0 && <Button variant="ghost" onClick={() => setStep(step - 1)} disabled={saving}>חזרה</Button>}
             <Button variant="ghost" className="ms-auto text-muted-foreground" onClick={finish} disabled={saving}>אדלג בינתיים</Button>

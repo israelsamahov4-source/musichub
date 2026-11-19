@@ -64,10 +64,24 @@ export function formToProfile(f) {
   };
 }
 
+/** Problems per field, e.g. { username: "..." }; empty when the basics are valid. */
+export function profileErrors(f) {
+  const errors = {};
+  if (f.full_name.trim().length < 2) errors.full_name = "נא לכתוב שם מלא (לפחות 2 תווים)";
+  const u = f.username.trim().toLowerCase();
+  if (u.length < 3 || u.length > 30) errors.username = "שם המשתמש צריך להיות באורך 3 עד 30 תווים";
+  else if (!/^[a-z0-9_]+$/.test(u)) errors.username = "רק אותיות באנגלית קטנות, ספרות או _ (בלי רווחים ועברית)";
+  return errors;
+}
+
 export function validateProfile(f) {
-  if (f.full_name.trim().length < 2) return "נא להזין שם מלא";
-  if (!/^[a-z0-9_]{3,30}$/.test(f.username.trim().toLowerCase())) return "שם משתמש: 3–30 תווים באנגלית קטנה, ספרות או _";
-  return null;
+  return Object.values(profileErrors(f))[0] ?? null;
+}
+
+/** Moves keyboard focus to the first field with a problem. */
+export function focusFirstError(errors) {
+  const first = ["full_name", "username"].find((k) => errors[k]);
+  if (first) requestAnimationFrame(() => document.getElementById(first)?.focus());
 }
 
 // The first options a newcomer sees; the rest wait behind a "more" chip during onboarding.
@@ -78,7 +92,7 @@ const POPULAR = {
 };
 
 /** `compact` is the onboarding version: no cover photo, no level, short option lists and up to 3 genres. */
-export default function ProfileForm({ form, setForm, userId, sections = ["basics", "music", "about", "links"], compact = false }) {
+export default function ProfileForm({ form, setForm, userId, sections = ["basics", "music", "about", "links"], compact = false, errors = {} }) {
   const [uploading, setUploading] = useState(false);
   const fileRef = useRef(null);
   const set = (k) => (v) => setForm((f) => ({ ...f, [k]: v?.target ? v.target.value : v }));
@@ -126,10 +140,10 @@ export default function ProfileForm({ form, setForm, userId, sections = ["basics
             </div>
           </div>}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <Field id="full_name" label="שם מלא">
+            <Field id="full_name" label="שם מלא" error={errors.full_name}>
               <Input id="full_name" value={form.full_name} onChange={set("full_name")} maxLength={80} required />
             </Field>
-            <Field id="username" label="שם משתמש" hint="אותיות באנגלית קטנות, ספרות או _. יופיע בכתובת הפרופיל שלכם">
+            <Field id="username" label="שם משתמש" error={errors.username} hint="אותיות באנגלית קטנות, ספרות או _. יופיע בכתובת הפרופיל שלכם">
               <Input id="username" dir="ltr" value={form.username} onChange={(e) => set("username")(e.target.value.toLowerCase())} maxLength={30} required />
             </Field>
             <Field id="location" label="עיר / אזור">
