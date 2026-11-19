@@ -70,7 +70,15 @@ export function validateProfile(f) {
   return null;
 }
 
-export default function ProfileForm({ form, setForm, userId, sections = ["basics", "music", "about", "links"] }) {
+// The first options a newcomer sees; the rest wait behind a "more" chip during onboarding.
+const POPULAR = {
+  instruments: ["vocals", "guitar", "bass", "drums", "piano", "synth", "oud", "dj"],
+  roles: ["vocalist", "instrumentalist", "producer", "songwriter", "composer", "sound_engineer"],
+  genres: ["pop", "rock", "hiphop", "mizrahi", "israeli", "electronic", "jazz", "indie"],
+};
+
+/** `compact` is the onboarding version: no cover photo, no level, short option lists and up to 3 genres. */
+export default function ProfileForm({ form, setForm, userId, sections = ["basics", "music", "about", "links"], compact = false }) {
   const [uploading, setUploading] = useState(false);
   const fileRef = useRef(null);
   const set = (k) => (v) => setForm((f) => ({ ...f, [k]: v?.target ? v.target.value : v }));
@@ -103,7 +111,7 @@ export default function ProfileForm({ form, setForm, userId, sections = ["basics
               {uploading === "avatar_url" ? <Loader2 className="animate-spin" /> : <Camera />}תמונת פרופיל
             </Button>
           </div>
-          <div className="space-y-2">
+          {!compact && <div className="space-y-2">
             <div className="relative h-24 overflow-hidden rounded-xl border-2 border-ink/15 bg-riso-blue">
               {safeUrl(form.cover_url)
                 ? <img src={safeUrl(form.cover_url)} alt="" className="h-full w-full object-cover" />
@@ -116,12 +124,12 @@ export default function ProfileForm({ form, setForm, userId, sections = ["basics
               </Button>
               {form.cover_url && <Button type="button" variant="ghost" size="sm" onClick={() => setForm((f) => ({ ...f, cover_url: null }))}>הסרה</Button>}
             </div>
-          </div>
+          </div>}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <Field id="full_name" label="שם מלא">
               <Input id="full_name" value={form.full_name} onChange={set("full_name")} maxLength={80} required />
             </Field>
-            <Field id="username" label="שם משתמש" hint="יופיע בכתובת הפרופיל שלכם">
+            <Field id="username" label="שם משתמש" hint="אותיות באנגלית קטנות, ספרות או _. יופיע בכתובת הפרופיל שלכם">
               <Input id="username" dir="ltr" value={form.username} onChange={(e) => set("username")(e.target.value.toLowerCase())} maxLength={30} required />
             </Field>
             <Field id="location" label="עיר / אזור">
@@ -142,15 +150,15 @@ export default function ProfileForm({ form, setForm, userId, sections = ["basics
 
       {show("music") && (
         <section className="space-y-4">
-          <Field label="כלי נגינה"><TagPicker options={INSTRUMENTS} value={form.instruments} onChange={set("instruments")} max={10} label="כלי נגינה" /></Field>
-          <Field label="תפקידים"><TagPicker options={ROLES} value={form.roles} onChange={set("roles")} max={6} label="תפקידים" /></Field>
-          <Field id="level" label="רמה מוזיקלית">
+          <Field label="כלי נגינה"><TagPicker options={INSTRUMENTS} value={form.instruments} onChange={set("instruments")} max={10} label="כלי נגינה" popular={compact ? POPULAR.instruments : undefined} /></Field>
+          <Field label="תפקידים"><TagPicker options={ROLES} value={form.roles} onChange={set("roles")} max={6} label="תפקידים" popular={compact ? POPULAR.roles : undefined} /></Field>
+          {!compact && <Field id="level" label="רמה מוזיקלית">
             <Select value={form.level} onValueChange={set("level")} dir="rtl">
               <SelectTrigger id="level" className="sm:w-60"><SelectValue /></SelectTrigger>
               <SelectContent>{LEVELS.map((l) => <SelectItem key={l.value} value={l.value}>{l.label}</SelectItem>)}</SelectContent>
             </Select>
-          </Field>
-          <Field label="ז'אנרים"><TagPicker options={GENRES} value={form.genres} onChange={set("genres")} max={8} label="ז'אנרים" /></Field>
+          </Field>}
+          <Field label={compact ? "ז'אנרים (עד 3)" : "ז'אנרים"}><TagPicker options={GENRES} value={form.genres} onChange={set("genres")} max={compact ? 3 : 8} label="ז'אנרים" popular={compact ? POPULAR.genres : undefined} /></Field>
         </section>
       )}
 
