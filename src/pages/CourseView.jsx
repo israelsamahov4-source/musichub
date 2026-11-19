@@ -85,7 +85,7 @@ export default function CourseView() {
         <div className="relative order-first aspect-video overflow-hidden md:order-none md:aspect-auto" style={{ backgroundColor: brandFor(c.id) }}>
           {!safeUrl(c.cover_url) && (
             <div className="absolute inset-0 flex items-center justify-center" aria-hidden>
-              <GraduationCap className={brandFor(c.id) === "#2F45C2" ? "h-24 w-24 text-white/30" : "h-24 w-24 text-ink/20"} strokeWidth={1.2} />
+              <GraduationCap className="h-24 w-24 text-white/30" strokeWidth={1.2} />
             </div>
           )}
           {safeUrl(c.cover_url) && <img src={safeUrl(c.cover_url)} alt="" className="h-full w-full object-cover" />}

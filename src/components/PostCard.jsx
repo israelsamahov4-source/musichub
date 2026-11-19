@@ -108,7 +108,7 @@ export default function PostCard({ post, defaultShowComments = false, onDeleted 
           <div className="flex flex-wrap items-center gap-2 rounded-xl bg-[#FFF0F4] px-3 py-2.5 text-sm">
             <Handshake className="h-4 w-4 shrink-0 text-[#B01E4C]" aria-hidden />
             <span className="font-semibold text-[#8E1840]">{name} מחפש/ת שותפים</span>
-            {user && !mine && <Button size="sm" className="ms-auto h-8 bg-riso-pink text-white hover:bg-riso-pink/90" onClick={startChat}>שליחת הודעה</Button>}
+            {user && !mine && <Button size="sm" className="ms-auto h-8" onClick={startChat}>שליחת הודעה</Button>}
           </div>
         )}
         {post.content && <p dir={textDir(post.content)} className="whitespace-pre-wrap break-words text-start text-[15px] leading-relaxed">{post.content}</p>}

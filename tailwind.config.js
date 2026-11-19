@@ -11,7 +11,7 @@ export default {
   			display: ['Rubik', 'system-ui', 'sans-serif'],
   		},
   		boxShadow: {
-  			card: '0 1px 2px rgb(30 27 58 / 0.04), 0 6px 20px -12px rgb(30 27 58 / 0.14)',
+  			card: '0 1px 2px rgb(30 27 58 / 0.05), 0 8px 24px -12px rgb(30 27 58 / 0.18)',
   			pop: '0 2px 6px rgb(30 27 58 / 0.06), 0 18px 44px -16px rgb(30 27 58 / 0.28)',
   		},
   		borderRadius: {
@@ -22,7 +22,7 @@ export default {
   		colors: {
   			ink: '#1E1B3A',
   			paper: '#F2F3F7',
-  			riso: { blue: '#2F45C2', pink: '#FF4F81', yellow: '#FFD84D' },
+  			riso: { blue: '#2F45C2', pink: '#FF4F81', pinkdeep: '#C81D55', yellow: '#FFD84D' },
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {

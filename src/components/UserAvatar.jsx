@@ -7,7 +7,7 @@ const INKS = ["bg-[#E5E9FB] text-riso-blue", "bg-[#FFE3EB] text-[#B01E4C]", "bg-
 const indexFor = (key = "") => [...key].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7) % INKS.length;
 const inkFor = (key = "") => INKS[indexFor(key)];
 /** The brand colour that goes with a person (matches their avatar tint), for covers and accents. */
-export const brandFor = (key = "") => ["#2F45C2", "#FF4F81", "#FFD84D"][indexFor(key)];
+export const brandFor = (key = "") => ["#2F45C2", "#4357D0", "#24369E"][indexFor(key)];
 
 export default function UserAvatar({ profile, size = "sm", className }) {
   const name = profile?.full_name || profile?.username || "";

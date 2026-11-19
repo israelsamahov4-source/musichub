@@ -17,6 +17,7 @@ import ReportDialog from "@/components/ReportDialog";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import { LINK_FIELDS } from "@/components/ProfileForm";
 import CvView from "@/components/CvView";
+import WaveCover from "@/components/WaveCover";
 import { fetchDetails } from "@/api/details";
 import { MEMBER_PROFILE_COLS, PUBLIC_PROFILE_COLS } from "@/api/profiles";
 import { supabase, unwrap } from "@/lib/supabase";
@@ -38,16 +39,7 @@ function Cover({ coverUrl }) {
   if (safeUrl(coverUrl)) {
     return <div className="h-32 bg-muted sm:h-48"><img src={safeUrl(coverUrl)} alt="" className="h-full w-full object-cover" /></div>;
   }
-  const waves = [0, 1, 2, 3, 4].map((i) => {
-    const y = 40 + i * 22, a = 10 + i * 4, f = 0.012 + i * 0.002;
-    const d = Array.from({ length: 121 }, (_, k) => `${k ? "L" : "M"}${k * 10},${(y + a * Math.sin(k * 10 * f + i)).toFixed(1)}`).join(" ");
-    return <path key={i} d={d} fill="none" stroke={i === 2 ? "#FF4F81" : "#fff"} strokeOpacity={i === 2 ? 0.85 : 0.14 + i * 0.03} strokeWidth={i === 2 ? 2.5 : 1.5} />;
-  });
-  return (
-    <div className="relative h-32 overflow-hidden bg-riso-blue sm:h-48" aria-hidden>
-      <svg viewBox="0 0 1200 200" preserveAspectRatio="none" className="absolute inset-0 h-full w-full">{waves}</svg>
-    </div>
-  );
+  return <WaveCover className="h-32 sm:h-48" />;
 }
 
 function ChipGroup({ title, items, group }) {

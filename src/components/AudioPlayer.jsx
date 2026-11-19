@@ -41,7 +41,7 @@ export default function AudioPlayer({ src, title = "קטע שמע", subtitle }) 
       <div className="min-w-0 flex-1">
         <div className="flex items-baseline justify-between gap-3 text-xs">
           <span className="truncate text-[13px] font-semibold">{title}{subtitle && <span className="font-normal text-white/60"> · {subtitle}</span>}</span>
-          <span className="tabular shrink-0 text-white/60">{fmt(time)} / {fmt(duration)}</span>
+          <span className="tabular shrink-0 text-white/60">{duration ? `${fmt(time)} / ${fmt(duration)}` : "–:––"}</span>
         </div>
         <div className="relative mt-1.5 h-8">
           <div className="absolute inset-0 flex items-center gap-[2px]" aria-hidden>

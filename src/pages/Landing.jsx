@@ -77,9 +77,9 @@ function Preview() {
         </div>
       </div>
       <div className="absolute -bottom-[5.5rem] -end-6 hidden w-48 overflow-hidden rounded-2xl border border-border/80 bg-card text-center shadow-pop sm:block">
-        <div className="h-10 bg-riso-yellow" />
+        <div className="h-10 bg-[#4357D0]" />
         <div className="px-3 pb-3">
-          <span className="-mt-7 mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#FFF2C2] text-sm font-bold text-[#6E5200] ring-4 ring-card">דל</span>
+          <span className="-mt-7 mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#FFE3EB] text-sm font-bold text-[#B01E4C] ring-4 ring-card">דל</span>
           <p className="mt-1.5 text-sm font-bold">דנה לוי</p>
           <p className="text-xs text-muted-foreground">בסיסטית · חיפה</p>
           <span className="mt-2 inline-flex h-8 w-full items-center justify-center gap-1.5 rounded-full border border-primary/50 text-[13px] font-semibold text-primary"><UserPlus className="h-3.5 w-3.5" aria-hidden />מעקב</span>
@@ -112,7 +112,7 @@ export default function Landing() {
 
       <section className="border-y border-border/80 bg-card">
         <div className="mx-auto max-w-6xl px-5 py-12 text-center md:py-16">
-          <h2 className="text-sm font-semibold text-muted-foreground">הבמה פתוחה ל</h2>
+          <h2 className="text-2xl font-bold tracking-tight md:text-[1.75rem]">הבמה פתוחה לכולם</h2>
           <ul className="mx-auto mt-5 flex max-w-4xl flex-wrap justify-center gap-2">
             {LINEUP.map((role) => <li key={role} className="rounded-full bg-muted px-4 py-2 text-[15px] font-medium">{role}</li>)}
           </ul>

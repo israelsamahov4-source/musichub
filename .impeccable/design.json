@@ -1,0 +1,624 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-19T15:20:34.267855+00:00",
+  "title": "Design System: MusicHub",
+  "extensions": {
+    "colorMeta": {
+      "riso-blue": {
+        "role": "primary",
+        "displayName": "Riso Blue",
+        "canonical": "#2F45C2",
+        "tonalRamp": [
+          "#101845",
+          "#1A2770",
+          "#243699",
+          "#2F45C2",
+          "#5468D6",
+          "#8494E4",
+          "#B9C2F1",
+          "#E5E9FB"
+        ]
+      },
+      "primary": {
+        "role": "primary",
+        "displayName": "Riso Blue (action role)",
+        "canonical": "hsl(231 61% 47%)",
+        "tonalRamp": [
+          "#101845",
+          "#1A2770",
+          "#243699",
+          "#2F45C2",
+          "#5468D6",
+          "#8494E4",
+          "#B9C2F1",
+          "#E5E9FB"
+        ]
+      },
+      "secondary": {
+        "role": "primary",
+        "displayName": "Blue Wash",
+        "canonical": "hsl(231 70% 96%)",
+        "tonalRamp": [
+          "#101845",
+          "#1A2770",
+          "#243699",
+          "#2F45C2",
+          "#5468D6",
+          "#8494E4",
+          "#B9C2F1",
+          "#E5E9FB"
+        ]
+      },
+      "secondary-foreground": {
+        "role": "primary",
+        "displayName": "Deep Action Blue",
+        "canonical": "hsl(231 61% 40%)",
+        "tonalRamp": [
+          "#101845",
+          "#1A2770",
+          "#243699",
+          "#2F45C2",
+          "#5468D6",
+          "#8494E4",
+          "#B9C2F1",
+          "#E5E9FB"
+        ]
+      },
+      "blue-tint": {
+        "role": "primary",
+        "displayName": "Blue Tint",
+        "canonical": "#E5E9FB",
+        "tonalRamp": [
+          "#101845",
+          "#1A2770",
+          "#243699",
+          "#2F45C2",
+          "#5468D6",
+          "#8494E4",
+          "#B9C2F1",
+          "#E5E9FB"
+        ]
+      },
+      "riso-pink": {
+        "role": "secondary",
+        "displayName": "Riso Pink",
+        "canonical": "#FF4F81",
+        "tonalRamp": [
+          "#4A0E20",
+          "#7A1736",
+          "#B01E4C",
+          "#E0386A",
+          "#FF4F81",
+          "#FF85A7",
+          "#FFC2D3",
+          "#FFF0F4"
+        ]
+      },
+      "pink-tint": {
+        "role": "secondary",
+        "displayName": "Pink Tint",
+        "canonical": "#FFE3EB",
+        "tonalRamp": [
+          "#4A0E20",
+          "#7A1736",
+          "#B01E4C",
+          "#E0386A",
+          "#FF4F81",
+          "#FF85A7",
+          "#FFC2D3",
+          "#FFF0F4"
+        ]
+      },
+      "pink-wash": {
+        "role": "secondary",
+        "displayName": "Pink Wash",
+        "canonical": "#FFF0F4",
+        "tonalRamp": [
+          "#4A0E20",
+          "#7A1736",
+          "#B01E4C",
+          "#E0386A",
+          "#FF4F81",
+          "#FF85A7",
+          "#FFC2D3",
+          "#FFF0F4"
+        ]
+      },
+      "pink-deep": {
+        "role": "secondary",
+        "displayName": "Pink Deep",
+        "canonical": "#B01E4C",
+        "tonalRamp": [
+          "#4A0E20",
+          "#7A1736",
+          "#B01E4C",
+          "#E0386A",
+          "#FF4F81",
+          "#FF85A7",
+          "#FFC2D3",
+          "#FFF0F4"
+        ]
+      },
+      "pink-deepest": {
+        "role": "secondary",
+        "displayName": "Pink Deepest",
+        "canonical": "#8E1840",
+        "tonalRamp": [
+          "#4A0E20",
+          "#7A1736",
+          "#B01E4C",
+          "#E0386A",
+          "#FF4F81",
+          "#FF85A7",
+          "#FFC2D3",
+          "#FFF0F4"
+        ]
+      },
+      "riso-yellow": {
+        "role": "tertiary",
+        "displayName": "Riso Yellow",
+        "canonical": "#FFD84D",
+        "tonalRamp": [
+          "#3A2B00",
+          "#6E5200",
+          "#A07A00",
+          "#C79300",
+          "#FFD84D",
+          "#FFE380",
+          "#FFF2C2",
+          "#FFF9E6"
+        ]
+      },
+      "yellow-tint": {
+        "role": "tertiary",
+        "displayName": "Yellow Tint",
+        "canonical": "#FFF2C2",
+        "tonalRamp": [
+          "#3A2B00",
+          "#6E5200",
+          "#A07A00",
+          "#C79300",
+          "#FFD84D",
+          "#FFE380",
+          "#FFF2C2",
+          "#FFF9E6"
+        ]
+      },
+      "yellow-wash": {
+        "role": "tertiary",
+        "displayName": "Yellow Wash",
+        "canonical": "#FFF6D9",
+        "tonalRamp": [
+          "#3A2B00",
+          "#6E5200",
+          "#A07A00",
+          "#C79300",
+          "#FFD84D",
+          "#FFE380",
+          "#FFF2C2",
+          "#FFF9E6"
+        ]
+      },
+      "yellow-deep": {
+        "role": "tertiary",
+        "displayName": "Yellow Deep",
+        "canonical": "#6E5200",
+        "tonalRamp": [
+          "#3A2B00",
+          "#6E5200",
+          "#A07A00",
+          "#C79300",
+          "#FFD84D",
+          "#FFE380",
+          "#FFF2C2",
+          "#FFF9E6"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "#1E1B3A",
+        "tonalRamp": [
+          "#0E0C1C",
+          "#1E1B3A",
+          "#38345C",
+          "#55517A",
+          "#7A7798",
+          "#A3A1BA",
+          "#CFCEDC",
+          "#F0F0F5"
+        ]
+      },
+      "foreground": {
+        "role": "neutral",
+        "displayName": "Ink Text",
+        "canonical": "hsl(246 37% 17%)",
+        "tonalRamp": [
+          "#0E0C1C",
+          "#1E1B3A",
+          "#38345C",
+          "#55517A",
+          "#7A7798",
+          "#A3A1BA",
+          "#CFCEDC",
+          "#F0F0F5"
+        ]
+      },
+      "background": {
+        "role": "neutral",
+        "displayName": "Cool Ground",
+        "canonical": "hsl(228 33% 97%)",
+        "tonalRamp": [
+          "#1F1B3B",
+          "#3A3D52",
+          "#5E5E6E",
+          "#8A8DA0",
+          "#D0D2DD",
+          "#E0E2EB",
+          "#EFF0F6",
+          "#F5F6FA"
+        ]
+      },
+      "card": {
+        "role": "neutral",
+        "displayName": "White",
+        "canonical": "hsl(0 0% 100%)",
+        "tonalRamp": [
+          "#1F1B3B",
+          "#3A3D52",
+          "#5E5E6E",
+          "#8A8DA0",
+          "#D0D2DD",
+          "#E0E2EB",
+          "#EFF0F6",
+          "#F5F6FA"
+        ]
+      },
+      "primary-foreground": {
+        "role": "neutral",
+        "displayName": "White on Blue",
+        "canonical": "hsl(0 0% 100%)",
+        "tonalRamp": [
+          "#1F1B3B",
+          "#3A3D52",
+          "#5E5E6E",
+          "#8A8DA0",
+          "#D0D2DD",
+          "#E0E2EB",
+          "#EFF0F6",
+          "#F5F6FA"
+        ]
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Mist",
+        "canonical": "hsl(228 26% 95%)",
+        "tonalRamp": [
+          "#1F1B3B",
+          "#3A3D52",
+          "#5E5E6E",
+          "#8A8DA0",
+          "#D0D2DD",
+          "#E0E2EB",
+          "#EFF0F6",
+          "#F5F6FA"
+        ]
+      },
+      "muted-foreground": {
+        "role": "neutral",
+        "displayName": "Slate Text",
+        "canonical": "hsl(240 8% 40%)",
+        "tonalRamp": [
+          "#1F1B3B",
+          "#3A3D52",
+          "#5E5E6E",
+          "#8A8DA0",
+          "#D0D2DD",
+          "#E0E2EB",
+          "#EFF0F6",
+          "#F5F6FA"
+        ]
+      },
+      "border": {
+        "role": "neutral",
+        "displayName": "Hairline",
+        "canonical": "hsl(228 20% 90%)",
+        "tonalRamp": [
+          "#1F1B3B",
+          "#3A3D52",
+          "#5E5E6E",
+          "#8A8DA0",
+          "#D0D2DD",
+          "#E0E2EB",
+          "#EFF0F6",
+          "#F5F6FA"
+        ]
+      },
+      "input": {
+        "role": "neutral",
+        "displayName": "Field Edge",
+        "canonical": "hsl(228 16% 84%)",
+        "tonalRamp": [
+          "#1F1B3B",
+          "#3A3D52",
+          "#5E5E6E",
+          "#8A8DA0",
+          "#D0D2DD",
+          "#E0E2EB",
+          "#EFF0F6",
+          "#F5F6FA"
+        ]
+      },
+      "destructive": {
+        "role": "neutral",
+        "displayName": "Alarm Red",
+        "canonical": "hsl(0 72% 48%)",
+        "tonalRamp": [
+          "#3D0A0A",
+          "#6B1212",
+          "#A01B1B",
+          "#D32222",
+          "#E25555",
+          "#EE8E8E",
+          "#F7C6C6",
+          "#FDEDED"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Landing hero headline only."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Page titles and the profile name (28px phones, 32px from md)."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Empty-state headings, dialog titles, card section heads."
+      },
+      "name": {
+        "displayName": "Name",
+        "purpose": "People's names on posts and cards; stat numbers."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Post text, bios, message bubbles."
+      },
+      "ui": {
+        "displayName": "Ui",
+        "purpose": "Buttons (600), tabs, menu items, desktop form text."
+      },
+      "meta": {
+        "displayName": "Meta",
+        "purpose": "Handle and time under a name, card subtitles, small buttons."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Chips, plan badges, desktop nav labels."
+      },
+      "micro": {
+        "displayName": "Micro",
+        "purpose": "Count badges, phone tab labels, message timestamps."
+      }
+    },
+    "shadows": [
+      {
+        "name": "card",
+        "value": "0 1px 2px rgb(30 27 58 / 0.04), 0 6px 20px -12px rgb(30 27 58 / 0.14)",
+        "purpose": "Every card at rest, framed empty states, incoming message bubbles."
+      },
+      {
+        "name": "pop",
+        "value": "0 2px 6px rgb(30 27 58 / 0.06), 0 18px 44px -16px rgb(30 27 58 / 0.28)",
+        "purpose": "Menus, selects, dialogs, the landing preview; hover lift of linked cards (can-hover only)."
+      },
+      {
+        "name": "hairline-ring",
+        "value": "inset 0 0 0 1px hsl(var(--border))",
+        "purpose": "Unselected filter tabs."
+      },
+      {
+        "name": "pink-ring",
+        "value": "inset 0 0 0 1px rgb(255 79 129 / 0.3)",
+        "purpose": "Looking-for pills on the profile header."
+      }
+    ],
+    "motion": [
+      {
+        "name": "press",
+        "value": "transform: scale(0.97); 150ms ease-out",
+        "purpose": "Every button on :active."
+      },
+      {
+        "name": "play-press",
+        "value": "hover scale(1.05), active scale(0.95); 150ms ease-out",
+        "purpose": "Audio player play button."
+      },
+      {
+        "name": "rise",
+        "value": "opacity 0 to 1, translateY(6px) to none; 320ms cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Content that arrives after loading (post cards)."
+      },
+      {
+        "name": "like",
+        "value": "heart scale(1.1) and pink fill; 200ms",
+        "purpose": "Liked state on a post."
+      },
+      {
+        "name": "card-lift",
+        "value": "box-shadow card to pop; 200ms",
+        "purpose": "Hover on linked musician, project and course cards, hover-capable pointers only."
+      },
+      {
+        "name": "overlay",
+        "value": "fade-in plus zoom-in from 95% (tailwindcss-animate, Radix data-state)",
+        "purpose": "Dropdown menus, selects, dialogs."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "animation-duration 0.01ms; transition-property limited to color, background-color, border-color, opacity, box-shadow, text-decoration-color",
+        "purpose": "Under prefers-reduced-motion nothing moves but colour and opacity feedback remains."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "md",
+        "value": "768px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Every main action: riso blue pill that presses in.",
+      "html": "<button class=\"ds-btn-primary\">הצטרפות</button>",
+      "css": ".ds-btn-primary{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:40px;padding:0 20px;border:none;border-radius:9999px;background:#2F45C2;color:#fff;font:600 14px/1 Rubik,system-ui,sans-serif;box-shadow:0 1px 2px rgb(0 0 0/.05);cursor:pointer;transition:background-color 150ms ease-out,transform 150ms ease-out}.ds-btn-primary:hover{background:rgb(47 69 194/.9)}.ds-btn-primary:active{transform:scale(.97)}.ds-btn-primary:focus-visible{outline:none;box-shadow:0 0 0 2px #F5F6FA,0 0 0 4px #2F45C2}"
+    },
+    {
+      "name": "Outline Button",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "Secondary actions and Following state: white pill on a hairline.",
+      "html": "<button class=\"ds-btn-outline\">לפרופיל שלי</button>",
+      "css": ".ds-btn-outline{display:inline-flex;align-items:center;justify-content:center;height:40px;padding:0 20px;border:1px solid #E0E2EB;border-radius:9999px;background:#fff;color:#1F1B3B;font:600 14px/1 Rubik,system-ui,sans-serif;cursor:pointer;transition:background-color 150ms ease-out,transform 150ms ease-out}.ds-btn-outline:hover{background:#EFF0F6}.ds-btn-outline:active{transform:scale(.97)}.ds-btn-outline:focus-visible{outline:none;box-shadow:0 0 0 2px #2F45C2}"
+    },
+    {
+      "name": "Follow Button (quiet)",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "Follow on musician cards: outline with half-strength blue edge and blue text.",
+      "html": "<button class=\"ds-btn-follow\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2\"/><circle cx=\"9\" cy=\"7\" r=\"4\"/><line x1=\"19\" x2=\"19\" y1=\"8\" y2=\"14\"/><line x1=\"22\" x2=\"16\" y1=\"11\" y2=\"11\"/></svg>מעקב</button>",
+      "css": ".ds-btn-follow{display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 14px;border:1px solid rgb(47 69 194/.5);border-radius:9999px;background:#fff;color:#2F45C2;font:600 13px/1 Rubik,system-ui,sans-serif;cursor:pointer;transition:background-color 150ms ease-out,transform 150ms ease-out}.ds-btn-follow:hover{background:#EEF0FC}.ds-btn-follow:active{transform:scale(.97)}.ds-btn-follow:focus-visible{outline:none;box-shadow:0 0 0 2px #2F45C2}"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Form field: white, field-edge stroke, 12px corners, blue focus ring.",
+      "html": "<input class=\"ds-input\" dir=\"rtl\" placeholder=\"שם מלא\">",
+      "css": ".ds-input{height:40px;width:100%;padding:0 14px;border:1px solid #D0D2DD;border-radius:12px;background:#fff;color:#1F1B3B;font:400 14px Rubik,system-ui,sans-serif;transition:border-color 150ms}.ds-input::placeholder{color:#5E5E6E}.ds-input:focus-visible{outline:none;box-shadow:0 0 0 2px #2F45C2}"
+    },
+    {
+      "name": "Header Search",
+      "kind": "input",
+      "refersTo": "search-field",
+      "description": "Top-bar musician search: mist pill that turns white on focus.",
+      "html": "<label class=\"ds-search\" dir=\"rtl\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"><circle cx=\"11\" cy=\"11\" r=\"8\"/><path d=\"m21 21-4.3-4.3\"/></svg><input placeholder=\"חיפוש מוזיקאים\"></label>",
+      "css": ".ds-search{position:relative;display:block;max-width:280px}.ds-search svg{position:absolute;inset-inline-start:14px;top:50%;transform:translateY(-50%);color:#5E5E6E;pointer-events:none}.ds-search input{height:40px;width:100%;padding-inline:40px 16px;border:1px solid transparent;border-radius:9999px;background:#EFF0F6;font:400 14px Rubik,system-ui,sans-serif;color:#1F1B3B;outline:none;transition:background-color 150ms,border-color 150ms}.ds-search input:hover{background:#E5E7F0}.ds-search input:focus{background:#fff;border-color:rgb(47 69 194/.4)}"
+    },
+    {
+      "name": "Filter Tabs",
+      "kind": "nav",
+      "refersTo": "tab-active",
+      "description": "Scrolling pill tabs; the active tab fills ink.",
+      "html": "<div class=\"ds-tabs\" dir=\"rtl\"><button class=\"ds-tab ds-tab-on\">הכול</button><button class=\"ds-tab\">עוקב/ת</button><button class=\"ds-tab\">מחפשים שותפים</button></div>",
+      "css": ".ds-tabs{display:flex;gap:8px}.ds-tab{min-height:36px;padding:0 16px;border:none;border-radius:9999px;background:#fff;color:#1F1B3B;font:500 14px Rubik,system-ui,sans-serif;box-shadow:inset 0 0 0 1px #E0E2EB;cursor:pointer;transition:background-color 150ms}.ds-tab:hover{background:#EFF0F6}.ds-tab-on,.ds-tab-on:hover{background:#1F1B3B;color:#fff;box-shadow:none}.ds-tab:focus-visible{outline:none;box-shadow:0 0 0 2px #2F45C2}"
+    },
+    {
+      "name": "Genre Chip and Plan Badges",
+      "kind": "chip",
+      "refersTo": "chip",
+      "description": "Mist chip for genres; Pro yellow-tint badge; Premium ink badge; looking-for pink wash pill.",
+      "html": "<div class=\"ds-chips\" dir=\"rtl\"><span class=\"ds-chip\">ג'אז</span><span class=\"ds-pro\">Pro</span><span class=\"ds-premium\">Premium</span><span class=\"ds-looking\">מחפש/ת מתופף/ת</span></div>",
+      "css": ".ds-chips{display:flex;flex-wrap:wrap;gap:6px;font-family:Rubik,system-ui,sans-serif}.ds-chip,.ds-pro,.ds-premium,.ds-looking{display:inline-flex;align-items:center;border-radius:9999px;font-size:12px;line-height:16px}.ds-chip{padding:2px 10px;background:#EFF0F6;color:rgb(31 27 59/.8);font-weight:500}.ds-pro{padding:2px 8px;background:#FFF2C2;color:#6E5200;font-weight:600}.ds-premium{padding:2px 8px;background:#1E1B3A;color:#FFD84D;font-weight:600}.ds-looking{padding:2px 10px;background:#FFF0F4;color:#8E1840;font-weight:600}"
+    },
+    {
+      "name": "Musician Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Brand-colour cover strip, overlapping avatar in a white ring, follow at the bottom; lifts to Pop on hover.",
+      "html": "<article class=\"ds-mcard\" dir=\"rtl\"><div class=\"ds-mcard-cover\"></div><div class=\"ds-mcard-av\">דל</div><h3>דניאל לוי</h3><p>מתופף · הפקה</p><span class=\"ds-mcard-look\">מחפש/ת להקה</span></article>",
+      "css": ".ds-mcard{width:200px;overflow:hidden;text-align:center;background:#fff;border:1px solid rgb(224 226 235/.8);border-radius:16px;box-shadow:0 1px 2px rgb(30 27 58/.04),0 6px 20px -12px rgb(30 27 58/.14);font-family:Rubik,system-ui,sans-serif;color:#1F1B3B;padding-bottom:16px;transition:box-shadow 200ms}.ds-mcard:hover{box-shadow:0 2px 6px rgb(30 27 58/.06),0 18px 44px -16px rgb(30 27 58/.28)}.ds-mcard-cover{height:56px;background:#FFD84D;opacity:.9}.ds-mcard-av{width:72px;height:72px;margin:-36px auto 0;border-radius:9999px;background:#FFF2C2;color:#6E5200;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;box-shadow:0 0 0 4px #fff}.ds-mcard h3{margin:8px 0 0;font-size:16px;font-weight:700}.ds-mcard p{margin:2px 0 0;font-size:13px;color:#5E5E6E}.ds-mcard-look{display:inline-block;margin-top:8px;padding:2px 10px;border-radius:9999px;background:#FFF0F4;color:#8E1840;font-size:12px;font-weight:600}"
+    },
+    {
+      "name": "Audio Player",
+      "kind": "custom",
+      "refersTo": "audio-player",
+      "description": "The one dark object: ink panel, white play button, seeded waveform filling pink as it plays.",
+      "html": "<div class=\"ds-player\" dir=\"rtl\"><button class=\"ds-play\" aria-label=\"ניגון\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><polygon points=\"6 3 20 12 6 21 6 3\"/></svg></button><div class=\"ds-pmeta\"><div class=\"ds-ptop\"><span>קטע שמע <em>· נועה</em></span><span>0:42 / 2:15</span></div><div class=\"ds-wave\"><i style=\"height:40%\" class=\"on\"></i><i style=\"height:70%\" class=\"on\"></i><i style=\"height:55%\" class=\"on\"></i><i style=\"height:90%\" class=\"on\"></i><i style=\"height:60%\"></i><i style=\"height:80%\"></i><i style=\"height:45%\"></i><i style=\"height:65%\"></i><i style=\"height:35%\"></i><i style=\"height:75%\"></i><i style=\"height:50%\"></i><i style=\"height:30%\"></i></div></div></div>",
+      "css": ".ds-player{display:flex;align-items:center;gap:12px;max-width:420px;padding:12px;padding-inline-end:16px;border-radius:16px;background:#1E1B3A;color:#fff;font-family:Rubik,system-ui,sans-serif}.ds-play{flex:none;width:48px;height:48px;border:none;border-radius:9999px;background:#fff;color:#1E1B3A;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform 150ms ease-out}.ds-play:hover{transform:scale(1.05)}.ds-play:active{transform:scale(.95)}.ds-play:focus-visible{outline:none;box-shadow:0 0 0 2px #1E1B3A,0 0 0 4px #2F45C2}.ds-pmeta{flex:1;min-width:0}.ds-ptop{display:flex;justify-content:space-between;font-size:12px;color:rgb(255 255 255/.6)}.ds-ptop span:first-child{font-size:13px;font-weight:600;color:#fff}.ds-ptop em{font-style:normal;font-weight:400;color:rgb(255 255 255/.6)}.ds-wave{display:flex;align-items:center;gap:2px;height:32px;margin-top:6px}.ds-wave i{flex:1;border-radius:9999px;background:rgb(255 255 255/.25)}.ds-wave i.on{background:#FF4F81}"
+    },
+    {
+      "name": "Phone Bottom Tab Bar",
+      "kind": "nav",
+      "refersTo": "tab",
+      "description": "White translucent bar of five icon-over-label tabs; active tab riso blue with thicker stroke; pink unread badge.",
+      "html": "<nav class=\"ds-bbar\" dir=\"rtl\"><a class=\"on\"><svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M3 10l9-7 9 7v11h-6v-7H9v7H3z\"/></svg>בית</a><a><svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\"><circle cx=\"11\" cy=\"11\" r=\"8\"/><path d=\"m21 21-4.3-4.3\"/></svg>מוזיקאים</a><a><span class=\"ds-ico\"><svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M7.9 20A9 9 0 1 0 4 16.1L2 22Z\"/></svg><b>3</b></span>הודעות</a></nav>",
+      "css": ".ds-bbar{display:grid;grid-template-columns:repeat(3,1fr);background:rgb(255 255 255/.95);border-top:1px solid rgb(224 226 235/.8);backdrop-filter:blur(24px);font-family:Rubik,system-ui,sans-serif}.ds-bbar a{min-height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:11px;font-weight:500;color:#5E5E6E;text-decoration:none;cursor:pointer}.ds-bbar a.on{color:#2F45C2}.ds-ico{position:relative;display:inline-flex}.ds-ico b{position:absolute;inset-inline-end:-10px;top:-6px;min-width:18px;padding:0 4px;border-radius:9999px;background:#FF4F81;color:#fff;font-size:11px;font-weight:700;line-height:18px;text-align:center;box-shadow:0 0 0 2px #fff}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Quiet Stage",
+    "overview": "MusicHub is the category standard played straight at full craft, with Spotify and LinkedIn as the bar. The shell is a light, quiet product frame: a cool near-white ground, white surfaces on hairline borders, soft two-layer shadows, pill controls and one typeface. The chrome steps back so that the performers, people and their music, take the stage. Colour is rationed by meaning rather than spread for decoration: blue acts, pink marks people reaching for each other, yellow marks Pro, and ink carries text and the music itself.\n\nDensity is app-like, not editorial. A desktop feed runs in three columns with a narrow centre; on phones it collapses to one column under a compact top bar with a white bottom tab bar. Everything is Hebrew, right to left, with Latin strings (usernames, the brand name) isolated left to right inside it. Most visitors see empty states first, so empty states are built as finished, centred cards, never placeholder text.\n\nThe system replaced an earlier risograph-poster look. It keeps the four brand colours and the name, and refuses the poster's devices: no overprinted display type, no paper grain, no ink frames or hard offset shadows, no coloured page bands.",
+    "keyCharacteristics": [
+      "Cool near-white ground, white cards on hairline borders with a soft two-layer shadow.",
+      "One family, Rubik, in a tight UI scale; weight, not size, carries rank.",
+      "Pills for every control; 16px corners for every card.",
+      "Colour by meaning: blue = action, pink = likes / unread / looking for partners, yellow = Pro and highlights, ink = text and the audio player.",
+      "Every person and project gets a stable brand colour from its id.",
+      "Lucide icons at one stroke, thickened only to mark the active tab."
+    ],
+    "rules": [
+      {
+        "name": "The One Job Rule",
+        "body": "Each brand colour means one thing. Blue is never a like, pink is never a generic button, yellow is never a warning on its own. A new surface reuses the meaning, not just the hue.",
+        "section": "colors"
+      },
+      {
+        "name": "The Step-Down Rule",
+        "body": "Pink and yellow are too light to be text on white. On light grounds they appear as a tint or wash with their deep companion (`pink-deep`, `pink-deepest`, `yellow-deep`) as the text colour; raw yellow text only ever sits on ink.",
+        "section": "colors"
+      },
+      {
+        "name": "The Brand-For Rule",
+        "body": "A person, project or course without its own image takes a stable brand colour from its id (`brandFor`, the same hash that picks the avatar tint): blue, pink or yellow. It fills the musician-card cover strip (90% opacity), the project-type icon tile, the course cover and the project page's top strip. Content on blue is white; on pink or yellow it is ink.",
+        "section": "colors"
+      },
+      {
+        "name": "The Weight-Carries-Rank Rule",
+        "body": "Rank is set by weight before size. A name is 15px bold beside 13px regular meta, not a larger size. Nothing in the app UI exceeds 32px; the 44–72px display size belongs to the landing hero alone.",
+        "section": "typography"
+      },
+      {
+        "name": "The Numbers-Line-Up Rule",
+        "body": "Counts, times and durations use tabular figures (`.tabular`, every `time` element).",
+        "section": "typography"
+      },
+      {
+        "name": "The Soft-Lift Rule",
+        "body": "Shadows are diffuse, ink-tinted and offset downward only. No hard offset shadows, no black shadows, no glow.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** give every action riso blue and keep pink for likes, unread counts and looking-for, yellow for Pro and highlights.",
+      "**Do** put new cards on white with a hairline border, 16px corners and the Card shadow; lift linked cards to Pop on hover only behind `can-hover`.",
+      "**Do** make every control a pill and press it to 0.97.",
+      "**Do** step pink and yellow down to their tint-plus-deep-text pairs on light grounds.",
+      "**Do** colour people, projects and courses without images with `brandFor(id)`, white content on blue and ink content on pink or yellow.",
+      "**Do** use logical properties (start / end) and wrap Latin strings in `.ltr`.",
+      "**Do** design the empty state as a finished card with one next step.",
+      "**Do** keep icons to Lucide at one stroke, thickening only for the active tab."
+    ],
+    "donts": [
+      "**Don't** bring back the poster: no overprinted display type, no paper grain, no ink frames, no hard offset shadows, no coloured page bands.",
+      "**Don't** set app UI type above 32px or add a second typeface.",
+      "**Don't** use raw pink or yellow as text on white.",
+      "**Don't** use pink or yellow for a primary button; the pink message button belongs only inside the looking-for banner.",
+      "**Don't** make any surface other than the audio player (and the small ink Premium / Pro-course badges) dark.",
+      "**Don't** show invented members, posts or counts in shipping UI; illustration content is labelled as an example."
+    ]
+  }
+}

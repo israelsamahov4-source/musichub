@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { ChevronLeft, GraduationCap, Handshake, Music, Pencil, Users } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import UserAvatar from "@/components/UserAvatar";
+import WaveCover from "@/components/WaveCover";
 import { supabase } from "@/lib/supabase";
 import { label } from "@/lib/config";
 import { safeUrl } from "@/lib/utils";
@@ -102,7 +103,7 @@ function ProfileSummary() {
   const cover = safeUrl(profile.cover_url);
   return (
     <Card className="overflow-hidden">
-      <div className="h-16 bg-riso-blue bg-cover bg-center" style={cover ? { backgroundImage: `url(${cover})` } : undefined} />
+      {cover ? <div className="h-16 bg-muted bg-cover bg-center" style={{ backgroundImage: `url(${cover})` }} /> : <WaveCover className="h-16" />}
       <div className="px-4 pb-4">
         <Link to={`/u/${profile.username}`} className="-mt-8 block w-fit rounded-full ring-4 ring-card" aria-hidden="true" tabIndex={-1}>
           <UserAvatar profile={profile} size="lg" />

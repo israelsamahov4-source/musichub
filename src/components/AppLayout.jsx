@@ -67,7 +67,7 @@ function useUnreadCounts(userId) {
 function CountBadge({ count, className }) {
   if (!count) return null;
   return (
-    <span className={cn("min-w-[18px] rounded-full bg-riso-pink px-1 text-center text-[11px] font-bold leading-[18px] text-white ring-2 ring-card", className)}>
+    <span className={cn("min-w-[18px] rounded-full bg-riso-pinkdeep px-1 text-center text-[11px] font-bold leading-[18px] text-white ring-2 ring-card", className)}>
       {count > 99 ? "99+" : count}
     </span>
   );
@@ -122,8 +122,8 @@ export default function AppLayout() {
             {items.map((n) => (
               <NavLink key={n.to} to={n.to} className={({ isActive }) => cn(
                 "relative flex min-w-[76px] flex-col items-center justify-center gap-1 px-2 text-xs font-medium transition-colors",
-                "after:absolute after:inset-x-3 after:bottom-0 after:h-0.5 after:rounded-full after:bg-foreground after:opacity-0 after:transition-opacity",
-                isActive ? "text-foreground after:opacity-100" : "text-muted-foreground hover:text-foreground")}>
+                "after:absolute after:inset-x-3 after:bottom-0 after:h-0.5 after:rounded-full after:bg-primary after:opacity-0 after:transition-opacity",
+                isActive ? "text-primary after:opacity-100" : "text-muted-foreground hover:text-foreground")}>
                 {({ isActive }) => (
                   <>
                     <span className="relative"><n.icon className="h-[22px] w-[22px]" strokeWidth={isActive ? 2.4 : 1.8} aria-hidden />
@@ -136,8 +136,8 @@ export default function AppLayout() {
             {user && (
               <NavLink to="/notifications" className={({ isActive }) => cn(
                 "relative flex min-w-[76px] flex-col items-center justify-center gap-1 px-2 text-xs font-medium transition-colors",
-                "after:absolute after:inset-x-3 after:bottom-0 after:h-0.5 after:rounded-full after:bg-foreground after:opacity-0",
-                isActive ? "text-foreground after:opacity-100" : "text-muted-foreground hover:text-foreground")}>
+                "after:absolute after:inset-x-3 after:bottom-0 after:h-0.5 after:rounded-full after:bg-primary after:opacity-0",
+                isActive ? "text-primary after:opacity-100" : "text-muted-foreground hover:text-foreground")}>
                 <span className="relative"><Bell className="h-[22px] w-[22px]" strokeWidth={1.8} aria-hidden />
                   <CountBadge count={counts.notifications} className="absolute -end-2.5 -top-1.5" /></span>
                 התראות
@@ -195,7 +195,7 @@ export default function AppLayout() {
           {items.map((n) => (
             <NavLink key={n.to} to={n.to} className={({ isActive }) => cn(
               "flex min-h-9 shrink-0 items-center gap-1.5 rounded-full px-3.5 text-sm font-medium",
-              isActive ? "bg-foreground text-white" : "bg-muted text-foreground/80")}>
+              isActive ? "bg-primary text-white" : "bg-muted text-foreground/80")}>
               <n.icon className="h-4 w-4" aria-hidden />{n.label}
             </NavLink>
           ))}
@@ -209,7 +209,7 @@ export default function AppLayout() {
           החשבון הושעה בעקבות דיווח. אפשר לצפות בתוכן אבל לא לפרסם. לבירור: פנו לצוות האתר.
         </div>
       )}
-      <main id="main" tabIndex={-1} className={cn("flex-1 outline-none", user && "pb-20 md:pb-0")}>
+      <main id="main" tabIndex={-1} className={cn("flex-1 outline-none focus-visible:ring-0 focus-visible:ring-offset-0", user && "pb-20 md:pb-0")}>
         <ErrorBoundary key={location.pathname} inline><Outlet /></ErrorBoundary>
       </main>
 

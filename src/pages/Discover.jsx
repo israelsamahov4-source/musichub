@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { MapPin, Search, SlidersHorizontal, Users } from "lucide-react";
+import { Handshake, MapPin, Search, SlidersHorizontal, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -36,7 +36,7 @@ function MusicianCard({ p }) {
   const subtitle = p.details?.headline || [...roles.slice(0, 1), ...p.instruments.slice(0, 2).map((i) => label("instruments", i))].join(" · ") || (p.user_type === "listener" ? "חובב/ת מוזיקה" : "מוזיקאי/ת");
   return (
     <Card className="group relative flex min-w-0 flex-col overflow-hidden text-center transition-shadow duration-200 can-hover:hover:shadow-pop">
-      <div className="h-14 opacity-90" style={{ backgroundColor: brandFor(p.id) }} aria-hidden />
+      <div className="h-14" style={{ backgroundColor: p.plan_tier && p.plan_tier !== "free" ? "#FFD84D" : brandFor(p.id) }} aria-hidden />
       <div className="flex flex-1 flex-col items-center px-3 pb-4">
         <Link to={`/u/${p.username}`} aria-hidden="true" tabIndex={-1} className="-mt-9 rounded-full ring-4 ring-card"><UserAvatar profile={p} size="lg" className="h-[72px] w-[72px]" /></Link>
         <Link to={`/u/${p.username}`} className="mt-2 flex max-w-full items-center justify-center gap-1.5 font-bold after:absolute after:inset-0 hover:underline">
@@ -45,8 +45,9 @@ function MusicianCard({ p }) {
         <p className="mt-0.5 line-clamp-2 min-h-[2.5rem] text-[13px] leading-5 text-muted-foreground">{subtitle}</p>
         {p.location && <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground"><MapPin className="h-3 w-3" aria-hidden />{p.location}</p>}
         {p.looking_for?.length > 0 && (
-          <p className="mt-2 max-w-full truncate rounded-full bg-[#FFF0F4] px-2.5 py-0.5 text-xs font-semibold text-[#8E1840]">
-            מחפש/ת {label("lookingFor", p.looking_for[0])}{p.looking_for.length > 1 && ` +${p.looking_for.length - 1}`}
+          <p className="mt-2 flex max-w-full items-center gap-1 rounded-full bg-[#FFF0F4] px-2.5 py-0.5 text-xs font-semibold text-[#8E1840]" title={p.looking_for.map((v) => label("lookingFor", v)).join(", ")}>
+            <Handshake className="h-3.5 w-3.5 shrink-0" aria-label="מחפש/ת" />
+            <span className="truncate">{label("lookingFor", p.looking_for[0])}</span>{p.looking_for.length > 1 && <span className="shrink-0">+{p.looking_for.length - 1}</span>}
           </p>
         )}
         <div className="relative z-10 mt-auto w-full pt-4 [&_button]:w-full"><FollowButton profileId={p.id} quiet /></div>
@@ -117,7 +118,7 @@ export default function Discover() {
           return (
             <button key={v} type="button" aria-pressed={on}
               onClick={() => set("instruments")(on ? f.instruments.filter((x) => x !== v) : [...f.instruments, v])}
-              className={cn("min-h-9 shrink-0 rounded-full px-4 text-sm font-medium transition-colors", on ? "bg-foreground text-white" : "bg-card text-foreground/80 shadow-[inset_0_0_0_1px_hsl(var(--border))] hover:bg-muted")}>
+              className={cn("min-h-9 shrink-0 rounded-full px-4 text-sm font-medium transition-colors", on ? "bg-primary text-white" : "bg-card text-foreground/80 shadow-[inset_0_0_0_1px_hsl(var(--border))] hover:bg-muted")}>
               {label("instruments", v)}
             </button>
           );

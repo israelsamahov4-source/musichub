@@ -90,9 +90,9 @@ export default function PostComposer() {
             onChange={(e) => setContent(e.target.value)}
             maxLength={5000}
             rows={open ? 3 : 1}
-            placeholder="על מה אתם עובדים? שתפו קטע, שאלה או חיפוש שותפים…"
+            placeholder={open ? "על מה אתם עובדים? שתפו קטע, שאלה או חיפוש שותפים…" : "על מה אתם עובדים?"}
             aria-label="תוכן הפוסט"
-            className={cn("resize-none rounded-2xl border-0 bg-muted px-4 py-3 text-[15px] focus-visible:bg-card focus-visible:ring-2", open ? "min-h-[84px]" : "min-h-[48px] md:min-h-[84px]")}
+            className={cn("resize-none rounded-2xl border-0 bg-muted px-4 py-3 text-[15px] focus-visible:bg-card focus-visible:ring-2", open ? "min-h-[84px]" : "min-h-[48px] overflow-hidden md:min-h-[84px]")}
           />
           {media && (
             <div className="relative">

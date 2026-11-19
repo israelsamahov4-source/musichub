@@ -20,7 +20,7 @@ import { cleanSearch, cn, safeUrl } from "@/lib/utils";
 
 export function CourseCard({ c, extra }) {
   const color = brandFor(c.id);
-  const onColor = color === "#2F45C2" ? "text-white" : "text-ink";
+  const onColor = "text-white";
   return (
     <Link to={`/courses/${c.id}`} className="block">
       <Card className="flex h-full flex-col overflow-hidden transition-shadow duration-200 can-hover:hover:shadow-pop">

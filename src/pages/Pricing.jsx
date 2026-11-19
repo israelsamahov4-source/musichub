@@ -46,7 +46,7 @@ export default function Pricing() {
       {[["monthly", "חודשי"], ["yearly", "שנתי, חודשיים מתנה"]].map(([v, t]) => (
         <button key={v} type="button" aria-pressed={cycle === v} onClick={() => setCycle(v)}
           className={cn("rounded-full px-4 py-1.5 text-sm font-semibold transition-colors",
-            cycle === v ? "bg-foreground text-white" : "text-foreground/70 hover:text-foreground", "min-h-9")}>{t}</button>
+            cycle === v ? "bg-primary text-white" : "text-foreground/70 hover:text-foreground", "min-h-9")}>{t}</button>
       ))}
     </div>
   );
@@ -65,7 +65,7 @@ export default function Pricing() {
                 className={cn("relative flex h-full flex-col rounded-2xl p-6 shadow-card",
                   hot ? "bg-ink text-white ring-2 ring-primary" : "border border-border/80 bg-card")}>
                 {plan.tier !== "free" && !PAYMENTS_ENABLED
-                  ? <span className="absolute -top-3 end-6 rounded-full bg-riso-pink px-3 py-1 text-xs font-bold text-white">בקרוב</span>
+                  ? <span className="absolute -top-3 end-6 rounded-full bg-riso-pinkdeep px-3 py-1 text-xs font-bold text-white">בקרוב</span>
                   : hot && <span className="absolute -top-3 end-6 rounded-full bg-primary px-3 py-1 text-xs font-bold text-white">מומלץ</span>}
                 <h2 id={`plan-${plan.tier}`} className={cn("text-xl font-bold", hot ? "text-riso-yellow" : "text-foreground")}>{plan.name}</h2>
                 <p className={cn("mt-2 text-sm", hot ? "text-white/75" : "text-muted-foreground")}>{plan.tagline}</p>

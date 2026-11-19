@@ -64,7 +64,7 @@ function ProjectCard({ p, badge }) {
     <Link to={`/collabs/${p.id}`} className="block">
       <Card className="flex h-full flex-col justify-between p-4 transition-shadow duration-200 can-hover:hover:shadow-pop">
         <div className="flex items-start gap-3">
-          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl" style={{ backgroundColor: color, color: color === "#2F45C2" ? "#fff" : "#1E1B3A" }}>
+          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl" style={{ backgroundColor: color, color: "#fff" }}>
             <Icon className="h-6 w-6" aria-hidden />
           </span>
           <div className="min-w-0 flex-1">

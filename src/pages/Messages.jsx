@@ -31,7 +31,7 @@ function ConversationList({ conversations, activeId }) {
               </div>
               <div className="flex items-center gap-2">
                 <p className="truncate text-sm text-muted-foreground">{c.last_message ?? "שיחה חדשה"}</p>
-                {Number(c.unread_count) > 0 && <span className="ms-auto min-w-5 rounded-full bg-riso-pink px-1.5 text-center text-xs font-bold leading-5 text-white">{c.unread_count}</span>}
+                {Number(c.unread_count) > 0 && <span className="ms-auto min-w-5 rounded-full bg-riso-pinkdeep px-1.5 text-center text-xs font-bold leading-5 text-white">{c.unread_count}</span>}
               </div>
             </div>
           </Link>
@@ -142,7 +142,7 @@ export default function Messages() {
 
   return (
     <div className="mx-auto max-w-5xl px-0 py-0 md:px-4 md:py-6">
-      <Card className="grid h-[calc(100dvh-8.5rem)] overflow-hidden rounded-none border-x-0 md:h-[calc(100dvh-8rem)] md:grid-cols-[340px_1fr] md:rounded-2xl md:border-x">
+      <Card className="grid h-[calc(100dvh-7rem-1px)] overflow-hidden rounded-none border-x-0 md:h-[calc(100dvh-8rem)] md:grid-cols-[340px_1fr] md:rounded-2xl md:border-x">
         <div className={cn("overflow-y-auto border-e", conversationId && "hidden md:block")}>
           <h1 className="flex h-16 items-center border-b px-4 text-xl font-bold">הודעות</h1>
           {isLoading ? <PageLoader /> : <ConversationList conversations={conversations} activeId={conversationId} />}
