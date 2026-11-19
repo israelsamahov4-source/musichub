@@ -146,7 +146,7 @@ const EN = {
   "שם המשתמש צריך להיות באורך 3 עד 30 תווים": "Username must be 3 to 30 characters",
   "רק אותיות באנגלית קטנות, ספרות או _ (בלי רווחים ועברית)": "Only lowercase English letters, numbers or _ (no spaces or Hebrew)",
   "תמונת פרופיל": "Profile photo",
-  "בלי תמונת כיסוי יופיע כיסוי הגלים של MusicHub": "Without a cover photo, your profile shows the MusicHub wave cover",
+  "בלי תמונת כיסוי יופיע כיסוי הגלים של Jamly": "Without a cover photo, your profile shows the Jamly wave cover",
   "תמונת כיסוי": "Cover photo",
   "שם מלא": "Full name",
   "שם משתמש": "Username",

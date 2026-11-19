@@ -1,15 +1,14 @@
 import { Link } from "react-router-dom";
 import { APP_NAME } from "@/lib/config";
 import { usePageTitle } from "@/lib/usePageTitle";
-import LogoMark from "@/components/LogoMark";
+import Wordmark from "@/components/Wordmark";
 import LanguageSwitch from "@/components/LanguageSwitch";
 import { tr } from "@/lib/i18n";
 
-function Wordmark() {
+function HomeLink() {
   return (
     <Link to="/" className="flex w-fit items-center gap-2" aria-label={tr("{0} — דף הבית", APP_NAME)}>
-      <LogoMark className="h-8 w-8" />
-      <span className="ltr text-[1.2rem] font-extrabold tracking-tight text-foreground">Music<span className="text-primary">Hub</span></span>
+      <Wordmark />
     </Link>
   );
 }
@@ -30,7 +29,7 @@ export default function AuthShell({ title, subtitle, children, footer }) {
   return (
     <div className="grid min-h-screen bg-card lg:grid-cols-[1fr_minmax(440px,0.85fr)]">
       <div className="flex flex-col px-5 py-6 sm:px-10 lg:py-8">
-        <div className="flex items-center justify-between gap-3"><Wordmark /><LanguageSwitch /></div>
+        <div className="flex items-center justify-between gap-3"><HomeLink /><LanguageSwitch /></div>
         <main id="main" className="mx-auto flex w-full max-w-[400px] flex-1 flex-col justify-center py-10">
           <h1 className="text-[2rem] font-bold leading-tight tracking-tight">{title}</h1>
           {subtitle && <p className="mt-2 text-[15px] text-muted-foreground">{subtitle}</p>}

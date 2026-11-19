@@ -10,7 +10,7 @@ web
 A community for everyone in Israel who lives music: music students, teachers, players and singers, producers, and music lovers. They come to belong to a scene and to use that community to move their music career forward: be seen, find people, get opportunities, learn. Mostly on phones, in Hebrew (right to left).
 
 ## Product Purpose
-MusicHub is a social network for musicians. Success is a member who shares their music, gets noticed by the community, and turns that into something real: a band, a session, a gig, a student, a paid job, a course finished.
+Jamly is a social network for musicians. Success is a member who shares their music, gets noticed by the community, and turns that into something real: a band, a session, a gig, a student, a paid job, a course finished.
 
 ## Positioning
 Not a general social network and not a classifieds board: one place where a musician's profile, their music posts, the people looking to play with them, shared projects, and courses all connect, built for the Israeli scene in Hebrew.
@@ -28,7 +28,7 @@ Also: musical CV with visibility control, follows, notifications, courses (catal
 - Payments (Paddle) are not configured; paid plans show "soon".
 
 ## Brand Commitments
-- The name MusicHub.
+- The name Jamly (renamed from MusicHub on 2026-11-19; domain jamly.co.il was free at that time).
 - The colors: riso blue #2F45C2, pink #FF4F81, yellow #FFD84D, ink #1E1B3A. Everything else about the look may be replaced.
 
 ## Evidence on Hand
@@ -44,4 +44,4 @@ No real members, posts, testimonials, press or member counts exist yet. Do not i
 Israeli accessibility law applies (IS 5568, WCAG 2.0 AA level); an accessibility statement page exists.
 
 ## Standing Preference
-Chosen 2026-11-19: a light app at the craft level of Spotify and LinkedIn (the category standard, executed fully), keeping the MusicHub name and brand colors.
+Chosen 2026-11-19: a light app at the craft level of Spotify and LinkedIn (the category standard, executed fully), keeping the brand colors (the name later changed from MusicHub to Jamly).

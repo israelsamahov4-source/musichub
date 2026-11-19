@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { tr } from "@/lib/i18n";
 
-const SITE = "MusicHub";
+const SITE = "Jamly";
 
 /** Sets the browser-tab title (also what screen readers announce on a new page). */
 export function usePageTitle(title) {

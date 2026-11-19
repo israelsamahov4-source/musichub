@@ -14,7 +14,7 @@ import { APP_NAME } from "@/lib/config";
 import { cn } from "@/lib/utils";
 import { useAuthHref } from "@/auth/returnTo";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import LogoMark from "@/components/LogoMark";
+import Wordmark from "@/components/Wordmark";
 import LanguageSwitch from "@/components/LanguageSwitch";
 import { DIR, LANG, setLang, tr } from "@/lib/i18n";
 
@@ -78,8 +78,7 @@ function CountBadge({ count, className }) {
 function Logo() {
   return (
     <Link to="/" className="flex shrink-0 items-center gap-2" aria-label={tr("{0} — דף הבית", APP_NAME)}>
-      <LogoMark className="h-8 w-8" />
-      <span className="ltr text-[1.2rem] font-extrabold tracking-tight text-foreground">Music<span className="text-primary">Hub</span></span>
+      <Wordmark />
     </Link>
   );
 }

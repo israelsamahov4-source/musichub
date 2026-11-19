@@ -1,4 +1,4 @@
-# MusicHub: הרשת החברתית למוזיקאים
+# Jamly (לשעבר MusicHub): הרשת החברתית למוזיקאים
 
 ## מצב נוכחי (13.11.2026)
 
@@ -66,7 +66,7 @@
 
 ב-**Authentication**:
 
-- **URL Configuration:** ב-Site URL שמים את כתובת האתר, למשל `https://musichub.co.il`. ב-Redirect URLs מוסיפים את `https://musichub.co.il/**` ואת `http://localhost:5173/**`.
+- **URL Configuration:** ב-Site URL שמים את כתובת האתר, למשל `https://jamly.co.il`. ב-Redirect URLs מוסיפים את `https://jamly.co.il/**` ואת `http://localhost:5173/**`.
 - **Providers → Email:** משאירים את **Confirm email** דלוק.
 - **Policies / Passwords:** אורך מינימלי 8. אם זמין בתוכנית, מפעילים גם **Leaked password protection**.
 - **Email Templates:** אחרי חיבור SMTP (בלעדיו Supabase לא מאפשר לערוך תבניות), מדביקים את התבניות בעברית מהתיקייה `supabase/templates/`: "Confirm signup" ו-"Reset password". הקישורים בהן עוברים דרך `/auth/confirm` ועובדים מכל מכשיר.
@@ -144,7 +144,7 @@ supabase/tests      בדיקות אבטחה
 ## רשימת משימות לפני השקה
 
 - [ ] להחליף את `SUPPORT_EMAIL` בקובץ `src/lib/config.js` בכתובת אמיתית
-- [ ] לבדוק שהשם MusicHub פנוי כסימן מסחרי וכדומיין, או להחליף אותו ב-`config.js` וב-`index.html`
+- [ ] לקנות את הדומיין jamly.co.il (היה פנוי ב-19.11.2026), ולבדוק שהשם Jamly פנוי כסימן מסחרי
 - [ ] להשלים את הפרטים בסוגריים מרובעים בתנאי השימוש, במדיניות הפרטיות ובהצהרת הנגישות, ולהעביר לעורך דין
 - [ ] לחבר שרת מייל (SMTP) ודומיין
 - [ ] להגדיר גיבויים ב-Supabase (גיבוי יומי כלול בתוכנית Pro שלהם)

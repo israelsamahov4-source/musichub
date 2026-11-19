@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import PageLoader from "@/components/PageLoader";
-import LogoMark from "@/components/LogoMark";
+import Wordmark from "@/components/Wordmark";
 import ProfileForm, { focusFirstError, formToProfile, profileErrors, profileToForm } from "@/components/ProfileForm";
 import { supabase, unwrap } from "@/lib/supabase";
 import { useAuth } from "@/auth/AuthProvider";
@@ -91,7 +91,7 @@ export default function Onboarding() {
   return (
     <div className="min-h-screen px-4 py-8 sm:py-12">
       <div className="mx-auto max-w-2xl">
-        <div className="mb-6 flex items-center gap-2"><LogoMark className="h-8 w-8" /><span className="ltr text-[1.2rem] font-extrabold tracking-tight">Music<span className="text-primary">Hub</span></span></div>
+        <Wordmark className="mb-6" />
         <Progress value={((step + 1) / STEPS.length) * 100} className="mb-6 h-1.5" aria-label={tr("שלב {0} מתוך {1}", step + 1, STEPS.length)} />
         <Card className="p-6 sm:p-8">
           <p className="text-sm font-medium text-primary">{tr("שלב")}{" "}{step + 1}{" "}{tr("מתוך")}{" "}{STEPS.length}</p>

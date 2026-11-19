@@ -9,7 +9,7 @@ related_targets: ["src/pages/Feed.jsx","src/pages/Profile.jsx","src/pages/Discov
 
 Scope: the signed-in app (feed, profile, musicians, projects, courses, messages, notifications, settings) and its shell. Mode: Operate.
 Audience and job: Israeli music community members, mostly on phones, splitting time between the feed and finding people/projects.
-Constraints: Hebrew RTL; name MusicHub and the four brand colors stay; pre-launch, so empty states are common and must look finished.
+Constraints: Hebrew RTL; name Jamly (formerly MusicHub) and the four brand colors stay; pre-launch, so empty states are common and must look finished.
 User steer: the poster look reads banal and "like a landing page". Light app. Craft bar: Spotify and LinkedIn.
 
 ## Direction contract

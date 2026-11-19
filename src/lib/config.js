@@ -1,7 +1,7 @@
 import { tr } from "@/lib/i18n";
 // Product-wide settings and the option lists used across forms and filters.
 // Change the brand name here and in index.html.
-export const APP_NAME = "MusicHub";
+export const APP_NAME = "Jamly";
 export const APP_TAGLINE = tr("הרשת החברתית למוזיקאים");
 export const SUPPORT_EMAIL = "support@example.com"; // TODO: replace with a real address before launch
 

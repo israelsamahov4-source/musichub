@@ -55,7 +55,7 @@ export async function downloadMyData(userId, email) {
   };
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
   const url = URL.createObjectURL(blob);
-  const a = Object.assign(document.createElement("a"), { href: url, download: `musichub-my-data-${new Date().toISOString().slice(0, 10)}.json` });
+  const a = Object.assign(document.createElement("a"), { href: url, download: `jamly-my-data-${new Date().toISOString().slice(0, 10)}.json` });
   document.body.appendChild(a); a.click(); a.remove();
   URL.revokeObjectURL(url);
 }

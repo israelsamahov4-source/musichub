@@ -1,5 +1,5 @@
 ---
-name: MusicHub
+name: Jamly
 description: The Hebrew social network for Israeli musicians; a light, quiet app shell where people and music lead.
 colors:
   riso-blue: "#2F45C2"
@@ -173,13 +173,13 @@ components:
     padding: "12px"
 ---
 
-# Design System: MusicHub
+# Design System: Jamly
 
 ## Overview
 
 **Creative North Star: "The Quiet Stage"**
 
-MusicHub is the category standard played straight at full craft, with Spotify and LinkedIn as the bar. The shell is a light, quiet product frame: a cool near-white ground, white surfaces on hairline borders, soft two-layer shadows, pill controls and one typeface. The chrome steps back so that the performers, people and their music, take the stage. Colour is rationed by meaning rather than spread for decoration: blue acts, pink marks people reaching for each other, yellow marks Pro, and ink carries text and the music itself.
+Jamly is the category standard played straight at full craft, with Spotify and LinkedIn as the bar. The shell is a light, quiet product frame: a cool near-white ground, white surfaces on hairline borders, soft two-layer shadows, pill controls and one typeface. The chrome steps back so that the performers, people and their music, take the stage. Colour is rationed by meaning rather than spread for decoration: blue acts, pink marks people reaching for each other, yellow marks Pro, and ink carries text and the music itself.
 
 Density is app-like, not editorial. A desktop feed runs in three columns with a narrow centre; on phones it collapses to one column under a compact top bar with a white bottom tab bar. Everything is Hebrew, right to left, with Latin strings (usernames, the brand name) isolated left to right inside it. Most visitors see empty states first, so empty states are built as finished, centred cards, never placeholder text.
 

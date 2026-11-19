@@ -29,7 +29,7 @@ export default function TwoFactorCard() {
     for (const f of factors.data ?? []) if (f.status !== "verified") await supabase.auth.mfa.unenroll({ factorId: f.id });
     const { data, error } = await supabase.auth.mfa.enroll({
       factorType: "totp",
-      friendlyName: `MusicHub ${Math.random().toString(36).slice(2, 8)}`,
+      friendlyName: `Jamly ${Math.random().toString(36).slice(2, 8)}`,
     });
     setBusy(false);
     if (error) return toast.error(errorMessage(error));

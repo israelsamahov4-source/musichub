@@ -130,7 +130,7 @@ export default function ProfileForm({ form, setForm, userId, sections = ["basics
             <div className="relative h-24 overflow-hidden rounded-xl bg-riso-blue">
               {safeUrl(form.cover_url)
                 ? <img src={safeUrl(form.cover_url)} alt="" className="h-full w-full object-cover" />
-                : <p className="flex h-full items-center justify-center px-4 text-center text-sm text-white/85">{tr("בלי תמונת כיסוי יופיע כיסוי הגלים של MusicHub")}</p>}
+                : <p className="flex h-full items-center justify-center px-4 text-center text-sm text-white/85">{tr("בלי תמונת כיסוי יופיע כיסוי הגלים של Jamly")}</p>}
             </div>
             <input ref={coverRef} type="file" accept={ACCEPT.image} hidden onChange={onImage("cover_url")} />
             <div className="flex flex-wrap gap-2">

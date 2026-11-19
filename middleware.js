@@ -6,7 +6,7 @@
 export const config = { matcher: ["/u/:path*", "/collabs/:path*", "/courses/:path*"] };
 
 const BOTS = /whatsapp|facebookexternalhit|facebot|twitterbot|telegrambot|slackbot|linkedinbot|discordbot|skypeuripreview|googlebot|bingbot|applebot|pinterest|redditbot|embedly|quora link preview|vkshare|w3c_validator/i;
-const SITE = "MusicHub";
+const SITE = "Jamly";
 
 const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 const clip = (v, n) => { const t = String(v ?? "").replace(/\s+/g, " ").trim(); return t.length > n ? `${t.slice(0, n - 1)}…` : t; };
