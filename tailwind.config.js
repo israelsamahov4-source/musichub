@@ -1,4 +1,5 @@
 import animate from "tailwindcss-animate";
+import plugin from "tailwindcss/plugin";
 /** @type {import('tailwindcss').Config} */
 export default {
     darkMode: ["class"],
@@ -93,5 +94,9 @@ export default {
   		}
   	}
   },
-  plugins: [animate],
+  plugins: [
+    animate,
+    // Hover effects only where there is a mouse; on phones a tap would leave them stuck.
+    plugin(({ addVariant }) => addVariant("can-hover", "@media (hover: hover) and (pointer: fine)")),
+  ],
 }

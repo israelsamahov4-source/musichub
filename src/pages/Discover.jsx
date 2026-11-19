@@ -34,7 +34,7 @@ function useDebounced(value, ms = 350) {
 function MusicianCard({ p }) {
   const roles = (Array.isArray(p.musical_roles) ? p.musical_roles : []).filter((r) => typeof r?.role === "string").map((r) => label("roles", r.role));
   return (
-    <Card className="flex min-w-0 flex-col p-4 transition-[transform,box-shadow] hover:-translate-y-0.5 hover:shadow-[4px_4px_0_0_#1E1B3A]">
+    <Card className="flex min-w-0 flex-col p-4 transition-[transform,box-shadow] can-hover:hover:-translate-y-0.5 can-hover:hover:shadow-[4px_4px_0_0_#1E1B3A]">
       <div className="flex items-start gap-3">
         <Link to={`/u/${p.username}`} aria-hidden="true" tabIndex={-1}><UserAvatar profile={p} size="md" /></Link>
         <div className="min-w-0 flex-1">

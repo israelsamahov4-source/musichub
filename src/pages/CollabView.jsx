@@ -232,7 +232,7 @@ export default function CollabView() {
               {p.is_public ? <Globe className="h-4 w-4" aria-hidden /> : <Lock className="h-4 w-4" aria-hidden />}
               {label("projectTypes", p.type)}, {label("projectStatus", p.status)}
             </div>
-            <h1 className="riso riso-animate mt-2 break-words font-display text-4xl font-bold leading-[0.95] sm:text-5xl md:text-6xl">{p.title}</h1>
+            <h1 className="riso mt-2 break-words font-display text-4xl font-bold leading-[0.95] sm:text-5xl md:text-6xl">{p.title}</h1>
             <Link to={`/u/${p.owner?.username}`} className="mt-2 inline-flex items-center gap-2 text-sm hover:underline">
               <UserAvatar profile={p.owner} size="xs" />{p.owner?.full_name || p.owner?.username}
             </Link>

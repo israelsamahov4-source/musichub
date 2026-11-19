@@ -21,7 +21,7 @@ import { cleanSearch, safeUrl } from "@/lib/utils";
 export function CourseCard({ c, extra }) {
   return (
     <Link to={`/courses/${c.id}`} className="block">
-      <Card className="flex h-full flex-col overflow-hidden transition-[transform,box-shadow] hover:-translate-y-0.5 hover:shadow-[4px_4px_0_0_#1E1B3A]">
+      <Card className="flex h-full flex-col overflow-hidden transition-[transform,box-shadow] can-hover:hover:-translate-y-0.5 can-hover:hover:shadow-[4px_4px_0_0_#1E1B3A]">
         <div className="grain relative aspect-[16/9] overflow-hidden bg-riso-blue">
           {safeUrl(c.cover_url) ? <img src={safeUrl(c.cover_url)} alt="" loading="lazy" className="h-full w-full object-cover" />
             : (
@@ -30,8 +30,8 @@ export function CourseCard({ c, extra }) {
                 <span className="riso-on-blue line-clamp-2 font-display text-4xl font-bold leading-[0.9]">{c.title}</span>
               </div>
             )}
-          {!c.is_free && <span className="absolute start-2 top-2 inline-flex items-center gap-1 rounded-full bg-card px-2 py-0.5 text-[11px] font-bold text-primary"><Star className="h-3 w-3" aria-hidden />Pro</span>}
-          {!c.is_published && <span className="absolute end-2 top-2 rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-bold text-amber-800">טיוטה</span>}
+          {!c.is_free && <span className="absolute start-2 top-2 inline-flex items-center gap-1 rounded-full bg-card px-2 py-0.5 text-xs font-bold text-primary"><Star className="h-3 w-3" aria-hidden />Pro</span>}
+          {!c.is_published && <span className="absolute end-2 top-2 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-bold text-amber-800">טיוטה</span>}
         </div>
         <div className="flex flex-1 flex-col p-4">
           <p className="text-xs text-muted-foreground">{label("courseCategories", c.category)}, {label("courseLevels", c.level)}</p>

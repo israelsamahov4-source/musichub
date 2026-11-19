@@ -58,7 +58,7 @@ export function ProjectFields({ value, onChange }) {
 function ProjectCard({ p, badge }) {
   return (
     <Link to={`/collabs/${p.id}`} className="block">
-      <Card className="flex h-full flex-col p-4 transition-[transform,box-shadow] hover:-translate-y-0.5 hover:shadow-[4px_4px_0_0_#1E1B3A]">
+      <Card className="flex h-full flex-col p-4 transition-[transform,box-shadow] can-hover:hover:-translate-y-0.5 can-hover:hover:shadow-[4px_4px_0_0_#1E1B3A]">
         <div className="flex items-start gap-2">
           <h3 className="flex-1 font-display text-3xl font-bold leading-[0.95] text-ink">{p.title}</h3>
           {badge}

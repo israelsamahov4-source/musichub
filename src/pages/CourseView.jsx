@@ -64,7 +64,7 @@ export default function CourseView() {
       <Card className="grid overflow-hidden border-2 border-ink md:grid-cols-[1fr_340px]">
         <div className="p-6">
           <p className="text-sm text-muted-foreground">{label("courseCategories", c.category)}, {label("courseLevels", c.level)}</p>
-          <h1 className="riso riso-animate mt-2 font-display text-5xl font-bold leading-[0.9] md:text-6xl">{c.title}</h1>
+          <h1 className="riso mt-2 font-display text-5xl font-bold leading-[0.9] md:text-6xl">{c.title}</h1>
           <Link to={`/u/${c.instructor?.username}`} className="mt-3 inline-flex items-center gap-2 hover:underline">
             <UserAvatar profile={c.instructor} /><span className="font-medium">{c.instructor?.full_name || c.instructor?.username}</span>
           </Link>
@@ -122,7 +122,7 @@ export default function CourseView() {
                     <span className="flex-1">{l.title}</span>
                     {l.duration_minutes ? <span className="text-xs text-muted-foreground">{l.duration_minutes} ד'</span> : null}
                     {completed ? <CheckCircle2 className="h-4 w-4 text-emerald-600" aria-label="הושלם" />
-                      : canOpen(l) ? (l.is_preview && !enrolled && !mine ? <span className="text-[11px] font-medium text-primary">צפייה חינם</span> : <PlayCircle className="h-4 w-4 text-primary" aria-hidden />)
+                      : canOpen(l) ? (l.is_preview && !enrolled && !mine ? <span className="text-xs font-medium text-primary">צפייה חינם</span> : <PlayCircle className="h-4 w-4 text-primary" aria-hidden />)
                       : <Lock className="h-4 w-4 text-muted-foreground" aria-label="נעול" />}
                   </>
                 );

@@ -27,11 +27,11 @@ function ConversationList({ conversations, activeId }) {
             <div className="min-w-0 flex-1">
               <div className="flex items-baseline gap-2">
                 <span className={cn("truncate", Number(c.unread_count) > 0 ? "font-bold" : "font-medium")}>{c.other_full_name || c.other_username}</span>
-                <span className="ms-auto shrink-0 text-[11px] text-muted-foreground">{timeAgo(c.last_message_at)}</span>
+                <span className="ms-auto shrink-0 text-xs text-muted-foreground">{timeAgo(c.last_message_at)}</span>
               </div>
               <div className="flex items-center gap-2">
                 <p className="truncate text-sm text-muted-foreground">{c.last_message ?? "שיחה חדשה"}</p>
-                {Number(c.unread_count) > 0 && <span className="ms-auto rounded-full bg-primary px-1.5 text-[11px] font-bold text-primary-foreground">{c.unread_count}</span>}
+                {Number(c.unread_count) > 0 && <span className="ms-auto rounded-full bg-primary px-1.5 text-xs font-bold text-primary-foreground">{c.unread_count}</span>}
               </div>
             </div>
           </Link>
@@ -114,7 +114,7 @@ function Thread({ conversationId, other }) {
             <div key={m.id} className={cn("flex", mine ? "justify-start" : "justify-end")}>
               <div className={cn("max-w-[80%] rounded-2xl px-3.5 py-2", mine ? "rounded-ss-sm bg-primary text-primary-foreground" : "rounded-se-sm bg-muted")}>
                 <p dir={textDir(m.content)} className="whitespace-pre-wrap break-words text-start text-sm">{m.content}</p>
-                <p className={cn("mt-0.5 text-[10px]", mine ? "text-primary-foreground/70" : "text-muted-foreground")}>{formatDate(m.created_at, "d.M HH:mm")}</p>
+                <p className={cn("mt-0.5 text-[11px]", mine ? "text-primary-foreground/70" : "text-muted-foreground")}>{formatDate(m.created_at, "d.M HH:mm")}</p>
               </div>
             </div>
           );

@@ -8,7 +8,7 @@ export default function PlanBadge({ tier, className }) {
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold",
+        "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold",
         premium ? "border border-ink bg-riso-yellow text-ink" : "bg-riso-blue text-white",
         className,
       )}

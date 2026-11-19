@@ -173,7 +173,7 @@ export default function Profile() {
           </div>
           <div className="mt-3">
             <div className="flex flex-wrap items-center gap-2">
-              <h1 className="riso riso-animate font-display text-6xl font-bold leading-[0.9] md:text-7xl">{p.full_name || p.username}</h1>
+              <h1 className="riso font-display text-6xl font-bold leading-[0.9] md:text-7xl">{p.full_name || p.username}</h1>
               <PlanBadge tier={p.plan_tier} />
             </div>
             {cv?.headline && <p className="mt-1 text-lg font-medium text-ink/85">{cv.headline}</p>}

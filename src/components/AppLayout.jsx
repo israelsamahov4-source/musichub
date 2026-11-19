@@ -147,20 +147,21 @@ export default function AppLayout() {
             )}
           </div>
         </div>
-        {!user && (
-          <nav className="flex gap-1 overflow-x-auto px-4 pb-2 md:hidden" aria-label="ניווט">
-            {items.map((n) => (
-              <NavLink key={n.to} to={n.to} className={({ isActive }) => cn(
-                "flex min-h-10 shrink-0 items-center gap-1.5 rounded-full px-3.5 text-sm font-medium",
-                isActive ? "bg-ink text-white" : "bg-muted text-ink/80")}>
-                <n.icon className="h-4 w-4" aria-hidden />{n.label}
-              </NavLink>
-            ))}
-            <NavLink to="/pricing" className={({ isActive }) => cn("flex min-h-10 shrink-0 items-center rounded-full px-3.5 text-sm font-medium",
-              isActive ? "bg-ink text-white" : "bg-muted text-ink/80")}>מחירים</NavLink>
-          </nav>
-        )}
       </header>
+      {/* Visitors on phones: page links scroll away with the page, so the pinned bar stays one row. */}
+      {!user && (
+        <nav className="flex gap-1 overflow-x-auto border-b-2 border-ink/10 bg-white px-4 py-2 md:hidden" aria-label="ניווט">
+          {items.map((n) => (
+            <NavLink key={n.to} to={n.to} className={({ isActive }) => cn(
+              "flex min-h-10 shrink-0 items-center gap-1.5 rounded-full px-3.5 text-sm font-medium",
+              isActive ? "bg-ink text-white" : "bg-muted text-ink/80")}>
+              <n.icon className="h-4 w-4" aria-hidden />{n.label}
+            </NavLink>
+          ))}
+          <NavLink to="/pricing" className={({ isActive }) => cn("flex min-h-10 shrink-0 items-center rounded-full px-3.5 text-sm font-medium",
+            isActive ? "bg-ink text-white" : "bg-muted text-ink/80")}>מחירים</NavLink>
+        </nav>
+      )}
 
       {profile?.is_suspended && (
         <div className="bg-destructive px-4 py-2 text-center text-sm text-destructive-foreground" role="alert">
@@ -186,7 +187,7 @@ export default function AppLayout() {
           <div className="grid grid-cols-5">
             {NAV.map((n) => (
               <NavLink key={n.to} to={n.to} className={({ isActive }) => cn(
-                "relative flex flex-col items-center gap-0.5 py-2 text-[11px]", isActive ? "text-primary" : "text-muted-foreground")}>
+                "relative flex min-h-14 flex-col items-center justify-center gap-0.5 py-1.5 text-xs font-medium", isActive ? "text-primary" : "text-muted-foreground")}>
                 <n.icon className="h-5 w-5" aria-hidden />{n.label}
                 {n.badge === "messages" && <CountBadge count={counts.messages} className="absolute end-[calc(50%-20px)] top-1" />}
               </NavLink>
