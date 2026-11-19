@@ -16,6 +16,10 @@ export const LEGAL = {
   accessibilityAuditDate: "נובמבר 2026",
 };
 
+// Until a detail is filled in above, the pages leave it out instead of showing "[...]" or the example address.
+export const isFilled = (v) => typeof v === "string" && v.trim() !== "" && !/^\[.*\]$/.test(v.trim()) && !/@example\.com$/i.test(v.trim());
+export const filledList = (...values) => values.filter(isFilled).join(", ");
+
 // Payments switch on automatically once the Paddle client token is configured in Vercel.
 export const PADDLE_CLIENT_TOKEN = import.meta.env.VITE_PADDLE_CLIENT_TOKEN || "";
 export const PADDLE_ENV = import.meta.env.VITE_PADDLE_ENV === "production" ? "production" : "sandbox";

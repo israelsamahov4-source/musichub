@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { APP_NAME } from "@/lib/config";
+import { APP_NAME, GOOGLE_AUTH_ENABLED } from "@/lib/config";
 import { usePageTitle } from "@/lib/usePageTitle";
 
 const SETLIST = [
@@ -37,7 +37,7 @@ const SIDES = [
 ];
 
 const COUNT_IN = [
-  { title: "נרשמים", text: "חינם, עם מייל או חשבון Google." },
+  { title: "נרשמים", text: GOOGLE_AUTH_ENABLED ? "חינם, עם מייל או חשבון Google." : "חינם, עם כתובת מייל." },
   { title: "ממלאים פרופיל", text: "כלים, ז'אנרים, אזור, ומה אתם מחפשים." },
   { title: "מוצאים אנשים", text: "מסננים לפי כלי, תפקיד, ז'אנר ומיקום." },
   { title: "מתחילים לנגן", text: "שולחים הודעה או מצטרפים לפרויקט." },

@@ -64,7 +64,9 @@ export default function Pricing() {
               <section key={plan.tier} aria-labelledby={`plan-${plan.tier}`}
                 className={cn("relative flex h-full flex-col rounded-2xl border-2 border-ink p-6",
                   hot ? "grain bg-ink text-white shadow-[6px_6px_0_0_#FF4F81] md:-translate-y-3" : "bg-card")}>
-                {hot && <span className="absolute -top-3 end-6 rotate-[-4deg] rounded-sm border-2 border-ink bg-riso-yellow px-3 py-1 text-xs font-bold text-ink">מומלץ</span>}
+                {plan.tier !== "free" && !PAYMENTS_ENABLED
+                  ? <span className="absolute -top-3 end-6 rotate-[-4deg] rounded-sm border-2 border-ink bg-riso-pink px-3 py-1 text-xs font-bold text-ink">בקרוב</span>
+                  : hot && <span className="absolute -top-3 end-6 rotate-[-4deg] rounded-sm border-2 border-ink bg-riso-yellow px-3 py-1 text-xs font-bold text-ink">מומלץ</span>}
                 <h2 id={`plan-${plan.tier}`} className={cn("font-display text-4xl font-bold leading-none", hot ? "text-riso-yellow" : "text-riso-blue")}>{plan.name}</h2>
                 <p className={cn("mt-2 text-sm", hot ? "text-white/75" : "text-muted-foreground")}>{plan.tagline}</p>
                 <p className="mt-5 flex items-baseline gap-1">

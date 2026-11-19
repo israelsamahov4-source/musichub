@@ -1,11 +1,11 @@
 // TEMPLATE: have an Israeli lawyer review before launch (Privacy Protection Law, Amendment 13). Replace every [placeholder].
 import LegalPage from "./LegalPage";
-import { APP_NAME, LEGAL, SUPPORT_EMAIL } from "@/lib/config";
+import { APP_NAME, LEGAL, SUPPORT_EMAIL, filledList, isFilled } from "@/lib/config";
 
 export default function Privacy() {
   return (
     <LegalPage title="מדיניות פרטיות" updated={LEGAL.updated}>
-      <p>מדיניות זו מסבירה איזה מידע {APP_NAME} ({LEGAL.businessName}, "אנחנו") אוספת, למה, ומה הזכויות שלכם. אנחנו פועלים לפי חוק הגנת הפרטיות, התשמ"א-1981 ותקנותיו.</p>
+      <p>מדיניות זו מסבירה איזה מידע {APP_NAME} ({filledList(LEGAL.businessName, '"אנחנו"')}) אוספת, למה, ומה הזכויות שלכם. אנחנו פועלים לפי חוק הגנת הפרטיות, התשמ"א-1981 ותקנותיו.</p>
       <h2>איזה מידע אנחנו אוספים</h2>
       <ul>
         <li><strong>פרטי חשבון:</strong> שם, אימייל וסיסמה (שמורה מוצפנת), או פרטים מחשבון Google אם התחברתם דרכו.</li>
@@ -27,14 +27,18 @@ export default function Privacy() {
         <li>לעיין במידע ולתקן אותו: דרך עמוד עריכת הפרופיל.</li>
         <li>למחוק את החשבון: בעמוד ההגדרות. המחיקה מסירה את הפרופיל, התוכן והקבצים שלכם.</li>
         <li>לחסום משתמשים ולדווח על תוכן פוגעני.</li>
-        <li>לכל בקשה אחרת: {SUPPORT_EMAIL}.</li>
+        {isFilled(SUPPORT_EMAIL) && <li>לכל בקשה אחרת: {SUPPORT_EMAIL}.</li>}
       </ul>
       <h2>אבטחה</h2>
       <p>התקשורת מוצפנת (HTTPS), הגישה למידע מוגבלת בהרשאות ברמת מסד הנתונים, והודעות פרטיות גלויות רק למשתתפי השיחה. אין שיטה בטוחה במאה אחוז, ואם יקרה אירוע אבטחה נודיע כנדרש בחוק.</p>
       <h2>עוגיות ואחסון מקומי</h2>
       <p>אנחנו משתמשים באחסון המקומי של הדפדפן רק כדי לשמור אתכם מחוברים. איננו משתמשים כרגע בעוגיות פרסום או מעקב.</p>
-      <h2>יצירת קשר</h2>
-      <p>{LEGAL.businessName}, {LEGAL.address}, {SUPPORT_EMAIL}.</p>
+      {filledList(LEGAL.businessName, LEGAL.address, SUPPORT_EMAIL) && (
+        <>
+          <h2>יצירת קשר</h2>
+          <p>{filledList(LEGAL.businessName, LEGAL.address, SUPPORT_EMAIL)}.</p>
+        </>
+      )}
     </LegalPage>
   );
 }

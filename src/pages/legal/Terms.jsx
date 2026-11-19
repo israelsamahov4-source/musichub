@@ -1,12 +1,13 @@
 // TEMPLATE: have an Israeli lawyer review before launch. Replace every [placeholder].
 import { Link } from "react-router-dom";
 import LegalPage from "./LegalPage";
-import { APP_NAME, LEGAL, SUPPORT_EMAIL } from "@/lib/config";
+import { APP_NAME, LEGAL, SUPPORT_EMAIL, filledList, isFilled } from "@/lib/config";
 
 export default function Terms() {
+  const operator = filledList(LEGAL.businessName, LEGAL.businessId, LEGAL.address);
   return (
     <LegalPage title="תנאי שימוש" updated={LEGAL.updated}>
-      <p>ברוכים הבאים ל-{APP_NAME} ("השירות"), המופעל על ידי {LEGAL.businessName}, {LEGAL.businessId}, {LEGAL.address} ("אנחנו"). השימוש בשירות מהווה הסכמה לתנאים אלה. אם אינכם מסכימים להם, אל תשתמשו בשירות.</p>
+      <p>ברוכים הבאים ל-{APP_NAME} {operator ? `("השירות"), המופעל על ידי ${operator} ("אנחנו").` : '("השירות", "אנחנו").'} השימוש בשירות מהווה הסכמה לתנאים אלה. אם אינכם מסכימים להם, אל תשתמשו בשירות.</p>
       <h2>1. החשבון שלכם</h2>
       <ul>
         <li>השימוש מותר מגיל 16 ומעלה. משתמשים מתחת לגיל 18 מצהירים שקיבלו את הסכמת ההורים.</li>
@@ -17,7 +18,7 @@ export default function Terms() {
       <ul>
         <li>התוכן שאתם מעלים (פוסטים, קבצי שמע, תמונות, קורסים) נשאר שלכם. אתם מעניקים לנו רישיון לא בלעדי להציג אותו בשירות לצורך הפעלתו בלבד.</li>
         <li>אתם מצהירים שיש לכם את כל הזכויות בתוכן, כולל זכויות יוצרים וזכויות מבצעים, ושהוא אינו מפר זכויות של אחרים.</li>
-        <li>נסיר תוכן שמפר זכויות יוצרים בהתאם לדיווח מבעל הזכויות לכתובת {SUPPORT_EMAIL}.</li>
+        <li>נסיר תוכן שמפר זכויות יוצרים בהתאם לדיווח מבעל הזכויות{isFilled(SUPPORT_EMAIL) && ` לכתובת ${SUPPORT_EMAIL}`}.</li>
       </ul>
       <h2>3. התנהגות אסורה</h2>
       <ul>
@@ -39,7 +40,7 @@ export default function Terms() {
       <h2>7. פרטיות</h2>
       <p>השימוש במידע האישי שלכם מתואר ב<Link to="/privacy" className="text-primary underline decoration-riso-pink decoration-2 underline-offset-4">מדיניות הפרטיות</Link>.</p>
       <h2>8. שונות</h2>
-      <p>נוכל לעדכן את התנאים מעת לעת ונודיע על שינוי מהותי. על התנאים יחול הדין הישראלי, וסמכות השיפוט הבלעדית נתונה לבתי המשפט ב{LEGAL.courtCity}. ליצירת קשר: {SUPPORT_EMAIL}.</p>
+      <p>נוכל לעדכן את התנאים מעת לעת ונודיע על שינוי מהותי. על התנאים יחול הדין הישראלי{isFilled(LEGAL.courtCity) && `, וסמכות השיפוט הבלעדית נתונה לבתי המשפט ב${LEGAL.courtCity}`}.{isFilled(SUPPORT_EMAIL) && ` ליצירת קשר: ${SUPPORT_EMAIL}.`}</p>
     </LegalPage>
   );
 }
