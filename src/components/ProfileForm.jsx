@@ -10,7 +10,7 @@ import TagPicker from "@/components/TagPicker";
 import CityPicker from "@/components/CityPicker";
 import UserAvatar from "@/components/UserAvatar";
 import { ACCEPT, uploadFile } from "@/lib/upload";
-import { GENRES, INSTRUMENTS, LEVELS, LOOKING_FOR, ROLES } from "@/lib/config";
+import { GENRES, INSTITUTIONS, INSTRUMENTS, LEVELS, LOOKING_FOR, ROLES, STUDY_TRACKS, STUDY_YEARS } from "@/lib/config";
 import { errorMessage, safeUrl } from "@/lib/utils";
 import { DIR, tr } from "@/lib/i18n";
 
@@ -37,6 +37,9 @@ export function profileToForm(p) {
     level: p.musical_roles?.[0]?.level || "intermediate",
     genres: p.genres || [],
     looking_for: p.looking_for || [],
+    institution: p.institution || null,
+    study_track: p.study_track || null,
+    study_year: p.study_year || null,
     links: { ...(p.links || {}) },
   };
 }
@@ -61,6 +64,10 @@ export function formToProfile(f) {
     looking_for: f.looking_for,
     // Kept in step with the list: whoever picked something is open to working together.
     open_for_collaboration: f.looking_for.length > 0,
+    // Track and year only mean something together with an institution.
+    institution: f.institution || null,
+    study_track: f.institution ? f.study_track || null : null,
+    study_year: f.institution ? f.study_year || null : null,
     links,
   };
 }
@@ -91,6 +98,49 @@ const POPULAR = {
   roles: ["vocalist", "instrumentalist", "producer", "songwriter", "composer", "sound_engineer"],
   genres: ["pop", "rock", "hiphop", "mizrahi", "israeli", "electronic", "jazz", "indie"],
 };
+
+// Radix Select can't hold an empty value, so "not chosen" is this key in the menu and null in the profile.
+const NONE = "none";
+
+/** Institution, track and year. Track and year appear once an institution is chosen. */
+function StudiesFields({ form, set }) {
+  const pick = (k) => (v) => set(k)(v === NONE ? null : v);
+  return (
+    <section className="space-y-4">
+      <Field id="institution" label={tr("איפה אני לומד/ת או למדתי")} hint={tr("לא חובה. עוזר לסטודנטים מהמוסד שלכם ומחוצה לו למצוא אתכם.")}>
+        <Select value={form.institution || NONE} onValueChange={pick("institution")} dir={DIR}>
+          <SelectTrigger id="institution" className="sm:w-96"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value={NONE}>{tr("לא לומד/ת מוזיקה כרגע")}</SelectItem>
+            {INSTITUTIONS.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}
+          </SelectContent>
+        </Select>
+      </Field>
+      {form.institution && (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <Field id="study_track" label={tr("מסלול")}>
+            <Select value={form.study_track || NONE} onValueChange={pick("study_track")} dir={DIR}>
+              <SelectTrigger id="study_track"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value={NONE}>{tr("לא צוין")}</SelectItem>
+                {STUDY_TRACKS.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </Field>
+          <Field id="study_year" label={tr("שנת לימודים")}>
+            <Select value={form.study_year || NONE} onValueChange={pick("study_year")} dir={DIR}>
+              <SelectTrigger id="study_year"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value={NONE}>{tr("לא צוין")}</SelectItem>
+                {STUDY_YEARS.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </Field>
+        </div>
+      )}
+    </section>
+  );
+}
 
 /** `compact` is the onboarding version: no cover photo, no level, short option lists and up to 3 genres. */
 export default function ProfileForm({ form, setForm, userId, sections = ["basics", "music", "about", "links"], compact = false, errors = {} }) {
@@ -162,6 +212,8 @@ export default function ProfileForm({ form, setForm, userId, sections = ["basics
           </div>
         </section>
       )}
+
+      {show("studies") && <StudiesFields form={form} set={set} />}
 
       {show("music") && (
         <section className="space-y-4">

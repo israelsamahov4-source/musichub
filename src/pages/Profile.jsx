@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Ban, Briefcase, ExternalLink, Flag, Handshake, MapPin, MessageCircle, MoreHorizontal, Music, Pencil } from "lucide-react";
+import { Ban, Briefcase, ExternalLink, Flag, GraduationCap, Handshake, MapPin, MessageCircle, MoreHorizontal, Music, Pencil } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -22,7 +22,7 @@ import { fetchDetails } from "@/api/details";
 import { MEMBER_PROFILE_COLS, PUBLIC_PROFILE_COLS } from "@/api/profiles";
 import { supabase, unwrap } from "@/lib/supabase";
 import { useAuth } from "@/auth/AuthProvider";
-import { label } from "@/lib/config";
+import { label, studyLine } from "@/lib/config";
 import { errorMessage, formatDate, safeUrl, textDir } from "@/lib/utils";
 import { useAuthHref } from "@/auth/returnTo";
 import { usePageTitle } from "@/lib/usePageTitle";
@@ -179,6 +179,7 @@ export default function Profile() {
               <PlanBadge tier={p.plan_tier} />
             </div>
             <p className="mt-0.5 text-[15px] text-foreground/85">{cv?.headline || roleLine || (p.user_type === "listener" ? tr("חובב/ת מוזיקה") : tr("מוזיקאי/ת"))}</p>
+            {studyLine(p) && <p className="mt-1 flex items-center gap-1.5 text-sm font-medium text-foreground/80"><GraduationCap className="h-4 w-4 shrink-0 text-primary" aria-label={tr("לימודים")} />{studyLine(p)}</p>}
             <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground">
               <span className="ltr">@{p.username}</span>
               {p.location && <span className="flex items-center gap-1"><MapPin className="h-3.5 w-3.5" aria-hidden />{p.location}</span>}

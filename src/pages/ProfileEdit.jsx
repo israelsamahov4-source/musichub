@@ -69,6 +69,7 @@ export default function ProfileEdit() {
     <form className="page-narrow space-y-6" onSubmit={save} noValidate>
       <h1 className="page-title">{tr("עריכת פרופיל")}</h1>
       <Card className="p-5"><h2 className="mb-4 font-semibold">{tr("פרטים בסיסיים")}</h2><ProfileForm form={form} setForm={setForm} userId={user.id} sections={["basics"]} errors={errors} /></Card>
+      <Card className="p-5"><h2 className="mb-4 font-semibold">{tr("לימודים")}</h2><ProfileForm form={form} setForm={setForm} userId={user.id} sections={["studies"]} /></Card>
       <Card className="p-5"><h2 className="mb-4 font-semibold">{tr("מוזיקה")}</h2><ProfileForm form={form} setForm={setForm} userId={user.id} sections={["music"]} /></Card>
       <Card className="p-5"><h2 className="mb-4 font-semibold">{tr("עליי")}</h2><ProfileForm form={form} setForm={setForm} userId={user.id} sections={["about"]} /></Card>
       <Card className="p-5">

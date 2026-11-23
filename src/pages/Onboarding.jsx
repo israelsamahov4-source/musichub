@@ -17,7 +17,7 @@ import { tr } from "@/lib/i18n";
 
 // Two short steps; the CV, bio and links wait for the profile page, once people have seen the site.
 const STEPS = [
-  { title: tr("ברוכים הבאים ל-{0}!", APP_NAME), text: tr("נתחיל מהבסיס: איך יכירו אתכם"), sections: ["basics"] },
+  { title: tr("ברוכים הבאים ל-{0}!", APP_NAME), text: tr("נתחיל מהבסיס: איך יכירו אתכם"), sections: ["basics", "studies"] },
   { title: tr("המוזיקה שלכם"), text: tr("בחרו כלי או תפקיד, ועד 3 ז'אנרים. את השאר אפשר להוסיף אחר כך בפרופיל."), sections: ["music"] },
 ];
 

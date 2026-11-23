@@ -99,6 +99,48 @@ export const LOOKING_FOR = [
   { value: "paid_work", label: tr("עבודה בתשלום") },
 ];
 
+// Studies on the profile. Stored as these keys; to add an institution or a track, add a line here.
+export const INSTITUTIONS = [
+  { value: "jamd", label: tr("האקדמיה למוזיקה ולמחול בירושלים"), short: tr("האקדמיה בירושלים") },
+  { value: "buchmann", label: tr("בית הספר למוזיקה בוכמן-מהטה, אוניברסיטת תל אביב"), short: tr("בוכמן-מהטה") },
+  { value: "rimon", label: tr("רימון"), short: tr("רימון") },
+  { value: "levinsky", label: tr("מכללת לוינסקי"), short: tr("לוינסקי") },
+  { value: "bar_ilan", label: tr("אוניברסיטת בר-אילן"), short: tr("בר-אילן") },
+  { value: "other", label: tr("מוסד אחר"), short: tr("מוסד אחר") },
+];
+
+export const STUDY_TRACKS = [
+  { value: "classical", label: tr("ביצוע קלאסי") },
+  { value: "jazz", label: tr("ג'אז ומוזיקה עכשווית") },
+  { value: "composition", label: tr("הלחנה ועיבוד") },
+  { value: "education", label: tr("חינוך מוזיקלי והוראה") },
+  { value: "production", label: tr("הפקה וטכנולוגיה מוזיקלית") },
+  { value: "musicology", label: tr("מוזיקולוגיה ותאוריה") },
+  { value: "other", label: tr("מסלול אחר") },
+];
+
+export const STUDY_YEARS = [
+  { value: "year1", label: tr("שנה א'") },
+  { value: "year2", label: tr("שנה ב'") },
+  { value: "year3", label: tr("שנה ג'") },
+  { value: "year4", label: tr("שנה ד'") },
+  { value: "masters", label: tr("תואר שני ומעלה") },
+  { value: "alumni", label: tr("בוגר/ת") },
+];
+
+/**
+ * One short line about someone's studies, or "" when no institution is set:
+ * "רימון · ג'אז ומוזיקה עכשווית · שנה ב'", "בוגר/ת רימון · ג'אז ומוזיקה עכשווית", "סטודנט/ית · שנה א'" (other institution).
+ */
+export function studyLine(p) {
+  if (!p?.institution) return "";
+  const place = p.institution !== "other" ? INSTITUTIONS.find((o) => o.value === p.institution)?.short : "";
+  const track = p.study_track && p.study_track !== "other" ? label("studyTracks", p.study_track) : "";
+  if (p.study_year === "alumni") return [place ? tr("בוגר/ת {0}", place) : tr("בוגר/ת"), track].filter(Boolean).join(" · ");
+  const year = p.study_year ? label("studyYears", p.study_year) : "";
+  return [place || tr("סטודנט/ית"), track, year].filter(Boolean).join(" · ");
+}
+
 export const PROJECT_TYPES = [
   { value: "single", label: tr("סינגל") },
   { value: "album", label: tr("אלבום / EP") },
@@ -156,6 +198,9 @@ export const LABELS = {
   levels: toMap(LEVELS),
   genres: toMap(GENRES),
   lookingFor: toMap(LOOKING_FOR),
+  institutions: toMap(INSTITUTIONS),
+  studyTracks: toMap(STUDY_TRACKS),
+  studyYears: toMap(STUDY_YEARS),
   projectTypes: toMap(PROJECT_TYPES),
   projectStatus: toMap(PROJECT_STATUS),
   courseCategories: toMap(COURSE_CATEGORIES),

@@ -280,6 +280,14 @@ await denied('nobody can read the suspended flag of others', () => as('carol', '
 await ok('members can read the full public profile', async () => {
   assert((await as('carol', 'select bio, location, links from profiles where id = $1', [users.bob])).rowCount === 1);
 });
+await denied('visitors cannot read where someone studies', () => as(null, 'select institution, study_track, study_year from profiles'));
+await ok('members can read where someone studies, and set their own', async () => {
+  await as('bob', "update profiles set institution = 'rimon', study_track = 'jazz', study_year = 'year2' where id = $1", [users.bob]);
+  const r = await as('carol', 'select institution, study_year from profiles where id = $1', [users.bob]);
+  assert(r.rows[0].institution === 'rimon' && r.rows[0].study_year === 'year2');
+});
+await denied('a study year must be one of the listed values', () =>
+  as('bob', "update profiles set study_year = 'year9' where id = $1", [users.bob]));
 await ok('a user can read their own account flags', async () => {
   const r = await as('bob', 'select my_account() as a'); assert(r.rows[0].a.is_admin === false);
 });

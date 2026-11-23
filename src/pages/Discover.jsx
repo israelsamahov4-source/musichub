@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { Handshake, MapPin, Search, SlidersHorizontal, Users } from "lucide-react";
+import { GraduationCap, Handshake, MapPin, Search, SlidersHorizontal, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -17,14 +17,16 @@ import EmptyState from "@/components/EmptyState";
 import PageHeader from "@/components/PageHeader";
 import Field from "@/components/Field";
 import { supabase, unwrap } from "@/lib/supabase";
-import { GENRES, INSTRUMENTS, LOOKING_FOR, ROLES, label } from "@/lib/config";
+import { GENRES, INSTITUTIONS, INSTRUMENTS, LOOKING_FOR, ROLES, STUDY_TRACKS, STUDY_YEARS, label, studyLine } from "@/lib/config";
 import { useAuth } from "@/auth/AuthProvider";
 import { cleanSearch, cn } from "@/lib/utils";
 import LoadError from "@/components/LoadError";
 import { tr } from "@/lib/i18n";
 
 const PAGE = 24;
-const EMPTY = { q: "", location: "", instruments: [], genres: [], lookingFor: [], roles: [], openOnly: false };
+const EMPTY = { q: "", location: "", instruments: [], genres: [], lookingFor: [], roles: [], openOnly: false, institutions: [], tracks: [], years: [], studentsOnly: false };
+// Chips show the short institution names ("רימון", "בוכמן-מהטה").
+const INSTITUTION_CHIPS = INSTITUTIONS.map((o) => ({ value: o.value, label: o.short }));
 
 function useDebounced(value, ms = 350) {
   const [v, setV] = useState(value);
@@ -44,6 +46,7 @@ function MusicianCard({ p }) {
           <span className="truncate">{p.full_name || p.username}</span>
         </Link>
         <p className="mt-0.5 line-clamp-2 min-h-[2.5rem] text-[13px] leading-5 text-muted-foreground">{subtitle}</p>
+        {studyLine(p) && <p className="mt-1 flex max-w-full items-center gap-1 text-xs font-medium text-foreground/75"><GraduationCap className="h-3.5 w-3.5 shrink-0 text-primary" aria-label={tr("לימודים")} /><span className="truncate">{studyLine(p)}</span></p>}
         {p.location && <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground"><MapPin className="h-3 w-3" aria-hidden />{p.location}</p>}
         {p.looking_for?.length > 0 && (
           <p className="mt-2 flex max-w-full items-center gap-1 rounded-full bg-[#FFF0F4] px-2.5 py-0.5 text-xs font-semibold text-[#8E1840]" title={p.looking_for.map((v) => label("lookingFor", v)).join(", ")}>
@@ -71,14 +74,15 @@ export default function Discover() {
   const q = useDebounced(cleanSearch(f.q));
   const location = useDebounced(cleanSearch(f.location));
   const set = (k) => (v) => setF((s) => ({ ...s, [k]: v }));
-  const activeCount = f.instruments.length + f.genres.length + f.lookingFor.length + f.roles.length + (f.location ? 1 : 0) + (f.openOnly ? 1 : 0);
+  const activeCount = f.instruments.length + f.genres.length + f.lookingFor.length + f.roles.length + (f.location ? 1 : 0) + (f.openOnly ? 1 : 0)
+    + f.institutions.length + f.tracks.length + f.years.length + (f.studentsOnly ? 1 : 0);
 
   const query = useInfiniteQuery({
-    queryKey: ["discover", q, location, f.instruments, f.genres, f.lookingFor, f.roles, f.openOnly],
+    queryKey: ["discover", q, location, f.instruments, f.genres, f.lookingFor, f.roles, f.openOnly, f.institutions, f.tracks, f.years, f.studentsOnly],
     initialPageParam: 0,
     queryFn: async ({ pageParam }) => {
       let s = supabase.from("profiles")
-        .select("id, username, full_name, avatar_url, bio, location, user_type, instruments, genres, musical_roles, looking_for, plan_tier, details:profile_details(headline)")
+        .select("id, username, full_name, avatar_url, bio, location, user_type, instruments, genres, musical_roles, looking_for, institution, study_track, study_year, plan_tier, details:profile_details(headline)")
         .eq("onboarding_completed", true).neq("id", user.id)
         .order("created_at", { ascending: false }).range(pageParam * PAGE, pageParam * PAGE + PAGE - 1);
       if (q) s = s.or(`full_name.ilike.%${q}%,username.ilike.%${q}%,bio.ilike.%${q}%`);
@@ -94,6 +98,10 @@ export default function Discover() {
       if (f.lookingFor.length) s = s.overlaps("looking_for", f.lookingFor);
       if (f.roles.length) s = s.overlaps("role_list", f.roles);
       if (f.openOnly) s = s.neq("looking_for", "{}"); // picked at least one thing they are looking for
+      if (f.institutions.length) s = s.in("institution", f.institutions);
+      if (f.tracks.length) s = s.in("study_track", f.tracks);
+      if (f.years.length) s = s.in("study_year", f.years);
+      if (f.studentsOnly) s = s.not("institution", "is", null); // students and alumni
       return unwrap(await s);
     },
     getNextPageParam: (last, pages) => (last.length === PAGE ? pages.length : undefined),
@@ -102,7 +110,7 @@ export default function Discover() {
 
   return (
     <div>
-    <PageHeader title={tr("מוזיקאים")} text={tr("מצאו נגנים, זמרים, מפיקים ומורים לפי כלי, תפקיד, ז'אנר ומיקום.")} />
+    <PageHeader title={tr("מוזיקאים")} text={tr("מצאו נגנים, זמרים, מפיקים ומורים לפי כלי, מוסד לימודים, תפקיד, ז'אנר ומיקום.")} />
     <div className="page">
       <div className="flex gap-2">
         <div className="relative flex-1">
@@ -113,7 +121,11 @@ export default function Discover() {
           <SlidersHorizontal />{tr("סינון")}{activeCount > 0 && ` (${activeCount})`}
         </Button>
       </div>
-      <div className="no-scrollbar -mx-4 mt-3 flex gap-2 overflow-x-auto px-4" role="group" aria-label={tr("סינון מהיר לפי כלי")}>
+      <div className="no-scrollbar -mx-4 mt-3 flex gap-2 overflow-x-auto px-4" role="group" aria-label={tr("סינון מהיר")}>
+        <button type="button" aria-pressed={f.studentsOnly} onClick={() => set("studentsOnly")(!f.studentsOnly)}
+          className={cn("flex min-h-9 shrink-0 items-center gap-1.5 rounded-full px-4 text-sm font-semibold transition-colors", f.studentsOnly ? "bg-primary text-white" : "bg-card text-foreground/80 shadow-[inset_0_0_0_1px_hsl(var(--border))] hover:bg-muted")}>
+          <GraduationCap className="h-4 w-4" aria-hidden />{tr("סטודנטים ובוגרים")}
+        </button>
         {QUICK.filter((v) => INSTRUMENTS.some((o) => o.value === v)).map((v) => {
           const on = f.instruments.includes(v);
           return (
@@ -128,6 +140,11 @@ export default function Discover() {
 
       {showFilters && (
         <Card className="mt-3 space-y-4 p-4">
+          <Field label={tr("מוסד לימודים")}><TagPicker options={INSTITUTION_CHIPS} value={f.institutions} onChange={set("institutions")} label={tr("מוסד לימודים")} /></Field>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <Field label={tr("מסלול")}><TagPicker options={STUDY_TRACKS} value={f.tracks} onChange={set("tracks")} label={tr("מסלול")} /></Field>
+            <Field label={tr("שנת לימודים")}><TagPicker options={STUDY_YEARS} value={f.years} onChange={set("years")} label={tr("שנת לימודים")} /></Field>
+          </div>
           <Field label={tr("כלי נגינה")}><TagPicker options={INSTRUMENTS} value={f.instruments} onChange={set("instruments")} label={tr("כלי נגינה")} /></Field>
           <Field label={tr("תפקיד")}><TagPicker options={ROLES} value={f.roles} onChange={set("roles")} label={tr("תפקיד")} /></Field>
           <Field label={tr("ז'אנר")}><TagPicker options={GENRES} value={f.genres} onChange={set("genres")} label={tr("ז'אנר")} /></Field>
