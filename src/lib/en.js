@@ -790,6 +790,17 @@ const EN = {
   "יוצרים חשבון…": "Creating account…",
   "יצירת חשבון": "Create account",
   "סגירה": "Close",
+  "קובץ תווים": "Sheet music file",
+  "PDF או תמונה, עד 20MB. התלמידים יוכלו לפתוח אותו ליד הסרטון ולהוריד אותו.": "PDF or image, up to 20MB. Students can open it next to the video and download it.",
+  "החלפה": "Replace",
+  "הסרת קובץ התווים": "Remove sheet music",
+  "העלאת קובץ תווים": "Upload sheet music",
+  "יש קובץ תווים": "Has sheet music",
+  "תווים לשיעור": "Sheet music for this lesson",
+  "סגירת התווים": "Hide sheet music",
+  "פתיחת התווים": "Open sheet music",
+  "הורדה": "Download",
+  "פתיחה בחלון חדש": "Open in a new window",
 };
 
 export default EN;

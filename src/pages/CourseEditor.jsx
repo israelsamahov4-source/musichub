@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowDown, ArrowUp, Camera, Eye, Loader2, Pencil, Plus, Trash2, X } from "lucide-react";
+import { ArrowDown, ArrowUp, Camera, Eye, FileMusic, Loader2, Pencil, Plus, Trash2, Upload, X } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -24,10 +24,22 @@ import { usePageTitle } from "@/lib/usePageTitle";
 import { DIR, tr } from "@/lib/i18n";
 
 const EMPTY = { title: "", description: "", category: "guitar", level: "beginner", cover_url: null, what_you_learn: [], is_free: true, is_published: false };
-const EMPTY_LESSON = { title: "", description: "", video_url: "", duration_minutes: "", is_preview: false };
+const EMPTY_LESSON = { title: "", description: "", video_url: "", duration_minutes: "", is_preview: false, sheet_music_url: null, sheet_music_name: null };
 
-function LessonDialog({ open, onOpenChange, initial, onSave, saving }) {
+function LessonDialog({ open, onOpenChange, initial, onSave, saving, userId }) {
   const [l, setL] = useState(initial);
+  const [sheetUploading, setSheetUploading] = useState(false);
+  const sheetRef = useRef(null);
+  const onSheet = async (e) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    setSheetUploading(true);
+    try {
+      const url = await uploadFile(file, { kind: "sheet", userId });
+      setL((cur) => ({ ...cur, sheet_music_url: url, sheet_music_name: file.name.slice(0, 200) }));
+    } catch (err) { toast.error(errorMessage(err)); } finally { setSheetUploading(false); }
+  };
   useEffect(() => setL(initial), [initial]);
   const set = (k) => (e) => setL({ ...l, [k]: e?.target ? e.target.value : e });
   const videoOk = !l.video_url || safeUrl(normalizeUrl(l.video_url));
@@ -40,12 +52,27 @@ function LessonDialog({ open, onOpenChange, initial, onSave, saving }) {
           <Input id="lv" dir="ltr" value={l.video_url} onChange={set("video_url")} placeholder="https://youtu.be/…" />
         </Field>
         {l.video_url && videoOk && !videoEmbedUrl(normalizeUrl(l.video_url)) && <p className="text-xs text-amber-700">{tr("הקישור יוצג כקישור חיצוני (לא נגן מוטמע).")}</p>}
+        <Field label={tr("קובץ תווים")} hint={tr("PDF או תמונה, עד 20MB. התלמידים יוכלו לפתוח אותו ליד הסרטון ולהוריד אותו.")}>
+          <input ref={sheetRef} type="file" accept={ACCEPT.sheet} hidden onChange={onSheet} />
+          {l.sheet_music_url ? (
+            <div className="flex items-center gap-2 rounded-md border p-2 text-sm">
+              <FileMusic className="h-4 w-4 shrink-0 text-primary" aria-hidden />
+              <span className="flex-1 truncate" dir="auto">{l.sheet_music_name || tr("קובץ תווים")}</span>
+              <Button type="button" size="sm" variant="ghost" onClick={() => sheetRef.current?.click()} disabled={sheetUploading}>{tr("החלפה")}</Button>
+              <Button type="button" size="icon" variant="ghost" className="h-7 w-7" aria-label={tr("הסרת קובץ התווים")} onClick={() => setL({ ...l, sheet_music_url: null, sheet_music_name: null })}><X /></Button>
+            </div>
+          ) : (
+            <Button type="button" variant="outline" onClick={() => sheetRef.current?.click()} disabled={sheetUploading}>
+              {sheetUploading ? <Loader2 className="animate-spin" /> : <Upload />}{tr("העלאת קובץ תווים")}
+            </Button>
+          )}
+        </Field>
         <Field id="ld" label={tr("תיאור / הערות לשיעור")}><Textarea id="ld" value={l.description} onChange={set("description")} maxLength={10000} rows={5} /></Field>
         <div className="flex flex-wrap items-end gap-4">
           <Field id="lm" label={tr("משך (דקות)")}><Input id="lm" type="number" min={0} max={600} value={l.duration_minutes} onChange={set("duration_minutes")} className="w-28" /></Field>
           <label className="flex items-center gap-2 pb-2 text-sm"><Switch aria-label={tr("שיעור לצפייה חינם")} checked={l.is_preview} onCheckedChange={set("is_preview")} />{tr("שיעור לצפייה חינם (גם בלי הרשמה)")}</label>
         </div>
-        <DialogFooter><Button onClick={() => onSave(l)} disabled={!l.title.trim() || !videoOk || saving}>{tr("שמירה")}</Button></DialogFooter>
+        <DialogFooter><Button onClick={() => onSave(l)} disabled={!l.title.trim() || !videoOk || saving || sheetUploading}>{tr("שמירה")}</Button></DialogFooter>
       </DialogContent>
     </Dialog>
   );
@@ -107,6 +134,8 @@ export default function CourseEditor() {
         video_url: l.video_url ? normalizeUrl(l.video_url) : null,
         duration_minutes: l.duration_minutes === "" || l.duration_minutes == null ? null : Math.max(0, Math.min(600, Number(l.duration_minutes))),
         is_preview: l.is_preview,
+        sheet_music_url: l.sheet_music_url || null,
+        sheet_music_name: l.sheet_music_url ? (l.sheet_music_name || null) : null,
       };
       if (l.id) return unwrap(await supabase.from("lessons").update(values).eq("id", l.id));
       const position = (lessons.data?.at(-1)?.position ?? 0) + 1;
@@ -228,7 +257,7 @@ export default function CourseEditor() {
                 {list.map((l, i) => (
                   <li key={l.id} className="flex items-center gap-2 rounded-md border p-2.5 text-sm">
                     <span className="w-5 text-muted-foreground">{i + 1}</span>
-                    <span className="flex-1 truncate">{l.title}{l.is_preview && <span className="ms-2 text-xs text-primary">{tr("חינם")}</span>}{!l.video_url && <span className="ms-2 text-xs text-amber-700">{tr("ללא וידאו")}</span>}</span>
+                    <span className="flex-1 truncate">{l.title}{l.is_preview && <span className="ms-2 text-xs text-primary">{tr("חינם")}</span>}{!l.video_url && <span className="ms-2 text-xs text-amber-700">{tr("ללא וידאו")}</span>}{l.sheet_music_url && <FileMusic className="ms-2 inline h-3.5 w-3.5 text-muted-foreground" aria-label={tr("יש קובץ תווים")} />}</span>
                     <Button size="icon" variant="ghost" className="h-7 w-7" aria-label={tr("למעלה")} disabled={i === 0} onClick={() => move.mutate({ a: l, b: list[i - 1] })}><ArrowUp /></Button>
                     <Button size="icon" variant="ghost" className="h-7 w-7" aria-label={tr("למטה")} disabled={i === list.length - 1} onClick={() => move.mutate({ a: l, b: list[i + 1] })}><ArrowDown /></Button>
                     <Button size="icon" variant="ghost" className="h-7 w-7" aria-label={tr("עריכה")} onClick={() => setLessonDialog({ ...l, video_url: l.video_url || "", duration_minutes: l.duration_minutes ?? "" })}><Pencil /></Button>
@@ -256,7 +285,7 @@ export default function CourseEditor() {
       )}
 
       {lessonDialog && (
-        <LessonDialog open onOpenChange={(o) => !o && setLessonDialog(null)} initial={lessonDialog} saving={saveLesson.isPending} onSave={(l) => saveLesson.mutate(l)} />
+        <LessonDialog open onOpenChange={(o) => !o && setLessonDialog(null)} initial={lessonDialog} userId={user.id} saving={saveLesson.isPending} onSave={(l) => saveLesson.mutate(l)} />
       )}
     </div>
   );

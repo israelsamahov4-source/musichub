@@ -6,6 +6,8 @@ const KINDS = {
     types: ["audio/mpeg", "audio/mp3", "audio/wav", "audio/x-wav", "audio/ogg", "audio/mp4", "audio/aac", "audio/flac", "audio/webm", "audio/x-m4a"],
     maxMB: 25,
   },
+  // Sheet music: a PDF, or a photo / scan of the page.
+  sheet: { types: ["application/pdf", "image/jpeg", "image/png", "image/webp"], maxMB: 20 },
 };
 
 /**
@@ -27,4 +29,4 @@ export async function uploadFile(file, { bucket = "media", kind = "image", userI
   return supabase.storage.from(bucket).getPublicUrl(path).data.publicUrl;
 }
 
-export const ACCEPT = { image: KINDS.image.types.join(","), audio: KINDS.audio.types.join(",") };
+export const ACCEPT = { image: KINDS.image.types.join(","), audio: KINDS.audio.types.join(","), sheet: KINDS.sheet.types.join(",") };

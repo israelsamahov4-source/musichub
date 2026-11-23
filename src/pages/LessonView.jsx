@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import MediaView from "@/components/MediaView";
+import SheetMusic from "@/components/SheetMusic";
 import PageLoader from "@/components/PageLoader";
 import EmptyState from "@/components/EmptyState";
 import { supabase, unwrap } from "@/lib/supabase";
@@ -61,6 +62,7 @@ export default function LessonView() {
         <Link to={`/courses/${id}`} className="text-sm text-muted-foreground hover:underline">{c.title}</Link>
         <h1 className="text-2xl font-bold tracking-tight md:text-[1.75rem]">{l.title}</h1>
         {l.video_url ? <MediaView url={l.video_url} type="video" title={l.title} /> : <Card className="p-6 text-center text-sm text-muted-foreground">{tr("לשיעור הזה אין וידאו.")}</Card>}
+        {l.sheet_music_url && <SheetMusic url={l.sheet_music_url} name={l.sheet_music_name} />}
         {l.description && <Card className="p-5"><p className="whitespace-pre-wrap break-words leading-relaxed">{l.description}</p></Card>}
         <div className="flex flex-wrap items-center gap-2">
           {prev && <Button asChild variant="outline"><Link to={`/courses/${id}/lessons/${prev.id}`}><ArrowRight className="ltr:rotate-180" />{tr("הקודם")}</Link></Button>}
