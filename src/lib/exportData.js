@@ -20,13 +20,13 @@ async function all(build) {
 export async function downloadMyData(userId, email) {
   const mine = (table, col = "user_id", select = "*") => all(() => supabase.from(table).select(select).eq(col, userId).order("created_at"));
   const [profile, cv, subscription, posts, comments, likes, following, followers, notifications, memberships,
-    projectsOwned, tasksCreated, tasksAssigned, courses, enrollments, progress, blocks, reports, conversations] = await Promise.all([
+    projectsOwned, tasksCreated, tasksAssigned, scoresWritten, courses, enrollments, progress, blocks, reports, conversations] = await Promise.all([
     supabase.from("profiles").select(MEMBER_PROFILE_COLS).eq("id", userId).single().then(unwrap),
     supabase.from("profile_details").select("*").eq("user_id", userId).maybeSingle().then(unwrap),
     supabase.from("subscriptions").select("tier, status, billing_cycle, current_period_end, provider").eq("user_id", userId).maybeSingle().then(unwrap),
     mine("posts", "author_id"), mine("post_comments", "author_id"), mine("post_likes"),
     mine("follows", "follower_id"), mine("follows", "following_id"), mine("notifications"),
-    mine("collab_members"), mine("collab_projects", "owner_id"), mine("collab_tasks", "created_by"), mine("collab_tasks", "assignee_id"),
+    mine("collab_members"), mine("collab_projects", "owner_id"), mine("collab_tasks", "created_by"), mine("collab_tasks", "assignee_id"), mine("collab_scores", "created_by"),
     mine("courses", "instructor_id"), mine("enrollments"),
     all(() => supabase.from("lesson_progress").select("*").eq("user_id", userId).order("completed_at")),
     mine("blocks", "blocker_id"), mine("reports", "reporter_id"),
@@ -49,7 +49,7 @@ export async function downloadMyData(userId, email) {
   const data = {
     exported_at: new Date().toISOString(), account: { id: userId, email }, profile, cv, subscription,
     posts, comments, likes, following, followers, notifications,
-    projects_owned: projectsOwned, project_memberships: memberships, tasks_created: tasksCreated, tasks_assigned: tasksAssigned,
+    projects_owned: projectsOwned, project_memberships: memberships, tasks_created: tasksCreated, tasks_assigned: tasksAssigned, project_scores_written: scoresWritten,
     courses_taught: courses, lessons_taught: lessons, enrollments, lesson_progress: progress,
     blocked_users: blocks, reports_sent: reports, conversations: threads,
   };

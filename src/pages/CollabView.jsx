@@ -14,6 +14,7 @@ import UserAvatar, { brandFor } from "@/components/UserAvatar";
 import PageLoader from "@/components/PageLoader";
 import EmptyState from "@/components/EmptyState";
 import ConfirmDialog from "@/components/ConfirmDialog";
+import ProjectScores from "@/components/ProjectScores";
 import { ProjectFields } from "@/pages/Collabs";
 import CvView, { LookingForBadges } from "@/components/CvView";
 import { fetchDetailsMap } from "@/api/details";
@@ -279,8 +280,13 @@ export default function CollabView() {
 
       <div className="grid gap-5 lg:grid-cols-[1fr_300px]">
         <div className="min-w-0">
-          {isMember ? <Tasks projectId={id} members={p.members} /> : (
-            <Card className="p-5 text-center text-sm text-muted-foreground">{tr("המשימות של הפרויקט גלויות רק לחברי הפרויקט.")}</Card>
+          {isMember ? (
+            <div className="space-y-5">
+              <Tasks projectId={id} members={p.members} />
+              <ProjectScores projectId={id} isOwner={isOwner} />
+            </div>
+          ) : (
+            <Card className="p-5 text-center text-sm text-muted-foreground">{tr("המשימות והתווים של הפרויקט גלויים רק לחברי הפרויקט.")}</Card>
           )}
         </div>
         <aside className="space-y-4">

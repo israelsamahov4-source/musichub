@@ -1,7 +1,7 @@
 import { supabase, unwrap } from "@/lib/supabase";
 
 export const AUTHOR = "id, username, full_name, avatar_url, plan_tier";
-const POST_SELECT = `id, content, media_url, media_type, genres, collaboration_wanted, created_at, author_id,
+const POST_SELECT = `id, content, media_url, media_type, notation, genres, collaboration_wanted, created_at, author_id,
   author:profiles!posts_author_id_fkey(${AUTHOR}), likes:post_likes(count), comments:post_comments(count)`;
 
 async function withMyLikes(posts, userId) {

@@ -174,6 +174,26 @@ await ok('owner approves carol; carol can now add tasks', async () => {
 });
 await denied('cannot assign a task to a non-member', () => as('carol', `insert into collab_tasks (project_id, title, assignee_id) values ($1, 'x', $2)`, [projId, users.dave]));
 await denied('outsider cannot see tasks', () => as('dave', 'select * from collab_tasks'));
+let scoreId;
+await ok('a member writes sheet music in the project, and saving records who saved', async () => {
+  scoreId = (await as('carol', `insert into collab_scores (project_id, title, notation) values ($1, 'Bass part', 'X:1\nK:C\nC4 D4 E4 F4 |') returning id, updated_by`, [projId])).rows[0];
+  assert(scoreId.updated_by === users.carol); scoreId = scoreId.id;
+});
+await ok('another member can edit it', async () => {
+  const r = await as('alice', `update collab_scores set title = 'Bass part v2' where id = $1 returning updated_by`, [scoreId]);
+  assert(r.rowCount === 1 && r.rows[0].updated_by === users.alice);
+});
+await ok('outsider cannot see project sheet music', async () => {
+  assert((await as('dave', 'select * from collab_scores where id = $1', [scoreId])).rowCount === 0);
+});
+await denied('outsider cannot add sheet music to a project', () =>
+  as('dave', `insert into collab_scores (project_id, notation) values ($1, 'X:1')`, [projId]));
+await denied('sheet music cannot be saved in someone else\'s name', () =>
+  as('carol', `insert into collab_scores (project_id, notation, created_by) values ($1, 'X:1', $2)`, [projId, users.alice]));
+await ok('a post can hold only sheet music', async () => {
+  await as('bob', `insert into posts (author_id, notation) values ($1, 'X:1\nK:C\nC4 |')`, [users.bob]);
+});
+await denied('an empty post is still refused', () => as('bob', `insert into posts (author_id) values ($1)`, [users.bob]));
 await ok('owner invites bob, bob accepts', async () => {
   await as('alice', `insert into collab_members (project_id, user_id, status) values ($1, $2, 'invited')`, [projId, users.bob]);
   await as('bob', `update collab_members set status = 'active' where project_id = $1 and user_id = $2`, [projId, users.bob]);

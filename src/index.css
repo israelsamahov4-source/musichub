@@ -80,3 +80,6 @@
     transition-property: color, background-color, border-color, opacity, box-shadow, text-decoration-color !important;
   }
 }
+
+/* Sheet music: the note that is sounding right now. */
+.score-view .abcjs-playing { fill: hsl(var(--primary)); stroke: hsl(var(--primary)); }

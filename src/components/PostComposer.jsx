@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Image as ImageIcon, Loader2, Music, Tag, Video, X } from "lucide-react";
+import { Image as ImageIcon, Loader2, Music, PenLine, Tag, Video, X } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import UserAvatar from "@/components/UserAvatar";
 import MediaView from "@/components/MediaView";
 import TagPicker from "@/components/TagPicker";
+import { ScoreEditorDialog, ScoreView } from "@/components/notation";
 import { supabase, unwrap } from "@/lib/supabase";
 import { ACCEPT, uploadFile } from "@/lib/upload";
 import { GENRES } from "@/lib/config";
@@ -23,6 +24,8 @@ export default function PostComposer() {
   const qc = useQueryClient();
   const [content, setContent] = useState("");
   const [media, setMedia] = useState(null); // { url, type }
+  const [notation, setNotation] = useState(null); // sheet music written in the editor (ABC text)
+  const [writing, setWriting] = useState(false);
   const [linkMode, setLinkMode] = useState(false);
   const [link, setLink] = useState("");
   const [linkError, setLinkError] = useState(null);
@@ -65,20 +68,21 @@ export default function PostComposer() {
         content: content.trim(),
         media_url: media?.url ?? null,
         media_type: media?.type ?? null,
+        notation,
         genres,
         collaboration_wanted: collab,
       })),
     onSuccess: () => {
-      setContent(""); setMedia(null); setGenres([]); setCollab(false); setShowGenres(false); setExpanded(false);
+      setContent(""); setMedia(null); setNotation(null); setGenres([]); setCollab(false); setShowGenres(false); setExpanded(false);
       toast.success(tr("הפוסט פורסם"));
       qc.invalidateQueries({ queryKey: ["posts"] });
     },
     onError: (e) => toast.error(errorMessage(e)),
   });
 
-  const canPost = (content.trim() || media) && !uploading && !publish.isPending;
+  const canPost = (content.trim() || media || notation) && !uploading && !publish.isPending;
   // On phones the box starts as one line and opens when you tap it, like other social apps.
-  const open = expanded || Boolean(content) || Boolean(media) || linkMode || showGenres;
+  const open = expanded || Boolean(content) || Boolean(media) || Boolean(notation) || linkMode || showGenres;
 
   return (
     <Card className="p-4">
@@ -101,6 +105,17 @@ export default function PostComposer() {
               <Button size="icon" variant="secondary" className="absolute end-2 top-2 h-7 w-7" onClick={() => setMedia(null)} aria-label={tr("הסרת מדיה")}><X /></Button>
             </div>
           )}
+          {notation && (
+            <div className="relative">
+              <ScoreView abc={notation} actions={false} />
+              <div className="absolute end-2 top-2 flex gap-1">
+                <Button size="sm" variant="secondary" className="h-7" onClick={() => setWriting(true)}>{tr("עריכה")}</Button>
+                <Button size="icon" variant="secondary" className="h-7 w-7" onClick={() => setNotation(null)} aria-label={tr("הסרת התווים")}><X /></Button>
+              </div>
+            </div>
+          )}
+          <ScoreEditorDialog open={writing} onOpenChange={setWriting} initialAbc={notation}
+            onSave={(abc) => { setNotation(abc); setWriting(false); setExpanded(true); }} />
           {linkMode && (
             <div className="flex gap-2">
               <Input dir="ltr" value={link} onChange={(e) => { setLink(e.target.value); setLinkError(null); }} placeholder="https://youtube.com/…" aria-label={tr("קישור")}
@@ -117,6 +132,7 @@ export default function PostComposer() {
             <Button variant="ghost" size="sm" onClick={() => imageRef.current?.click()} disabled={uploading || !!media}><ImageIcon className="text-primary" />{tr("תמונה")}</Button>
             <Button variant="ghost" size="sm" onClick={() => audioRef.current?.click()} disabled={uploading || !!media}><Music className="text-riso-pink" />{tr("שמע")}</Button>
             <Button variant="ghost" size="sm" onClick={() => setLinkMode((v) => !v)} disabled={uploading || !!media}><Video className="text-[#C79300]" />{tr("וידאו או קישור")}</Button>
+            <Button variant="ghost" size="sm" onClick={() => setWriting(true)}><PenLine className="text-primary" />{notation ? tr("עריכת תווים") : tr("תווים")}</Button>
             <Button variant="ghost" size="sm" onClick={() => setShowGenres((v) => !v)} aria-expanded={showGenres}><Tag className="text-muted-foreground" />{tr("ז'אנר")}</Button>
             {uploading && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" aria-label={tr("מעלה…")} />}
             <div className="ms-auto flex items-center gap-3">

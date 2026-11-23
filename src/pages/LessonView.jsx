@@ -1,11 +1,13 @@
 import { Link, useParams } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, ArrowRight, CheckCircle2, Circle, Lock } from "lucide-react";
+import { ArrowLeft, ArrowRight, CheckCircle2, Circle, FileMusic, Lock } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import MediaView from "@/components/MediaView";
 import SheetMusic from "@/components/SheetMusic";
+import { ScoreView } from "@/components/notation";
+import { parseAbc } from "@/lib/notation";
 import PageLoader from "@/components/PageLoader";
 import EmptyState from "@/components/EmptyState";
 import { supabase, unwrap } from "@/lib/supabase";
@@ -62,6 +64,12 @@ export default function LessonView() {
         <Link to={`/courses/${id}`} className="text-sm text-muted-foreground hover:underline">{c.title}</Link>
         <h1 className="text-2xl font-bold tracking-tight md:text-[1.75rem]">{l.title}</h1>
         {l.video_url ? <MediaView url={l.video_url} type="video" title={l.title} /> : <Card className="p-6 text-center text-sm text-muted-foreground">{tr("לשיעור הזה אין וידאו.")}</Card>}
+        {l.notation && (
+          <Card className="p-4">
+            <h2 className="mb-3 flex items-center gap-2 font-semibold"><FileMusic className="h-5 w-5 text-primary" aria-hidden />{parseAbc(l.notation).title || tr("התווים של השיעור")}</h2>
+            <ScoreView abc={l.notation} />
+          </Card>
+        )}
         {l.sheet_music_url && <SheetMusic url={l.sheet_music_url} name={l.sheet_music_name} />}
         {l.description && <Card className="p-5"><p className="whitespace-pre-wrap break-words leading-relaxed">{l.description}</p></Card>}
         <div className="flex flex-wrap items-center gap-2">

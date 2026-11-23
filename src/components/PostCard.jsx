@@ -9,6 +9,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import UserAvatar from "@/components/UserAvatar";
 import PlanBadge from "@/components/PlanBadge";
 import MediaView from "@/components/MediaView";
+import { ScoreView } from "@/components/notation";
 import Comments from "@/components/Comments";
 import ReportDialog from "@/components/ReportDialog";
 import ConfirmDialog from "@/components/ConfirmDialog";
@@ -114,6 +115,7 @@ export default function PostCard({ post, defaultShowComments = false, onDeleted 
         )}
         {post.content && <p dir={textDir(post.content)} className="whitespace-pre-wrap break-words text-start text-[15px] leading-relaxed">{post.content}</p>}
         {post.media_url && <MediaView url={post.media_url} type={post.media_type} subtitle={name} />}
+        {post.notation && <ScoreView abc={post.notation} />}
         {post.genres?.length > 0 && (
           <div className="flex flex-wrap gap-1.5">{post.genres.map((g) => <span key={g} className="chip">{label("genres", g)}</span>)}</div>
         )}

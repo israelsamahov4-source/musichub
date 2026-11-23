@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowDown, ArrowUp, Camera, Eye, FileMusic, Loader2, Pencil, Plus, Trash2, Upload, X } from "lucide-react";
+import { ArrowDown, ArrowUp, Camera, Eye, FileMusic, Loader2, PenLine, Pencil, Plus, Trash2, Upload, X } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -14,6 +14,8 @@ import Field from "@/components/Field";
 import PageLoader from "@/components/PageLoader";
 import EmptyState from "@/components/EmptyState";
 import ConfirmDialog from "@/components/ConfirmDialog";
+import { ScoreEditorDialog } from "@/components/notation";
+import { parseAbc } from "@/lib/notation";
 import { supabase, unwrap } from "@/lib/supabase";
 import { ACCEPT, uploadFile } from "@/lib/upload";
 import { canTeach } from "@/api/courses";
@@ -24,11 +26,12 @@ import { usePageTitle } from "@/lib/usePageTitle";
 import { DIR, tr } from "@/lib/i18n";
 
 const EMPTY = { title: "", description: "", category: "guitar", level: "beginner", cover_url: null, what_you_learn: [], is_free: true, is_published: false };
-const EMPTY_LESSON = { title: "", description: "", video_url: "", duration_minutes: "", is_preview: false, sheet_music_url: null, sheet_music_name: null };
+const EMPTY_LESSON = { title: "", description: "", video_url: "", duration_minutes: "", is_preview: false, sheet_music_url: null, sheet_music_name: null, notation: null };
 
 function LessonDialog({ open, onOpenChange, initial, onSave, saving, userId }) {
   const [l, setL] = useState(initial);
   const [sheetUploading, setSheetUploading] = useState(false);
+  const [writing, setWriting] = useState(false);
   const sheetRef = useRef(null);
   const onSheet = async (e) => {
     const file = e.target.files?.[0];
@@ -67,6 +70,20 @@ function LessonDialog({ open, onOpenChange, initial, onSave, saving, userId }) {
             </Button>
           )}
         </Field>
+        <Field label={tr("תווים שכותבים כאן")} hint={tr("כותבים מנגינה, אקורדים וקצב בלחיצות. התלמידים יראו, ינגנו וידפיסו אותם ליד הסרטון.")}>
+          {l.notation ? (
+            <div className="flex items-center gap-2 rounded-md border p-2 text-sm">
+              <PenLine className="h-4 w-4 shrink-0 text-primary" aria-hidden />
+              <span className="flex-1 truncate">{parseAbc(l.notation).title || tr("תווים ללא שם")}</span>
+              <Button type="button" size="sm" variant="ghost" onClick={() => setWriting(true)}>{tr("עריכה")}</Button>
+              <Button type="button" size="icon" variant="ghost" className="h-7 w-7" aria-label={tr("הסרת התווים")} onClick={() => setL({ ...l, notation: null })}><X /></Button>
+            </div>
+          ) : (
+            <Button type="button" variant="outline" onClick={() => setWriting(true)}><PenLine />{tr("כתיבת תווים")}</Button>
+          )}
+        </Field>
+        <ScoreEditorDialog open={writing} onOpenChange={setWriting} initialAbc={l.notation}
+          heading={tr("תווים לשיעור")} onSave={(abc) => { setL((cur) => ({ ...cur, notation: abc })); setWriting(false); }} />
         <Field id="ld" label={tr("תיאור / הערות לשיעור")}><Textarea id="ld" value={l.description} onChange={set("description")} maxLength={10000} rows={5} /></Field>
         <div className="flex flex-wrap items-end gap-4">
           <Field id="lm" label={tr("משך (דקות)")}><Input id="lm" type="number" min={0} max={600} value={l.duration_minutes} onChange={set("duration_minutes")} className="w-28" /></Field>
@@ -136,6 +153,7 @@ export default function CourseEditor() {
         is_preview: l.is_preview,
         sheet_music_url: l.sheet_music_url || null,
         sheet_music_name: l.sheet_music_url ? (l.sheet_music_name || null) : null,
+        notation: l.notation || null,
       };
       if (l.id) return unwrap(await supabase.from("lessons").update(values).eq("id", l.id));
       const position = (lessons.data?.at(-1)?.position ?? 0) + 1;
@@ -257,7 +275,7 @@ export default function CourseEditor() {
                 {list.map((l, i) => (
                   <li key={l.id} className="flex items-center gap-2 rounded-md border p-2.5 text-sm">
                     <span className="w-5 text-muted-foreground">{i + 1}</span>
-                    <span className="flex-1 truncate">{l.title}{l.is_preview && <span className="ms-2 text-xs text-primary">{tr("חינם")}</span>}{!l.video_url && <span className="ms-2 text-xs text-amber-700">{tr("ללא וידאו")}</span>}{l.sheet_music_url && <FileMusic className="ms-2 inline h-3.5 w-3.5 text-muted-foreground" aria-label={tr("יש קובץ תווים")} />}</span>
+                    <span className="flex-1 truncate">{l.title}{l.is_preview && <span className="ms-2 text-xs text-primary">{tr("חינם")}</span>}{!l.video_url && <span className="ms-2 text-xs text-amber-700">{tr("ללא וידאו")}</span>}{(l.sheet_music_url || l.notation) && <FileMusic className="ms-2 inline h-3.5 w-3.5 text-muted-foreground" aria-label={tr("יש תווים")} />}</span>
                     <Button size="icon" variant="ghost" className="h-7 w-7" aria-label={tr("למעלה")} disabled={i === 0} onClick={() => move.mutate({ a: l, b: list[i - 1] })}><ArrowUp /></Button>
                     <Button size="icon" variant="ghost" className="h-7 w-7" aria-label={tr("למטה")} disabled={i === list.length - 1} onClick={() => move.mutate({ a: l, b: list[i + 1] })}><ArrowDown /></Button>
                     <Button size="icon" variant="ghost" className="h-7 w-7" aria-label={tr("עריכה")} onClick={() => setLessonDialog({ ...l, video_url: l.video_url || "", duration_minutes: l.duration_minutes ?? "" })}><Pencil /></Button>
