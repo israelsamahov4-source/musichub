@@ -6,7 +6,7 @@ import { Card } from "@/components/ui/card";
 import UserAvatar from "@/components/UserAvatar";
 import WaveCover from "@/components/WaveCover";
 import { supabase } from "@/lib/supabase";
-import { label } from "@/lib/config";
+import { label, typeLabel } from "@/lib/config";
 import { safeUrl } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -100,7 +100,7 @@ function ProfileSummary() {
     },
   });
   if (!profile) return null;
-  const role = profile.instruments?.[0] ? label("instruments", profile.instruments[0]) : profile.user_type === "listener" ? tr("חובב/ת מוזיקה") : tr("מוזיקאי/ת");
+  const role = profile.instruments?.[0] ? label("instruments", profile.instruments[0]) : typeLabel(profile);
   const cover = safeUrl(profile.cover_url);
   return (
     <Card className="overflow-hidden">

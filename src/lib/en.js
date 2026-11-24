@@ -912,6 +912,19 @@ const EN = {
   "יש תווים": "Has sheet music",
   "התווים של השיעור": "Lesson sheet music",
   "עריכת תווים": "Edit sheet music",
+  // "What describes you best?" and place of study
+  "מה מתאר אותך הכי טוב?": "What describes you best?",
+  "סטודנט/ית למוזיקה": "Music student",
+  "איפה אני לומד/ת": "Where I study",
+  "לא חובה. כך סטודנטים מאותו מקום ומחוצה לו ימצאו אתכם.": "Optional. Helps students from the same place, and beyond, find you.",
+  "למשל: רימון, הקריה האקדמית אונו": "e.g. Rimon, Ono Academic College",
+  "נא לכתוב את שם מקום הלימודים המלא": "Please write the full name of where you study",
+  "מי אני": "Who I am",
+  "בחרו כלים, תפקידים וז'אנרים. את השאר אפשר להוסיף אחר כך בפרופיל.": "Pick instruments, roles and genres. You can add the rest later in your profile.",
+  "סטודנטים": "Students",
+  "מקום לימודים": "Place of study",
+  "למשל: רימון": "e.g. Rimon",
+  "סוג משתמש": "Member type",
 };
 
 export default EN;

@@ -22,7 +22,7 @@ import { fetchDetails } from "@/api/details";
 import { MEMBER_PROFILE_COLS, PUBLIC_PROFILE_COLS } from "@/api/profiles";
 import { supabase, unwrap } from "@/lib/supabase";
 import { useAuth } from "@/auth/AuthProvider";
-import { label, studyLine } from "@/lib/config";
+import { label, studyLine, typeLabel } from "@/lib/config";
 import { errorMessage, formatDate, safeUrl, textDir } from "@/lib/utils";
 import { useAuthHref } from "@/auth/returnTo";
 import { usePageTitle } from "@/lib/usePageTitle";
@@ -178,7 +178,7 @@ export default function Profile() {
               <h1 className="text-[1.65rem] font-bold leading-tight tracking-tight sm:text-[2rem]">{name}</h1>
               <PlanBadge tier={p.plan_tier} />
             </div>
-            <p className="mt-0.5 text-[15px] text-foreground/85">{cv?.headline || roleLine || (p.user_type === "listener" ? tr("חובב/ת מוזיקה") : tr("מוזיקאי/ת"))}</p>
+            <p className="mt-0.5 text-[15px] text-foreground/85">{cv?.headline || roleLine || (p.user_type === "student" ? "" : typeLabel(p))}</p>
             {studyLine(p) && <p className="mt-1 flex items-center gap-1.5 text-sm font-medium text-foreground/80"><GraduationCap className="h-4 w-4 shrink-0 text-primary" aria-label={tr("לימודים")} />{studyLine(p)}</p>}
             <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground">
               <span className="ltr">@{p.username}</span>

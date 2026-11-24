@@ -10,8 +10,8 @@ import TagPicker from "@/components/TagPicker";
 import CityPicker from "@/components/CityPicker";
 import UserAvatar from "@/components/UserAvatar";
 import { ACCEPT, uploadFile } from "@/lib/upload";
-import { GENRES, INSTITUTIONS, INSTRUMENTS, LEVELS, LOOKING_FOR, ROLES, STUDY_TRACKS, STUDY_YEARS } from "@/lib/config";
-import { errorMessage, safeUrl } from "@/lib/utils";
+import { GENRES, INSTRUMENTS, LEVELS, LOOKING_FOR, MAX_INSTITUTION, ROLES, USER_TYPES } from "@/lib/config";
+import { cn, errorMessage, safeUrl } from "@/lib/utils";
 import { DIR, tr } from "@/lib/i18n";
 
 export const LINK_FIELDS = [
@@ -37,9 +37,7 @@ export function profileToForm(p) {
     level: p.musical_roles?.[0]?.level || "intermediate",
     genres: p.genres || [],
     looking_for: p.looking_for || [],
-    institution: p.institution || null,
-    study_track: p.study_track || null,
-    study_year: p.study_year || null,
+    institution: p.institution || "",
     links: { ...(p.links || {}) },
   };
 }
@@ -64,10 +62,10 @@ export function formToProfile(f) {
     looking_for: f.looking_for,
     // Kept in step with the list: whoever picked something is open to working together.
     open_for_collaboration: f.looking_for.length > 0,
-    // Track and year only mean something together with an institution.
-    institution: f.institution || null,
-    study_track: f.institution ? f.study_track || null : null,
-    study_year: f.institution ? f.study_year || null : null,
+    // Only students say where they study. Track and year are no longer asked, so they are cleared.
+    institution: f.user_type === "student" ? f.institution.trim() || null : null,
+    study_track: null,
+    study_year: null,
     links,
   };
 }
@@ -79,6 +77,7 @@ export function profileErrors(f) {
   const u = f.username.trim().toLowerCase();
   if (u.length < 3 || u.length > 30) errors.username = tr("שם המשתמש צריך להיות באורך 3 עד 30 תווים");
   else if (!/^[a-z0-9_]+$/.test(u)) errors.username = tr("רק אותיות באנגלית קטנות, ספרות או _ (בלי רווחים ועברית)");
+  if (f.user_type === "student" && f.institution.trim().length === 1) errors.institution = tr("נא לכתוב את שם מקום הלימודים המלא");
   return errors;
 }
 
@@ -88,7 +87,7 @@ export function validateProfile(f) {
 
 /** Moves keyboard focus to the first field with a problem. */
 export function focusFirstError(errors) {
-  const first = ["full_name", "username"].find((k) => errors[k]);
+  const first = ["full_name", "username", "institution"].find((k) => errors[k]);
   if (first) requestAnimationFrame(() => document.getElementById(first)?.focus());
 }
 
@@ -99,50 +98,36 @@ const POPULAR = {
   genres: ["pop", "rock", "hiphop", "mizrahi", "israeli", "electronic", "jazz", "indie"],
 };
 
-// Radix Select can't hold an empty value, so "not chosen" is this key in the menu and null in the profile.
-const NONE = "none";
-
-/** Institution, track and year. Track and year appear once an institution is chosen. */
-function StudiesFields({ form, set }) {
-  const pick = (k) => (v) => set(k)(v === NONE ? null : v);
+/** "What describes you best?" (one choice). Students can also write where they study, in their own words. */
+function WhoFields({ form, set, errors }) {
   return (
     <section className="space-y-4">
-      <Field id="institution" label={tr("איפה אני לומד/ת או למדתי")} hint={tr("לא חובה. עוזר לסטודנטים מהמוסד שלכם ומחוצה לו למצוא אתכם.")}>
-        <Select value={form.institution || NONE} onValueChange={pick("institution")} dir={DIR}>
-          <SelectTrigger id="institution" className="sm:w-96"><SelectValue /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value={NONE}>{tr("לא לומד/ת מוזיקה כרגע")}</SelectItem>
-            {INSTITUTIONS.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}
-          </SelectContent>
-        </Select>
-      </Field>
-      {form.institution && (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <Field id="study_track" label={tr("מסלול")}>
-            <Select value={form.study_track || NONE} onValueChange={pick("study_track")} dir={DIR}>
-              <SelectTrigger id="study_track"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value={NONE}>{tr("לא צוין")}</SelectItem>
-                {STUDY_TRACKS.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}
-              </SelectContent>
-            </Select>
-          </Field>
-          <Field id="study_year" label={tr("שנת לימודים")}>
-            <Select value={form.study_year || NONE} onValueChange={pick("study_year")} dir={DIR}>
-              <SelectTrigger id="study_year"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value={NONE}>{tr("לא צוין")}</SelectItem>
-                {STUDY_YEARS.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}
-              </SelectContent>
-            </Select>
-          </Field>
+      <Field label={tr("מה מתאר אותך הכי טוב?")}>
+        <div className="flex flex-wrap gap-2" role="group" aria-label={tr("מה מתאר אותך הכי טוב?")}>
+          {USER_TYPES.map((o) => {
+            const on = form.user_type === o.value;
+            return (
+              <button key={o.value} type="button" aria-pressed={on} onClick={() => set("user_type")(o.value)}
+                className={cn("inline-flex min-h-9 items-center rounded-full border px-3.5 py-1 text-sm transition-colors",
+                  on ? "border-primary bg-primary font-medium text-primary-foreground" : "bg-card hover:bg-accent")}>
+                {o.label}
+              </button>
+            );
+          })}
         </div>
+      </Field>
+      {form.user_type === "student" && (
+        <Field id="institution" label={tr("איפה אני לומד/ת")} error={errors.institution}
+          hint={tr("לא חובה. כך סטודנטים מאותו מקום ומחוצה לו ימצאו אתכם.")}>
+          <Input id="institution" value={form.institution} onChange={set("institution")} maxLength={MAX_INSTITUTION}
+            placeholder={tr("למשל: רימון, הקריה האקדמית אונו")} className="sm:w-96" />
+        </Field>
       )}
     </section>
   );
 }
 
-/** `compact` is the onboarding version: no cover photo, no level, short option lists and up to 3 genres. */
+/** `compact` is the onboarding version: no cover photo, no level, and short option lists behind a "more" chip. */
 export default function ProfileForm({ form, setForm, userId, sections = ["basics", "music", "about", "links"], compact = false, errors = {} }) {
   const [uploading, setUploading] = useState(false);
   const fileRef = useRef(null);
@@ -200,20 +185,11 @@ export default function ProfileForm({ form, setForm, userId, sections = ["basics
             <Field id="location" label={tr("עיר")}>
               <CityPicker id="location" value={form.location} onChange={set("location")} />
             </Field>
-            <Field id="user_type" label={tr("אני…")}>
-              <Select value={form.user_type} onValueChange={set("user_type")} dir={DIR}>
-                <SelectTrigger id="user_type"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="musician">{tr("מוזיקאי/ת")}</SelectItem>
-                  <SelectItem value="listener">{tr("חובב/ת מוזיקה")}</SelectItem>
-                </SelectContent>
-              </Select>
-            </Field>
           </div>
         </section>
       )}
 
-      {show("studies") && <StudiesFields form={form} set={set} />}
+      {show("who") && <WhoFields form={form} set={set} errors={errors} />}
 
       {show("music") && (
         <section className="space-y-4">
@@ -225,7 +201,7 @@ export default function ProfileForm({ form, setForm, userId, sections = ["basics
               <SelectContent>{LEVELS.map((l) => <SelectItem key={l.value} value={l.value}>{l.label}</SelectItem>)}</SelectContent>
             </Select>
           </Field>}
-          <Field label={compact ? tr("ז'אנרים (עד 3)") : tr("ז'אנרים")}><TagPicker options={GENRES} value={form.genres} onChange={set("genres")} max={compact ? 3 : 8} label={tr("ז'אנרים")} popular={compact ? POPULAR.genres : undefined} /></Field>
+          <Field label={tr("ז'אנרים")}><TagPicker options={GENRES} value={form.genres} onChange={set("genres")} label={tr("ז'אנרים")} popular={compact ? POPULAR.genres : undefined} /></Field>
         </section>
       )}
 
