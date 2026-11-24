@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription,
   AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
@@ -41,6 +42,33 @@ function PasswordCard() {
       <Field id="newpw" label={tr("סיסמה חדשה")}><Input id="newpw" type="password" dir="ltr" autoComplete="new-password" value={pw} onChange={(e) => setPw(e.target.value)} className="w-64" /></Field>
       <Button type="submit" variant="outline" disabled={busy || !pw}>{tr("עדכון סיסמה")}</Button>
     </form>
+  );
+}
+
+/** On/off for the email that comes when a message waits unread. Only the person can see or change it. */
+function EmailAlertsCard() {
+  const { user } = useAuth();
+  const qc = useQueryClient();
+  const key = ["my-account", user.id];
+  const account = useQuery({ queryKey: key, queryFn: async () => unwrap(await supabase.rpc("my_account")) });
+  const on = account.data?.email_on_message ?? true;
+  const save = useMutation({
+    mutationFn: async (value) => unwrap(await supabase.from("profiles").update({ email_on_message: value }).eq("id", user.id)),
+    onMutate: (value) => qc.setQueryData(key, (old) => ({ ...(old ?? {}), email_on_message: value })),
+    onSuccess: (_, value) => toast.success(value ? tr("נשלח לכם מייל על הודעות שלא נקראו") : tr("לא נשלח לכם מייל על הודעות")),
+    onError: (e) => { toast.error(errorMessage(e)); qc.invalidateQueries({ queryKey: key }); },
+  });
+  return (
+    <Card className="space-y-3 p-5">
+      <h2 className="font-semibold">{tr("התראות במייל")}</h2>
+      <div className="flex items-start gap-3">
+        <Switch id="email-on-message" checked={on} disabled={account.isLoading || save.isPending} onCheckedChange={(v) => save.mutate(v)} className="mt-0.5" />
+        <label htmlFor="email-on-message" className="text-sm leading-6">
+          {tr("מייל כשמישהו כותב לי הודעה ואני לא קורא/ת אותה תוך 10 דקות")}
+          <span className="block text-muted-foreground">{tr("בלי תוכן ההודעה, רק מי כתב. לכל היותר מייל אחד בשעה.")}</span>
+        </label>
+      </div>
+    </Card>
   );
 }
 
@@ -157,6 +185,8 @@ export default function Settings() {
           </ul>
         )}
       </Card>
+
+      <EmailAlertsCard />
 
       <TwoFactorCard />
 

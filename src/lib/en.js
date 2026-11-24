@@ -893,6 +893,12 @@ const EN = {
   "מקום לימודים": "Place of study",
   "למשל: רימון": "e.g. Rimon",
   "סוג משתמש": "Member type",
+  // Email alerts for unread messages
+  "התראות במייל": "Email alerts",
+  "מייל כשמישהו כותב לי הודעה ואני לא קורא/ת אותה תוך 10 דקות": "Email me when someone messages me and I haven't read it within 10 minutes",
+  "בלי תוכן ההודעה, רק מי כתב. לכל היותר מייל אחד בשעה.": "Without the message text, only who wrote. At most one email an hour.",
+  "נשלח לכם מייל על הודעות שלא נקראו": "We'll email you about unread messages",
+  "לא נשלח לכם מייל על הודעות": "We won't email you about messages",
 };
 
 export default EN;

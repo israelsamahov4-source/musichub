@@ -454,6 +454,48 @@ await ok('CODE-18: read time comes from the server clock', async () => {
   assert(new Date(r.rows[0].m).getFullYear() > 2000);
 });
 
+console.log('\nEmail alerts for unread messages');
+// Two fresh users, so blocks, suspensions and two-step settings from earlier tests don't interfere.
+for (const [k, email] of [['frank', 'frank@x.com'], ['gina', 'gina@x.com']]) {
+  users[k] = (await db.query('insert into auth.users (email) values ($1) returning id', [email])).rows[0].id;
+}
+await ok('a user can turn message emails off and back on', async () => {
+  await as('gina', 'update profiles set email_on_message = false where id = $1', [users.gina]);
+  assert((await as('gina', 'select my_account() as a')).rows[0].a.email_on_message === false);
+  await as('gina', 'update profiles set email_on_message = true where id = $1', [users.gina]);
+});
+await denied('others cannot see that choice', () => as('frank', 'select email_on_message from profiles'));
+await denied('nobody can read when someone was emailed', () => as('frank', 'select * from message_email_state'));
+await denied('only the server can pick who gets an email', () => as('frank', 'select * from claim_message_alerts()'));
+let alertConv;
+const ageConversation = async () => {
+  // Pretend the message came 11 minutes ago; the server-time triggers are skipped for this.
+  await db.query('set session_replication_role = replica');
+  await db.query("update conversation_members set last_read_at = now() - interval '1 hour' where conversation_id = $1", [alertConv]);
+  await db.query("update messages set created_at = now() - interval '11 minutes' where conversation_id = $1", [alertConv]);
+  await db.query('set session_replication_role = origin');
+};
+const picked = async () => (await as('server', 'select * from claim_message_alerts()')).rows.filter((x) => x.user_id === users.gina);
+await ok('a message unread for 10 minutes is picked once, and not again within the hour', async () => {
+  alertConv = (await as('frank', 'select start_conversation($1) as id', [users.gina])).rows[0].id;
+  await as('frank', 'insert into messages (conversation_id, sender_id, content) values ($1, $2, $3)', [alertConv, users.frank, 'hi']);
+  assert((await picked()).length === 0, 'emailed before 10 minutes');
+  await ageConversation();
+  const first = await picked();
+  assert(first.length === 1 && first[0].message_count === 1 && first[0].email === 'gina@x.com', JSON.stringify(first));
+  assert((await picked()).length === 0, 'emailed twice');
+});
+await ok('no email to someone who turned it off', async () => {
+  await db.query('delete from message_email_state where user_id = $1', [users.gina]);
+  await as('gina', 'update profiles set email_on_message = false where id = $1', [users.gina]);
+  assert((await picked()).length === 0, 'emailed anyway');
+  await as('gina', 'update profiles set email_on_message = true where id = $1', [users.gina]);
+});
+await ok('no email once the message was read', async () => {
+  await as('gina', 'update conversation_members set last_read_at = now() where conversation_id = $1 and user_id = $2', [alertConv, users.gina]);
+  assert((await picked()).length === 0, 'emailed about a read message');
+});
+
 console.log('\nStorage');
 await ok('user uploads into own folder', async () => {
   await as('alice', `insert into storage.objects (bucket_id, name) values ('avatars', $1)`, [`${users.alice}/me.png`]);

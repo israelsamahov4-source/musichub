@@ -12,3 +12,7 @@ verify_jwt = false
 verify_jwt = false
 [functions.delete-account]
 verify_jwt = false
+
+# Called by a database timer, not by a signed-in user. It only sends emails the database marks as due.
+[functions.message-alerts]
+verify_jwt = false

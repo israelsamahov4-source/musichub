@@ -3,8 +3,9 @@
 ## מצב נוכחי (13.11.2026)
 
 - **האתר:** https://musichub-wheat.vercel.app (Vercel, מתעדכן אוטומטית מכל דחיפה ל-`main`)
-- **מסד הנתונים:** פרויקט Supabase בשם `musichub` (מזהה `jrhzkarxjqbcqokfowbv`, אזור אירופה). כל חמש המיגרציות הורצו.
+- **מסד הנתונים:** פרויקט Supabase בשם `musichub` (מזהה `jrhzkarxjqbcqokfowbv`, אזור אירופה). כל המיגרציות בתיקייה `supabase/migrations` הורצו, עד `20261124000014_message_emails.sql`.
 - **פונקציות שרת (פעילות):** `delete-account`, `paddle-checkout`, `paddle-webhook`, `billing-portal`. כולן הועלו מהעורך בדשבורד, ובדיקת ה-JWT כבויה בכולן כי הן מאמתות את המשתמש (או את החתימה של Paddle) בעצמן.
+- **מייל על הודעה שלא נקראה:** הפונקציה `message-alerts` הועלתה, וטיימר במסד הנתונים קורא לה כל 5 דקות. כדי שתעבוד: לכבות בה את **Verify JWT** (Edge Functions → message-alerts → Settings), ולחבר שירות מייל דרך Edge Functions → Secrets: `RESEND_API_KEY` או `BREVO_API_KEY`, ו-`ALERT_FROM_EMAIL` (כתובת השולח). עד אז לא נשלח שום מייל.
 - **חשבון מייסד:** `israelsamahov4` הוא מנהל ומורה. עמוד הניהול: `/admin`.
 - **עוד לא הוגדר:** חשבון Paddle והמפתחות שלו (עד אז כפתורי השדרוג מציגים "בקרוב"), שרת מיילים (SMTP) ותבניות מייל בעברית, דומיין, התחברות עם Google, וגיבויים (בתוכנית Pro של Supabase).
 

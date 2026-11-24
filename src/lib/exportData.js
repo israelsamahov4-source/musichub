@@ -20,7 +20,7 @@ async function all(build) {
 export async function downloadMyData(userId, email) {
   const mine = (table, col = "user_id", select = "*") => all(() => supabase.from(table).select(select).eq(col, userId).order("created_at"));
   const [profile, cv, subscription, posts, comments, likes, following, followers, notifications, memberships,
-    projectsOwned, tasksCreated, tasksAssigned, scoresWritten, courses, enrollments, progress, blocks, reports, conversations] = await Promise.all([
+    projectsOwned, tasksCreated, tasksAssigned, scoresWritten, courses, enrollments, progress, blocks, reports, conversations, account] = await Promise.all([
     supabase.from("profiles").select(MEMBER_PROFILE_COLS).eq("id", userId).single().then(unwrap),
     supabase.from("profile_details").select("*").eq("user_id", userId).maybeSingle().then(unwrap),
     supabase.from("subscriptions").select("tier, status, billing_cycle, current_period_end, provider").eq("user_id", userId).maybeSingle().then(unwrap),
@@ -31,6 +31,7 @@ export async function downloadMyData(userId, email) {
     all(() => supabase.from("lesson_progress").select("*").eq("user_id", userId).order("completed_at")),
     mine("blocks", "blocker_id"), mine("reports", "reporter_id"),
     supabase.rpc("my_conversations").then(unwrap),
+    supabase.rpc("my_account").then(unwrap),
   ]);
   if (!profile) throw new Error("not loaded");
 
@@ -47,7 +48,7 @@ export async function downloadMyData(userId, email) {
   }
 
   const data = {
-    exported_at: new Date().toISOString(), account: { id: userId, email }, profile, cv, subscription,
+    exported_at: new Date().toISOString(), account: { id: userId, email }, settings: { email_on_message: account?.email_on_message ?? true }, profile, cv, subscription,
     posts, comments, likes, following, followers, notifications,
     projects_owned: projectsOwned, project_memberships: memberships, tasks_created: tasksCreated, tasks_assigned: tasksAssigned, project_scores_written: scoresWritten,
     courses_taught: courses, lessons_taught: lessons, enrollments, lesson_progress: progress,
