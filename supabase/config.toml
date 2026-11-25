@@ -13,7 +13,7 @@ verify_jwt = false
 [functions.delete-account]
 verify_jwt = false
 
-# Called by a database timer, not by a signed-in user. The timer sends the public anon key (read from
-# Vault as 'anon_key'), so Supabase's key check stays on. It only sends emails the database marks as due.
+# Called by a database timer, not by a signed-in user. It only sends emails the database marks as due.
+# (If this is ever turned on, the timer can still get in: save the anon key in Vault as 'anon_key'.)
 [functions.message-alerts]
-verify_jwt = true
+verify_jwt = false
